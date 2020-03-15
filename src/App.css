@@ -30,7 +30,7 @@ nav{
   }
     #title a{
       text-decoration: none;  
-      color: var(--grey700);
+      color: var(--grey800);
       font-weight: bold;
     }
   .icon{

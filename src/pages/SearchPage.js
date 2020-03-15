@@ -9,18 +9,29 @@ export default function SearchPage(){
 
     // Query departments on component mount
     useEffect(() => {
-      (async () => {
-        fetch('https://schedge.torchnyu.com/subjects')
-            .then(response => response.json())    // one extra step
-            .then(data => setDepartments(data))
-            .catch(error => console.error(error));
-      })();
-      (async () => {
-        fetch('https://schedge.torchnyu.com/schools')
-            .then(response => response.json())    // one extra step
-            .then(data => setSchools(data))
-            .catch(error => console.error(error));
-      })();
+        // Get Schedge data
+        (async () => {
+            fetch('https://schedge.torchnyu.com/subjects')
+                .then(response => response.json())    // one extra step
+                .then(data => setDepartments(data))
+                .catch(error => console.error(error));
+        })();
+        (async () => {
+            fetch('https://schedge.torchnyu.com/schools')
+                .then(response => response.json())    // one extra step
+                .then(data => setSchools(data))
+                .catch(error => console.error(error));
+        })();
+        // Animate in elements
+        document.getElementById('departmentTitle').style.opacity = 1;
+        // Wait until departments are loaded
+        let checkLoaded = setInterval(() => {
+            if(document.querySelector('.school')){
+                document.getElementById('departments').style.opacity = 1;
+                document.getElementById('departments').style.paddingTop = '4rem';
+                clearInterval(checkLoaded);
+            }
+        }, 50);
     }, []);
 
     return(
@@ -30,6 +41,7 @@ export default function SearchPage(){
             </div>
             <div id="departmentContainer">
                 <div id="departmentTitle">Departments</div>
+                <div id="departments">
                 {
                     ReactHtmlParser((Object.keys(departments)
                         .sort((a,b) => {
@@ -54,6 +66,7 @@ export default function SearchPage(){
                         </div>`
                     )) + "").replace(/,/g, ''))
                 }
+                </div>
             </div>  
         </div>
     )

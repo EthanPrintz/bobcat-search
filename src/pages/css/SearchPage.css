@@ -5,10 +5,6 @@
     width: 100%;
     min-height: 50vh;
     background-color: var(--grey300);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
-    grid-gap: 1rem;
-    padding: 4rem 2rem;
     position: relative;
 }
     #departmentTitle{
@@ -19,6 +15,17 @@
         position: absolute;
         top: 0.3rem;
         left: 0.3rem;
+        opacity: 0;
+        transition: 0.8s;
+    }
+    #departments{
+        opacity: 0;
+        transition: 0.8s;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+        grid-gap: 1rem;
+        padding: 6rem 2rem 2rem 2rem;
     }
     .school{
         padding: 1rem;
