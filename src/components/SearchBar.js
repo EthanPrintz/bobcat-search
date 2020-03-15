@@ -9,7 +9,7 @@ export default function SearchBar(){
         document.getElementById('searchBar').addEventListener('input', (e) => {
             if(e.target.innerText.length > 0){
                 (async () => {
-                    fetch(`https://schedge.torchnyu.com/2020/su/search?query=${e.target.innerText.length}&limit=4`)
+                    fetch(`https://schedge.torchnyu.com/2020/su/search?query=${e.target.innerText}&limit=5`)
                         .then(response => response.json())    // one extra step
                         .then(data => {
                             document.getElementById('searchResults').innerHTML = (data.map(course => (
