@@ -24,8 +24,8 @@ export default function SearchPage(){
         })();
         // Animate in elements
         document.getElementById('departmentTitle').style.opacity = 1;
-        // Wait until departments are loaded
         let checkLoaded = setInterval(() => {
+            // Wait until departments are loaded
             if(document.querySelector('.school')){
                 document.getElementById('departments').style.opacity = 1;
                 document.getElementById('departments').style.paddingTop = '4rem';

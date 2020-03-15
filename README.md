@@ -1,3 +1,6 @@
+## Bobcat Search
+An open source course search for the NYU community, created in React using Albert Liu's Schedge API. Hopefully this becomes a good replacement for the general NYU course search.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
