@@ -1,3 +1,11 @@
+#courseLoading{
+    position: absolute;
+    top: calc(10vmax + 1.6rem);
+    left: calc(87vmin - 3.2rem);
+    height: 0.8rem;
+    z-index: 2;
+    opacity: 0;
+}
 #searchBar{
     position: absolute;
     top: 10vmax;
@@ -24,4 +32,21 @@
     position: absolute;
     top: calc(10vmax + 5rem);
     left: 10vmin;
+    width: 80vmin;
 }
+.course{
+    background-color: white;
+    padding: 1rem;
+    font-size: 1.15rem;
+    border: 1px solid var(--grey200);
+    color: var(--grey900);
+}
+    .courseSchoolCode, .courseId{
+        font-family: var(--extraCondensedFont);
+        font-weight: 500;
+        color: var(--grey700);
+    }
+    .courseName{
+        font-weight: bold;
+        margin-left: 1rem;
+    }
