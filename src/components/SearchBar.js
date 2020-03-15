@@ -9,9 +9,16 @@ export default function SearchBar(){
         document.getElementById('searchBar').addEventListener('input', (e) => {
             if(e.target.innerText.length > 0){
                 (async () => {
-                    fetch(`https://schedge.torchnyu.com/2020/sp/search?query=${e.target.innerText.length}&limit=4`)
+                    fetch(`https://schedge.torchnyu.com/2020/su/search?query=${e.target.innerText.length}&limit=4`)
                         .then(response => response.json())    // one extra step
-                        .then(data => console.log(data))
+                        .then(data => {
+                            document.getElementById('searchResults').innerHTML = (data.map(course => (
+                                `<div class="course">
+                                    ${course.subjectCode.school}-${course.subjectCode.code} ${course.deptCourseId}:
+                                    ${course.name}
+                                </div>`
+                            )) + '').replace(/,/g, '');
+                        })
                         .catch(error => console.error(error));
                 })();
             } else {

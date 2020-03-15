@@ -20,3 +20,8 @@
     color: rgb(136, 136, 136); 
     font-size: 1.2rem;
 }
+#searchResults{
+    position: absolute;
+    top: calc(10vmax + 5rem);
+    left: 10vmin;
+}
