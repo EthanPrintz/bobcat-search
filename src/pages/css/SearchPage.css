@@ -1,9 +1,10 @@
 #searchContainer{
-    min-height: 70vh;
+    min-height: 60vh;
 }
 #departmentContainer{
     width: 100%;
     min-height: 50vh;
+    border-top: 1rem solid var(--grey200);
     background-color: var(--grey300);
     position: relative;
 }

@@ -1,0 +1,22 @@
+#searchBar{
+    position: absolute;
+    top: 10vmax;
+    left: 10vmin;
+    width: 80vmin;
+    height: 4rem;
+    background-color: white;
+    padding: 1.2rem 2rem;
+    font-size: 1.3rem;
+    cursor: text;
+    outline: solid;
+    outline-color: var(--grey300);
+    transition: 0.2s;
+}
+    #searchBar:focus{
+        outline-color: var(--purpleMain);
+    }
+#searchBar[placeholder]:empty:before {
+    content: attr(placeholder);
+    color: rgb(136, 136, 136); 
+    font-size: 1.2rem;
+}

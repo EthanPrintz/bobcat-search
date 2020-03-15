@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import './css/SearchPage.css';
 
+import SearchBar from '../components/SearchBar'
+
 export default function SearchPage(){
     // Set state
     const [departments, setDepartments] = useState({});
@@ -37,10 +39,10 @@ export default function SearchPage(){
     return(
         <div id="pageContainer">
             <div id="searchContainer">
-                <div id="searchBar"></div>
+                <SearchBar />
             </div>
             <div id="departmentContainer">
-                <div id="departmentTitle">Departments</div>
+                <div id="departmentTitle">Majors</div>
                 <div id="departments">
                 {
                     ReactHtmlParser((Object.keys(departments)
