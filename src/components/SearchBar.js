@@ -24,7 +24,7 @@ const SearchBox = styled.input`
   outline: solid;
   outline-color: var(--grey300);
   border: none;
-  transition: 0.1s;
+  transition: outline-color 0.2;
 
   &:focus {
     outline-color: var(--purpleMain);
