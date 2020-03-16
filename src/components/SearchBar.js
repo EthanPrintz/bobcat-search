@@ -13,7 +13,7 @@ export default function SearchBar(){
                     // Add loading animation
                     document.getElementById('courseLoading').style.opacity = 0.3;
                     // Get data
-                    fetch(`https://schedge.torchnyu.com/2020/su/search?query=${searchText}&limit=5`)
+                    fetch(`https://schedge.a1liu.com/2020/su/search?query=${searchText}&limit=5`)
                         .then(response => response.json())    // one extra step
                         .then(data => {
                             // Update search result HTML
