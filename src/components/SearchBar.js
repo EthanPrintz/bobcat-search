@@ -4,7 +4,7 @@ import styled from "styled-components";
 const Loader = styled.img`
   opacity: ${props => (props.loading ? 0.3 : 0)};
   position: absolute;
-  top: calc(10vmax + 1.6rem);
+  top: calc(7vmax + 1.6rem);
   left: calc(87vmin - 3.2rem);
   height: 0.8rem;
   z-index: 2;
@@ -38,7 +38,7 @@ const SearchBox = styled.input`
 
 const SearchResults = styled.div`
   position: absolute;
-  top: calc(10vmax + 5rem);
+  top: calc(7vmax + 5rem);
   left: 10vmin;
   width: 80vmin;
 `;
