@@ -1,54 +1,53 @@
-
-*{
+* {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
-body{
+body {
   background-color: var(--grey100);
   font-family: var(--primaryFont);
 }
 
-nav{
+nav {
   position: relative;
   width: 100%;
   min-height: 3.3rem;
 }
-  nav ul{
-    list-style: none;
-  }
-  nav li{
-    padding: 1vmin;
-  }
-  #title{
-    font-size: 2rem;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: 1rem;
-  }
-    #title a{
-      text-decoration: none;  
-      color: var(--grey800);
-      font-weight: bold;
-    }
-  .icon{
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-  }
-    .icon img{
-      height: 2.8rem;
-      margin: 1.2vmin;
-      float: right;
-      padding: 0.5rem;
-      border-radius: 100%;
-    }
-    .icon a{
-      transition: 0.2s;
-    }
-    .icon a.active img{
-      background-color: var(--grey300);
-    }
+nav ul {
+  list-style: none;
+}
+nav li {
+  padding: 1vmin;
+}
+#title {
+  font-size: 2rem;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 1rem;
+}
+#title a {
+  text-decoration: none;
+  color: var(--grey800);
+  font-weight: bold;
+}
+.icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+}
+.icon img {
+  height: 2.8rem;
+  margin: 1.2vmin;
+  float: right;
+  padding: 0.5rem;
+  border-radius: 100%;
+}
+.icon a {
+  transition: 0.2s;
+}
+.icon a.active img {
+  background-color: var(--grey300);
+}
