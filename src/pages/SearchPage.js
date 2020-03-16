@@ -13,13 +13,13 @@ export default function SearchPage(){
     useEffect(() => {
         // Get Schedge data
         (async () => {
-            fetch('https://schedge.torchnyu.com/subjects')
+            fetch('https://schedge.a1liu.com/subjects')
                 .then(response => response.json())    // one extra step
                 .then(data => setDepartments(data))
                 .catch(error => console.error(error));
         })();
         (async () => {
-            fetch('https://schedge.torchnyu.com/schools')
+            fetch('https://schedge.a1liu.com/schools')
                 .then(response => response.json())    // one extra step
                 .then(data => setSchools(data))
                 .catch(error => console.error(error));
