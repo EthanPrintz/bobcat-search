@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import "./css/SearchBar.css";
 
 const Loader = styled.img`
   opacity: ${props => (props.loading ? 0.3 : 0)};
@@ -14,17 +13,18 @@ const Loader = styled.img`
 const SearchBox = styled.input`
   font-family: var(--primaryFont);
   position: absolute;
-  top: 10vmax;
+  top: 7vmax;
   left: 10vmin;
   width: 80vmin;
   height: 4rem;
   background-color: white;
   padding: 1.2rem 2rem;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   cursor: text;
   outline: solid;
   outline-color: var(--grey300);
-  transition: 0.2s;
+  border: none;
+  transition: 0.1s;
 
   &:focus {
     outline-color: var(--purpleMain);
@@ -32,7 +32,7 @@ const SearchBox = styled.input`
 
   &::placeholder {
     color: rgb(136, 136, 136);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
 `;
 
