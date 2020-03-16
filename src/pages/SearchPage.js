@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
-import "./css/SearchPage.css";
-
 import SearchBar from "../components/SearchBar";
 
-const SearchContainer = styled.div`
-  position: relative;
-  min-height: 60vh;
-`;
-
+// Keyframe Animations
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
@@ -24,6 +18,12 @@ const deptFadeIn = keyframes`
     opacity: 1;
     padding-top: 4rem;
   }
+`;
+
+// Styled Components
+const SearchContainer = styled.div`
+  position: relative;
+  min-height: 60vh;
 `;
 
 const DepartmentContainer = styled.div`
@@ -52,6 +52,37 @@ const Departments = styled.div`
   grid-gap: 1rem;
   padding: 6rem 2rem 2rem 2rem;
   animation: ${deptFadeIn} 0.8s ease forwards;
+`;
+
+const School = styled.div`
+  padding: 1rem;
+
+  & > .schoolTitle {
+    font-size: 1.2rem;
+    font-family: var(--condensedFont);
+    text-align: center;
+    margin: 1rem 0;
+
+    & > .schoolCode {
+      padding: 0.3rem;
+      color: var(--grey600);
+      font-weight: 800;
+    }
+
+    & > .schoolName {
+      color: var(--grey900);
+    }
+  }
+`;
+
+const Department = styled.div`
+  margin: 0.3rem 0;
+
+  & > .departmentCode {
+    color: var(--grey600);
+    font-family: var(--condensedFont);
+    font-weight: 700;
+  }
 `;
 
 export default function SearchPage() {
@@ -93,7 +124,7 @@ export default function SearchPage() {
                 );
               })
               .map((schoolCode, i) => (
-                <div className="school" key={i}>
+                <School key={i}>
                   <div className="schoolTitle">
                     <span className="schoolCode">{schoolCode}</span>
                     <span className="schoolName">
@@ -102,7 +133,7 @@ export default function SearchPage() {
                   </div>
                   {Object.keys(departments.data[schoolCode]).map(
                     (departmentCode, i) => (
-                      <div className="department" key={i}>
+                      <Department key={i}>
                         <span className="departmentCode">{departmentCode}</span>
                         <span className="departmentName">
                           &nbsp;
@@ -110,10 +141,10 @@ export default function SearchPage() {
                             departmentCode
                           ]?.name.replace(/,/g, "")}
                         </span>
-                      </div>
+                      </Department>
                     )
                   )}
-                </div>
+                </School>
               ))}
           </Departments>
         )}
