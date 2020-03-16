@@ -1,13 +1,94 @@
 import React, { useState, useEffect } from "react";
-import ReactHtmlParser from "react-html-parser";
-import "./css/SearchPage.css";
-
+import styled, { keyframes } from "styled-components";
 import SearchBar from "../components/SearchBar";
+
+// Keyframe Animations
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const deptFadeIn = keyframes`
+  from {
+    opacity: 0;
+    padding-top: 6rem;
+  }
+
+  to {
+    opacity: 1;
+    padding-top: 4rem;
+  }
+`;
+
+// Styled Components
+const SearchContainer = styled.div`
+  position: relative;
+  min-height: 60vh;
+`;
+
+const DepartmentContainer = styled.div`
+  width: 100%;
+  min-height: 50vh;
+  border-top: 1rem solid var(--grey200);
+  background-color: var(--grey300);
+  position: relative;
+
+  & > #departmentTitle {
+    font-size: 1.7rem;
+    padding: 1rem;
+    font-weight: bold;
+    color: var(--grey700);
+    position: absolute;
+    top: 0.3rem;
+    left: 0.3rem;
+    animation: ${fadeIn} 1.2s ease forwards;
+  }
+`;
+
+const Departments = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  grid-gap: 1rem;
+  padding: 6rem 2rem 2rem 2rem;
+  animation: ${deptFadeIn} 0.8s ease forwards;
+`;
+
+const School = styled.div`
+  padding: 1rem;
+
+  & > .schoolTitle {
+    font-size: 1.2rem;
+    font-family: var(--condensedFont);
+    text-align: center;
+    margin: 1rem 0;
+
+    & > .schoolCode {
+      padding: 0.3rem;
+      color: var(--grey600);
+      font-weight: 800;
+    }
+
+    & > .schoolName {
+      color: var(--grey900);
+    }
+  }
+`;
+
+const Department = styled.div`
+  margin: 0.3rem 0;
+
+  & > .departmentCode {
+    color: var(--grey600);
+    font-family: var(--condensedFont);
+    font-weight: 700;
+  }
+`;
 
 export default function SearchPage() {
   // Set state
-  const [departments, setDepartments] = useState({});
-  const [schools, setSchools] = useState({});
+  const [departments, setDepartments] = useState({ loading: true, data: {} });
+  const [schools, setSchools] = useState({ loading: true, data: {} });
 
   // Query departments on component mount
   useEffect(() => {
@@ -15,70 +96,59 @@ export default function SearchPage() {
     (async () => {
       fetch("https://schedge.a1liu.com/subjects")
         .then(response => response.json()) // one extra step
-        .then(data => setDepartments(data))
+        .then(data => setDepartments({ loading: false, data }))
         .catch(error => console.error(error));
     })();
     (async () => {
       fetch("https://schedge.a1liu.com/schools")
         .then(response => response.json()) // one extra step
-        .then(data => setSchools(data))
+        .then(data => setSchools({ loading: false, data }))
         .catch(error => console.error(error));
     })();
-    // Animate in elements
-    document.getElementById("departmentTitle").style.opacity = 1;
-    let checkLoaded = setInterval(() => {
-      // Wait until departments are loaded
-      if (document.querySelector(".school")) {
-        document.getElementById("departments").style.opacity = 1;
-        document.getElementById("departments").style.paddingTop = "4rem";
-        clearInterval(checkLoaded);
-      }
-    }, 50);
   }, []);
 
   return (
     <div id="pageContainer">
-      <div id="searchContainer">
+      <SearchContainer>
         <SearchBar />
-      </div>
-      <div id="departmentContainer">
+      </SearchContainer>
+      <DepartmentContainer>
         <div id="departmentTitle">Majors</div>
-        <div id="departments">
-          {ReactHtmlParser(
-            (
-              Object.keys(departments)
-                .sort((a, b) => {
-                  return (
-                    Object.keys(departments[b]).length -
-                    Object.keys(departments[a]).length
-                  );
-                })
-                .map(
-                  (schoolCode, i) =>
-                    `<div class="school" key="${i}">
-                            <div class="schoolTitle">
-                                <span class="schoolCode">${schoolCode}</span>
-                                <span class="schoolName">${schools[schoolCode]
-                                  ?.name ?? ""}</span>
-                            </div>
-                            ${Object.keys(departments[schoolCode]).map(
-                              (departmentCode, i) => `
-                                <div class="department">
-                                    <span class="departmentCode">
-                                        ${departmentCode}
-                                    </span>
-                                    <span class="departmentName">
-                                        ${departments[schoolCode][departmentCode]?.name}
-                                    </span>
-                                </div>
-                            `
-                            )}
-                        </div>`
-                ) + ""
-            ).replace(/,/g, "")
-          )}
-        </div>
-      </div>
+        {!schools.loading && !departments.loading && (
+          <Departments>
+            {Object.keys(departments.data)
+              .sort((a, b) => {
+                return (
+                  Object.keys(departments.data[b]).length -
+                  Object.keys(departments.data[a]).length
+                );
+              })
+              .map((schoolCode, i) => (
+                <School key={i}>
+                  <div className="schoolTitle">
+                    <span className="schoolCode">{schoolCode}</span>
+                    <span className="schoolName">
+                      {schools.data[schoolCode]?.name.replace(/,/g, "") ?? ""}
+                    </span>
+                  </div>
+                  {Object.keys(departments.data[schoolCode]).map(
+                    (departmentCode, i) => (
+                      <Department key={i}>
+                        <span className="departmentCode">{departmentCode}</span>
+                        <span className="departmentName">
+                          &nbsp;
+                          {departments.data[schoolCode][
+                            departmentCode
+                          ]?.name.replace(/,/g, "")}
+                        </span>
+                      </Department>
+                    )
+                  )}
+                </School>
+              ))}
+          </Departments>
+        )}
+      </DepartmentContainer>
     </div>
   );
 }
