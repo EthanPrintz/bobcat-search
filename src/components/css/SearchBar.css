@@ -15,7 +15,7 @@
   height: 4rem;
   background-color: white;
   padding: 1.2rem 2rem;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   cursor: text;
   outline: solid;
   outline-color: var(--grey300);
@@ -24,8 +24,7 @@
 #searchBar:focus {
   outline-color: var(--purpleMain);
 }
-#searchBar[placeholder]:empty:before {
-  content: attr(placeholder);
+#searchBar::placeholder {
   color: rgb(136, 136, 136);
   font-size: 1.2rem;
 }
