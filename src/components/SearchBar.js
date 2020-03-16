@@ -24,7 +24,7 @@ const SearchBox = styled.input`
   outline: solid;
   outline-color: var(--grey300);
   border: none;
-  transition: outline-color 0.2;
+  transition: outline-color 0.2s;
 
   &:focus {
     outline-color: var(--purpleMain);
@@ -93,7 +93,7 @@ export default function SearchBar() {
       <Loader
         src="./loading.svg"
         alt="loading symbol"
-        loading={searchResults.loading}
+        loading={+searchResults.loading}
       />
       <SearchBox
         value={searchText}

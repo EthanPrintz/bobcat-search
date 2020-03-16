@@ -1,34 +1,3 @@
-#searchContainer {
-  position: relative;
-  min-height: 60vh;
-}
-#departmentContainer {
-  width: 100%;
-  min-height: 50vh;
-  border-top: 1rem solid var(--grey200);
-  background-color: var(--grey300);
-  position: relative;
-}
-#departmentTitle {
-  font-size: 1.7rem;
-  padding: 1rem;
-  font-weight: bold;
-  color: var(--grey700);
-  position: absolute;
-  top: 0.3rem;
-  left: 0.3rem;
-  opacity: 0;
-  transition: 1.2s;
-}
-#departments {
-  opacity: 0;
-  transition: 0.8s;
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
-  grid-gap: 1rem;
-  padding: 6rem 2rem 2rem 2rem;
-}
 .school {
   padding: 1rem;
 }
