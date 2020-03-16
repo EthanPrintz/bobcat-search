@@ -1,52 +1,54 @@
-#courseLoading{
-    position: absolute;
-    top: calc(10vmax + 1.6rem);
-    left: calc(87vmin - 3.2rem);
-    height: 0.8rem;
-    z-index: 2;
-    opacity: 0;
+#courseLoading {
+  position: absolute;
+  top: calc(10vmax + 1.6rem);
+  left: calc(87vmin - 3.2rem);
+  height: 0.8rem;
+  z-index: 2;
+  opacity: 0;
 }
-#searchBar{
-    position: absolute;
-    top: 10vmax;
-    left: 10vmin;
-    width: 80vmin;
-    height: 4rem;
-    background-color: white;
-    padding: 1.2rem 2rem;
-    font-size: 1.3rem;
-    cursor: text;
-    outline: solid;
-    outline-color: var(--grey300);
-    transition: 0.2s;
+#searchBar {
+  font-family: var(--primaryFont);
+  position: absolute;
+  top: 10vmax;
+  left: 10vmin;
+  width: 80vmin;
+  height: 4rem;
+  background-color: white;
+  padding: 1.2rem 2rem;
+  font-size: 1.2rem;
+  cursor: text;
+  outline: solid;
+  outline-color: var(--grey300);
+  transition: 0.2s;
 }
-    #searchBar:focus{
-        outline-color: var(--purpleMain);
-    }
+#searchBar:focus {
+  outline-color: var(--purpleMain);
+}
 #searchBar[placeholder]:empty:before {
-    content: attr(placeholder);
-    color: rgb(136, 136, 136); 
-    font-size: 1.2rem;
+  content: attr(placeholder);
+  color: rgb(136, 136, 136);
+  font-size: 1.2rem;
 }
-#searchResults{
-    position: absolute;
-    top: calc(10vmax + 5rem);
-    left: 10vmin;
-    width: 80vmin;
+#searchResults {
+  position: absolute;
+  top: calc(10vmax + 5rem);
+  left: 10vmin;
+  width: 80vmin;
 }
-.course{
-    background-color: white;
-    padding: 1rem;
-    font-size: 1.15rem;
-    border: 1px solid var(--grey200);
-    color: var(--grey900);
+.course {
+  background-color: white;
+  padding: 1rem;
+  font-size: 1.15rem;
+  border: 1px solid var(--grey200);
+  color: var(--grey900);
 }
-    .courseSchoolCode, .courseId{
-        font-family: var(--extraCondensedFont);
-        font-weight: 500;
-        color: var(--grey700);
-    }
-    .courseName{
-        font-weight: bold;
-        margin-left: 1rem;
-    }
+.courseSchoolCode,
+.courseId {
+  font-family: var(--extraCondensedFont);
+  font-weight: 500;
+  color: var(--grey700);
+}
+.courseName {
+  font-weight: bold;
+  margin-left: 1rem;
+}

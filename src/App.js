@@ -1,5 +1,5 @@
-import React from 'react';
-import './App.css';
+import React from "react";
+import "./App.css";
 import {
   BrowserRouter as Router,
   Switch,
@@ -9,8 +9,8 @@ import {
 } from "react-router-dom";
 
 // Page Imports
-import SearchPage from './pages/SearchPage'
-import SchedulePage from './pages/SchedulePage'
+import SearchPage from "./pages/SearchPage";
+import SchedulePage from "./pages/SchedulePage";
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
             </li>
             <li className="icon">
               <NavLink to="/schedule">
-                <img src="./img/edit-calendar.svg" alt="Edit Calendar"/>
+                <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
               </NavLink>
             </li>
           </ul>
