@@ -11,6 +11,7 @@ import {
 // Page Imports
 import SearchPage from "./pages/SearchPage";
 import SchedulePage from "./pages/SchedulePage";
+import CoursePage from "./pages/CoursePage";
 
 function App() {
   return (
@@ -32,12 +33,9 @@ function App() {
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <Route path="/schedule">
-            <SchedulePage />
-          </Route>
-          <Route path="/">
-            <SearchPage />
-          </Route>
+          <Route exact path="/course" component={CoursePage} />
+          <Route exact path="/schedule" component={SchedulePage} />
+          <Route exact path="/" component={SearchPage} />
         </Switch>
       </div>
     </Router>
