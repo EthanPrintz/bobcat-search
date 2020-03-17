@@ -49,6 +49,8 @@ const Course = styled.div`
   font-size: 1.15rem;
   border: 1px solid var(--grey200);
   color: var(--grey900);
+  transition: background-color 0.15s;
+  cursor: pointer;
 
   & > .courseSchoolCode,
   & > .courseId {
@@ -60,6 +62,10 @@ const Course = styled.div`
   & > .courseName {
     font-weight: bold;
     margin-left: 1rem;
+  }
+
+  &:hover {
+    background-color: var(--grey200);
   }
 `;
 
@@ -83,7 +89,13 @@ export default function SearchBar() {
     fetch(
       `https://schedge.a1liu.com/2020/su/search?query=${event.target.value}&limit=5`
     )
-      .then(response => response.json())
+      .then(response => {
+        if (response.status !== 200) {
+          setSearchResults({ loading: false, results: [] });
+          return;
+        }
+        return response.json();
+      })
       .then(results => setSearchResults({ loading: false, results }))
       .catch(error => console.error(error));
   };
