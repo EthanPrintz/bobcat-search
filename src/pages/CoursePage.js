@@ -15,7 +15,7 @@ export default class CoursePage extends React.Component {
 
   componentDidMount() {
     const { year, semester, school, subject, courseid } = this.state.params;
-    fetch(`http://schedge.a1liu.com/${year}/${semester}/${school}/${subject}`)
+    fetch(`https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}`)
       .then(response => {
         if (!response.ok) {
           // handle invalid search parameters
