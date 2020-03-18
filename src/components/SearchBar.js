@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const Loader = styled.img`
   opacity: ${props => (props.loading ? 0.3 : 0)};
@@ -77,6 +78,10 @@ export default function SearchBar() {
   });
 
   const _handleChange = async event => {
+    if (event.target.value.length >= 50) {
+      setSearchText(event.target.value.substring(0, 50));
+      return;
+    }
     setSearchText(event.target.value);
 
     // handle empty search text
@@ -87,10 +92,13 @@ export default function SearchBar() {
     setSearchResults({ loading: true, results: [] });
     // fetch results
     fetch(
-      `https://schedge.a1liu.com/2020/su/search?query=${event.target.value}&limit=5`
+      `https://schedge.a1liu.com/2020/su/search?query=${event.target.value.replace(
+        /\s/g,
+        "+"
+      )}&limit=5`
     )
       .then(response => {
-        if (response.status !== 200) {
+        if (!response.ok) {
           setSearchResults({ loading: false, results: [] });
           return;
         }
@@ -98,6 +106,10 @@ export default function SearchBar() {
       })
       .then(results => setSearchResults({ loading: false, results }))
       .catch(error => console.error(error));
+  };
+
+  const _handleSearchResultClick = course => {
+    console.log(course);
   };
 
   return (
@@ -115,13 +127,27 @@ export default function SearchBar() {
       <SearchResults>
         {searchText.replace(/\s/g, "").length !== 0 &&
           searchResults.results.map((course, i) => (
-            <Course key={i}>
-              <span className="courseSchoolCode">
-                {course.subjectCode.school}-{course.subjectCode.code}
-              </span>
-              <span className="courseId">{course.deptCourseId}</span>
-              <span className="courseName">{course.name}</span>
-            </Course>
+            <Link
+              to={{
+                pathname: "/course",
+                search: `?year=${2020}&semester=${"su"}&school=${
+                  // figure out how we want to get year and semester
+                  course.subjectCode.school
+                }&subject=${course.subjectCode.code}&courseid=${
+                  course.deptCourseId
+                }`
+              }}
+              key={i}
+              style={{ textDecoration: "none" }}
+            >
+              <Course onClick={() => _handleSearchResultClick(course)}>
+                <span className="courseSchoolCode">
+                  {course.subjectCode.school}-{course.subjectCode.code}
+                </span>
+                <span className="courseId">{course.deptCourseId}</span>
+                <span className="courseName">{course.name}</span>
+              </Course>
+            </Link>
           ))}
       </SearchResults>
     </>

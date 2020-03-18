@@ -33,7 +33,7 @@ function App() {
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <Route exact path="/course" component={CoursePage} />
+          <Route path="/course" component={CoursePage} />
           <Route exact path="/schedule" component={SchedulePage} />
           <Route exact path="/" component={SearchPage} />
         </Switch>
