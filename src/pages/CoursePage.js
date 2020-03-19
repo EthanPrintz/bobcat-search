@@ -53,8 +53,8 @@ const SectionsHeader = styled.div`
 const SectionContainer = styled.div`
   padding: 1.8vmin 2.8vmin;
   background-color: var(--grey100);
-  width: 80%;
-  margin-left: 10%;
+  width: 84%;
+  margin-left: 8%;
 
   & > .sectionNum{
     font-size: 1.6rem;
@@ -71,7 +71,7 @@ const SectionContainer = styled.div`
 
 const DateContainer = styled.div`
   border: 0.3rem solid var(--grey200);
-  width: calc(10vmin + 6rem);
+  width: calc(6vmin + 8rem);
   border-radius: 0.35rem;
   text-align: center;
   display: inline-block;
