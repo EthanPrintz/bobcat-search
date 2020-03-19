@@ -55,25 +55,6 @@ const SectionsHeader = styled.div`
   margin-top: calc(10vmin + 2rem);
 `;
 
-const SectionContainer = styled.div`
-  padding: 1.8vmin 2.8vmin;
-  background-color: var(--grey100);
-  width: 84%;
-  margin-left: 8%;
-
-  & > .sectionNum {
-    font-size: 1.6rem;
-    font-family: var(--condensedFont);
-    color: var(--grey700);
-    margin: 0 0 -1rem 1rem;
-  }
-
-  & > .attributes {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
-
 const DateContainer = styled.div`
   border: 0.3rem solid var(--grey200);
   width: calc(6vmin + 8rem);
@@ -101,22 +82,75 @@ const DateContainer = styled.div`
   }
 `;
 
+const SectionContainer = styled.div`
+  padding: 1.8vmin 2.8vmin;
+  background-color: var(--grey100);
+  width: 84%;
+  margin-left: 8%;
+
+  & > .sectionNum {
+    font-size: 1.6rem;
+    font-family: var(--condensedFont);
+    color: var(--grey700);
+    margin: 0 0 -1rem 1rem;
+  }
+
+  & > .attributes {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &:hover {
+    background-color: var(--grey300);
+  }
+
+  &:hover > ${DateContainer} {
+    border: 0.3rem solid var(--grey400);
+  }
+
+  &:hover > ${DateContainer} > .dayOfWeek {
+    background-color: var(--grey400);
+    color: var(--grey800);
+  }
+
+  &:hover > ${DateContainer} > .timeOfDay {
+    color: var(--grey900);
+  }
+`;
+
 const CourseSections = styled.div`
   & ${SectionContainer}:nth-child(odd) {
     background-color: var(--grey200);
-  }
 
-  & ${SectionContainer}:nth-child(odd) > ${DateContainer} {
-    border: 0.3rem solid var(--grey300);
-  }
+    & > ${DateContainer} {
+      border: 0.3rem solid var(--grey300);
+    }
 
-  & ${SectionContainer}:nth-child(odd) > ${DateContainer} > .dayOfWeek {
-    background-color: var(--grey300);
-    color: var(--grey700);
-  }
+    & > ${DateContainer} > .dayOfWeek {
+      background-color: var(--grey300);
+      color: var(--grey700);
+    }
 
-  & ${SectionContainer}:nth-child(odd) > ${DateContainer} > .timeOfDay {
-    color: var(--grey800);
+    & > ${DateContainer} > .timeOfDay {
+      color: var(--grey800);
+    }
+
+    &:hover {
+      background-color: var(--grey300);
+    }
+
+    &:hover > ${DateContainer} {
+      border: 0.3rem solid var(--grey400);
+    }
+
+    &:hover > ${DateContainer} > .dayOfWeek {
+      background-color: var(--grey400);
+      color: var(--grey800);
+    }
+
+    &:hover > ${DateContainer} > .timeOfDay {
+      color: var(--grey900);
+    }
   }
 `;
 
@@ -197,7 +231,22 @@ export default class CoursePage extends React.Component {
             </SectionsHeader>
             <CourseSections>
               {courseData.sections.map((section, i) => (
-                <SectionContainer key={i}>
+                <SectionContainer
+                  key={i}
+                  waitlisted={
+                    this.props.wishlist.filter(
+                      course =>
+                        course.registrationNumber === section.registrationNumber
+                    ).length > 0
+                  }
+                  onClick={e =>
+                    this.props.onToggleCourse({
+                      year: this.props.year,
+                      semester: this.props.semester,
+                      course: section
+                    })
+                  }
+                >
                   {courseData.sections.length > 1 ? (
                     <h4 className="sectionNum">{section.code}</h4>
                   ) : (

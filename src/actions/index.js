@@ -5,13 +5,6 @@ export const wishlistCourse = course => ({
   payload: course // { year, semester, course data}
 });
 
-export const UNWISHLIST_COURSE = "UNWISHLIST_COURSE";
-
-export const unwishlistCourse = course => ({
-  type: UNWISHLIST_COURSE,
-  payload: course // { year, semester, registrationNumber}
-});
-
 export const SELECT_COURSE = "SELECT_COURSE";
 
 export const selectCourse = course => ({

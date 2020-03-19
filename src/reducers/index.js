@@ -1,64 +1,81 @@
-import {
-  WISHLIST_COURSE,
-  UNWISHLIST_COURSE,
-  SELECT_COURSE,
-  UNSELECT_COURSE
-} from "../actions";
+import { combineReducers } from "redux";
+
+import { WISHLIST_COURSE, SELECT_COURSE, UNSELECT_COURSE } from "../actions";
 
 const initalState = {
   wishlist: {},
   scheduled: {}
 };
 
-const rootReducer = (state = initalState, action) => {
+const wishlistReducer = (state = initalState.wishlist, action) => {
   switch (action.type) {
     case WISHLIST_COURSE:
       // let { year, semester, course } = action.payload;
       if (
-        state.wishlist[action.payload.semester + action.payload.year] !==
-          undefined &&
-        state.wishlist[action.payload.semester + action.payload.year].filter(
+        state[action.payload.semester + action.payload.year] !== undefined &&
+        state[action.payload.semester + action.payload.year].filter(
           course =>
             course.registrationNumber ===
             action.payload.course.registrationNumber
         ).length !== 0
-      )
-        return state;
-      // if we have an entry for the current semester in our waitlist get its state
-      const arrSpread =
-        state.wishlist[action.payload.semester + action.payload.year] ?? [];
-      return {
-        ...state,
-        wishlist: {
-          ...state.wishlist,
-          [action.payload.semester + action.payload.year]: [
-            action.payload.course,
-            ...arrSpread
-          ]
-        }
-      };
-    case UNWISHLIST_COURSE:
-      if (
-        state.wishlist[action.payload.semester + action.payload.year].length ===
-        0
-      )
-        return state;
-      // let { year, semester, registrationNumber } = action.payload;
-      return {
-        ...state,
-        wishlist: {
-          ...state.wishlist,
-          [action.payload.semester + action.payload.year]: state.wishlist[
+      ) {
+        console.log("course exists");
+        // If course exists, remove it
+        return {
+          ...state,
+          [action.payload.semester + action.payload.year]: state[
             action.payload.semester + action.payload.year
           ].filter(
             course =>
-              course.registrationNumber !== action.payload.registrationNumber
+              course.registrationNumber !==
+              action.payload.course.registrationNumber
           )
-        }
+        };
+      }
+
+      // if we have an entry for the current semester in our waitlist get its state
+      const arrSpread =
+        state[action.payload.semester + action.payload.year] ?? [];
+      return {
+        ...state,
+        [action.payload.semester + action.payload.year]: [
+          action.payload.course,
+          ...arrSpread
+        ]
       };
+    default:
+      return state;
+  }
+};
+
+const courseSelectReducer = (state = initalState.scheduled, action) => {
+  switch (action.type) {
     case SELECT_COURSE:
       // let { year, semester,  courseRegistrationNumber, recitationRegistrationNumber } = action.payload;
-      return state;
+      if (
+        state[action.payload.semester + action.payload.year] !== undefined &&
+        state[action.payload.semester + action.payload.year].filter(
+          selection =>
+            selection.courseRegistrationNumber ===
+            action.payload.courseRegistrationNumber
+        ).length !== 0
+      )
+        return state;
+
+      const arrSpread =
+        state[action.payload.semester + action.payload.year] ?? [];
+
+      return {
+        ...state,
+        [action.payload.semester + action.payload.year]: [
+          ...arrSpread,
+          {
+            courseeRegistrationNumber: action.payload.courseRegistrationNumber,
+            recitationRegistrationNumber:
+              action.payload.recitationRegistrationNumber
+          }
+        ]
+      };
     case UNSELECT_COURSE:
       // let { year, semester, courseRegistrationNumber, recitationRegistrationNumber } = action.payload;
       return state;
@@ -67,4 +84,9 @@ const rootReducer = (state = initalState, action) => {
   }
 };
 
-export default rootReducer;
+const schedulingApp = combineReducers({
+  wishlist: wishlistReducer,
+  scheduled: courseSelectReducer
+});
+
+export default schedulingApp;

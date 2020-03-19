@@ -11,7 +11,7 @@ import {
 // Page Imports
 import SearchPage from "./pages/SearchPage";
 import SchedulePage from "./pages/SchedulePage";
-import CoursePage from "./pages/CoursePage";
+import CoursePage from "./containers/CoursePageContainer";
 
 function App() {
   // eslint-disable-next-line
