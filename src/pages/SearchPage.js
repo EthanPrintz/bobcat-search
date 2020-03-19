@@ -85,7 +85,7 @@ const Department = styled.div`
   }
 `;
 
-export default function SearchPage() {
+export default function SearchPage(props) {
   // Set state
   const [departments, setDepartments] = useState({ loading: true, data: {} });
   const [schools, setSchools] = useState({ loading: true, data: {} });
@@ -110,7 +110,7 @@ export default function SearchPage() {
   return (
     <div id="pageContainer">
       <SearchContainer>
-        <SearchBar />
+        <SearchBar year={props.year} semester={props.semester} />
       </SearchContainer>
       <DepartmentContainer>
         <div id="departmentTitle">Majors</div>

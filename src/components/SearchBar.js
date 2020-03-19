@@ -70,7 +70,7 @@ const Course = styled.div`
   }
 `;
 
-export default function SearchBar() {
+export default function SearchBar(props) {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState({
     loading: false,
@@ -92,10 +92,9 @@ export default function SearchBar() {
     setSearchResults({ loading: true, results: [] });
     // fetch results
     fetch(
-      `https://schedge.a1liu.com/2020/su/search?query=${event.target.value.replace(
-        /\s/g,
-        "+"
-      )}&limit=5`
+      `https://schedge.a1liu.com/${props.year}/${
+        props.semester
+      }/search?query=${event.target.value.replace(/\s/g, "+")}&limit=5`
     )
       .then(response => {
         if (!response.ok) {
@@ -130,7 +129,9 @@ export default function SearchBar() {
             <Link
               to={{
                 pathname: "/course",
-                search: `?year=${2020}&semester=${"su"}&school=${
+                search: `?year=${props.year}&semester=${
+                  props.semester
+                }&school=${
                   // figure out how we want to get year and semester
                   course.subjectCode.school
                 }&subject=${course.subjectCode.code}&courseid=${

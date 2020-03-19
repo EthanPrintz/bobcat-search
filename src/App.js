@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import {
   BrowserRouter as Router,
@@ -14,6 +14,11 @@ import SchedulePage from "./pages/SchedulePage";
 import CoursePage from "./pages/CoursePage";
 
 function App() {
+  // eslint-disable-next-line
+  const [year, setYear] = useState(2020);
+  // eslint-disable-next-line
+  const [semester, setSemester] = useState("fa");
+
   return (
     <Router>
       <div className="App">
@@ -33,9 +38,26 @@ function App() {
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <Route path="/course" component={CoursePage} />
-          <Route exact path="/schedule" component={SchedulePage} />
-          <Route exact path="/" component={SearchPage} />
+          <Route
+            path="/course"
+            render={props => (
+              <CoursePage {...props} year={year} semester={semester} />
+            )}
+          />
+          <Route
+            exact
+            path="/schedule"
+            render={props => (
+              <SchedulePage {...props} year={year} semester={semester} />
+            )}
+          />
+          <Route
+            exact
+            path="/"
+            render={props => (
+              <SearchPage {...props} year={year} semester={semester} />
+            )}
+          />
         </Switch>
       </div>
     </Router>

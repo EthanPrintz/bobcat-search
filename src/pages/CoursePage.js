@@ -1,6 +1,6 @@
 import React from "react";
 import qs from "qs";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import Moment from "moment";
 import { Link } from "react-router-dom";
 
@@ -8,7 +8,12 @@ const CourseHeader = styled.div`
   width: 100vw;
   height: calc(14vmin + 3rem);
   padding: 2vmin 4vmin;
-  background: linear-gradient(167deg, var(--purpleMain) 21%, #712991 60%, rgba(135,37,144,1) 82%);
+  background: linear-gradient(
+    167deg,
+    var(--purpleMain) 21%,
+    #712991 60%,
+    rgba(135, 37, 144, 1) 82%
+  );
   color: var(--grey100);
   position: absolute;
   top: 0;
@@ -16,7 +21,7 @@ const CourseHeader = styled.div`
   display: flex;
   align-items: flex-end;
 
-  & #backButton{
+  & #backButton {
     position: absolute;
     z-index: 2;
     top: 2vmin;
@@ -25,17 +30,17 @@ const CourseHeader = styled.div`
     opacity: 0.7;
     transition: 0.15s;
   }
-  & #backButton:hover{
+  & #backButton:hover {
     opacity: 1;
   }
 
-  & #titleDepartment{
+  & #titleDepartment {
     font-size: calc(1vmin + 0.7rem);
     margin: 0 0 -0.5vmin 0.3vmin;
     font-family: var(--grey200);
   }
 
-  & #titleName{
+  & #titleName {
     font-size: calc(2.2vmin + 1.4rem);
     font-weight: bold;
   }
@@ -56,15 +61,15 @@ const SectionContainer = styled.div`
   width: 84%;
   margin-left: 8%;
 
-  & > .sectionNum{
+  & > .sectionNum {
     font-size: 1.6rem;
     font-family: var(--condensedFont);
     color: var(--grey700);
     margin: 0 0 -1rem 1rem;
   }
 
-  & > .attributes{
-    display: flex; 
+  & > .attributes {
+    display: flex;
     flex-wrap: wrap;
   }
 `;
@@ -87,30 +92,30 @@ const DateContainer = styled.div`
     font-size: 1.2rem;
   }
 
-  & > .timeOfDay{
+  & > .timeOfDay {
     padding: 0.4rem calc(0.5vmin + 0.4rem);
     font-family: var(--condensedFont);
     color: var(--grey700);
     font-weight: 500;
     font-size: 1.1rem;
   }
-`
+`;
 
 const CourseSections = styled.div`
   & ${SectionContainer}:nth-child(odd) {
     background-color: var(--grey200);
   }
 
-  & ${SectionContainer}:nth-child(odd) > ${DateContainer}{
+  & ${SectionContainer}:nth-child(odd) > ${DateContainer} {
     border: 0.3rem solid var(--grey300);
   }
 
-  & ${SectionContainer}:nth-child(odd) > ${DateContainer} > .dayOfWeek{
+  & ${SectionContainer}:nth-child(odd) > ${DateContainer} > .dayOfWeek {
     background-color: var(--grey300);
     color: var(--grey700);
   }
 
-  & ${SectionContainer}:nth-child(odd) > ${DateContainer} > .timeOfDay{
+  & ${SectionContainer}:nth-child(odd) > ${DateContainer} > .timeOfDay {
     color: var(--grey800);
   }
 `;
@@ -141,7 +146,9 @@ export default class CoursePage extends React.Component {
 
   componentDidMount() {
     const { year, semester, school, subject, courseid } = this.state.params;
-    fetch(`https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}`)
+    fetch(
+      `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}?full=true`
+    )
       .then(response => {
         if (!response.ok) {
           // handle invalid search parameters
@@ -162,7 +169,7 @@ export default class CoursePage extends React.Component {
     const { loading, courseData } = this.state;
     return (
       <div>
-        {loading && 
+        {loading && (
           <>
             <span>Loading...</span>
             <CourseHeader>
@@ -171,7 +178,7 @@ export default class CoursePage extends React.Component {
               </Link>
             </CourseHeader>
           </>
-        }
+        )}
         {!loading && (
           <>
             <CourseHeader>
@@ -182,57 +189,67 @@ export default class CoursePage extends React.Component {
                 <div id="titleDepartment">
                   {courseData.subjectCode.code}-{courseData.subjectCode.school}
                 </div>
-                <div id="titleName">
-                  {courseData.name}
-                </div>
+                <div id="titleName">{courseData.name}</div>
               </div>
             </CourseHeader>
-            <SectionsHeader>{(courseData.sections.length > 1 ? 'Sections' : '')}</SectionsHeader>
+            <SectionsHeader>
+              {courseData.sections.length > 1 ? "Sections" : ""}
+            </SectionsHeader>
             <CourseSections>
-            {courseData.sections.map((section, i) => (
-              <SectionContainer key={i}>
-                {(courseData.sections.length > 1 ? <h4 class='sectionNum'>{section.code}</h4>: '')}
-                <div class="attributes">
-                  <AttributeContainer>
-                    <div className="attributeLabel">Instructor</div>
-                    {(section.instructors.length > 1 ?'s' : '')}{section.instructors.join(", ")}
-                  </AttributeContainer>
-                  <AttributeContainer>
-                    <div className="attributeLabel">Location</div>
-                    {section.location}
-                  </AttributeContainer>
-                  <AttributeContainer>
-                    <div className="attributeLabel">Units</div>
-                    {section.minUnits}-{section.maxUnits}
-                  </AttributeContainer>
-                  <AttributeContainer>
-                    <div className="attributeLabel">Status</div>
-                    {section.status}
-                  </AttributeContainer>
-                  <AttributeContainer>
-                    <div className="attributeLabel">Type</div>
-                    {section.type}
-                  </AttributeContainer>
-                  <AttributeContainer>
-                  <div className="attributeLabel">Registration #</div>
-                    {section.registrationNumber}
-                  </AttributeContainer>
-                </div>
-                {section.meetings.map((meeting, i) => (
-                  <DateContainer key={i}>
-                    <div className="dayOfWeek">
-                      {Moment(meeting.beginDate).format("dddd")}
-                    </div>
-                    <div className="timeOfDay">
-                      {Moment(meeting.beginDate).format("h:mm A") +
-                      Moment(meeting.beginDate)
-                        .add(meeting.minutesDuration, "minutes")
-                        .format(" - h:mm A")}
-                    </div>
-                  </DateContainer>
-                ))}
-              </SectionContainer>
-            ))}
+              {courseData.sections.map((section, i) => (
+                <SectionContainer key={i}>
+                  {courseData.sections.length > 1 ? (
+                    <h4 className="sectionNum">{section.code}</h4>
+                  ) : (
+                    ""
+                  )}
+                  <div className="attributes">
+                    <AttributeContainer>
+                      <div className="attributeLabel">Instructor</div>
+                      {section.instructors.length > 1 ? "s" : ""}
+                      {section.instructors.join(", ")}
+                    </AttributeContainer>
+                    <AttributeContainer>
+                      <div className="attributeLabel">Location</div>
+                      {section.location}
+                    </AttributeContainer>
+                    <AttributeContainer>
+                      <div className="attributeLabel">Units</div>
+                      {section.minUnits}-{section.maxUnits}
+                    </AttributeContainer>
+                    <AttributeContainer>
+                      <div className="attributeLabel">Status</div>
+                      {section.status}
+                    </AttributeContainer>
+                    <AttributeContainer>
+                      <div className="attributeLabel">Type</div>
+                      {section.type}
+                    </AttributeContainer>
+                    <AttributeContainer>
+                      <div className="attributeLabel">Registration #</div>
+                      {section.registrationNumber}
+                    </AttributeContainer>
+                  </div>
+                  {/* Fix Description Styling */}
+                  <p>{section.description}</p>
+                  {/* Fix Description Styling */}
+                  {section.meetings.map((meeting, i) => (
+                    <DateContainer key={i}>
+                      <div className="dayOfWeek">
+                        {Moment(meeting.beginDate).format("dddd")}
+                      </div>
+                      <div className="timeOfDay">
+                        {Moment(meeting.beginDate).format("h:mm A") +
+                          Moment(meeting.beginDate)
+                            .add(meeting.minutesDuration, "minutes")
+                            .format(" - h:mm A")}
+                      </div>
+                    </DateContainer>
+                  ))}
+                  {/* Handle Recitations */}
+                  {/* Handle Recitations */}
+                </SectionContainer>
+              ))}
             </CourseSections>
           </>
         )}
