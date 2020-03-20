@@ -11,6 +11,8 @@ import {
 // Page Imports
 import SearchPage from "./pages/SearchPage";
 import SchedulePage from "./pages/SchedulePage";
+import SchoolPage from "./pages/SchoolPage";
+import SubjectPage from "./pages/SubjectPage";
 import CoursePage from "./containers/CoursePageContainer";
 
 function App() {
@@ -42,6 +44,18 @@ function App() {
             path="/course"
             render={props => (
               <CoursePage {...props} year={year} semester={semester} />
+            )}
+          />
+          <Route
+            path="/school"
+            render={props => (
+              <SchoolPage {...props} year={year} semester={semester} />
+            )}
+          />
+          <Route
+            path="/subject"
+            render={props => (
+              <SubjectPage {...props} year={year} semester={semester} />
             )}
           />
           <Route

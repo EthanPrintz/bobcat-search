@@ -125,14 +125,7 @@ export default function SearchBar(props) {
             <Link
               to={{
                 pathname: "/course",
-                search: `?year=${props.year}&semester=${
-                  props.semester
-                }&school=${
-                  // figure out how we want to get year and semester
-                  course.subjectCode.school
-                }&subject=${course.subjectCode.code}&courseid=${
-                  course.deptCourseId
-                }`
+                search: `?&school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}`
               }}
               key={i}
               style={{ textDecoration: "none" }}

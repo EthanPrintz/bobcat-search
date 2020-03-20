@@ -179,7 +179,8 @@ export default class CoursePage extends React.Component {
   }
 
   componentDidMount() {
-    const { year, semester, school, subject, courseid } = this.state.params;
+    const { school, subject, courseid } = this.state.params;
+    const { year, semester } = this.props;
     fetch(
       `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}?full=true`
     )

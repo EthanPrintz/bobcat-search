@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
+import { Link } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 
 // Keyframe Animations
@@ -56,8 +57,9 @@ const Departments = styled.div`
 
 const School = styled.div`
   padding: 1rem;
+  cursor: pointer;
 
-  & > .schoolTitle {
+  & > .schoolLink > .schoolTitle {
     font-size: 1.2rem;
     font-family: var(--condensedFont);
     text-align: center;
@@ -125,23 +127,43 @@ export default function SearchPage(props) {
               })
               .map((schoolCode, i) => (
                 <School key={i}>
-                  <div className="schoolTitle">
-                    <span className="schoolCode">{schoolCode}</span>
-                    <span className="schoolName">
-                      {schools.data[schoolCode]?.name.replace(/,/g, "") ?? ""}
-                    </span>
-                  </div>
+                  <Link
+                    className="schoolLink"
+                    to={{
+                      pathname: "/school",
+                      search: `?school=${schoolCode}`
+                    }}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <div className="schoolTitle">
+                      <span className="schoolCode">{schoolCode}</span>
+                      <span className="schoolName">
+                        {schools.data[schoolCode]?.name ?? ""}
+                      </span>
+                    </div>
+                  </Link>
                   {Object.keys(departments.data[schoolCode]).map(
                     (departmentCode, i) => (
-                      <Department key={i}>
-                        <span className="departmentCode">{departmentCode}</span>
-                        <span className="departmentName">
-                          &nbsp;
-                          {departments.data[schoolCode][
-                            departmentCode
-                          ]?.name.replace(/,/g, "")}
-                        </span>
-                      </Department>
+                      <Link
+                        key={i}
+                        to={{
+                          pathname: "/subject",
+                          search: `?school=${schoolCode}&subject=${departmentCode}`
+                        }}
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        <Department>
+                          <span className="departmentCode">
+                            {departmentCode}
+                          </span>
+                          <span className="departmentName">
+                            &nbsp;
+                            {departments.data[schoolCode][
+                              departmentCode
+                            ]?.name.replace(/,/g, "")}
+                          </span>
+                        </Department>
+                      </Link>
                     )
                   )}
                 </School>
