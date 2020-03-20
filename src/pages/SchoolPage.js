@@ -16,7 +16,7 @@ export default class SchoolPage extends Component {
   componentDidMount() {
     const { school } = this.state.params;
 
-    fetch(`http://schedge.a1liu.com/subjects`)
+    fetch(`https://schedge.a1liu.com/subjects`)
       .then(response => {
         if (!response.ok) {
           // handle invalid search parameters
