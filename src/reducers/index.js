@@ -1,6 +1,10 @@
 import { combineReducers } from "redux";
 
-import { WISHLIST_COURSE, SELECT_COURSE, UNSELECT_COURSE } from "../actions";
+import {
+  WISHLIST_COURSE,
+  CLEAR_WISHLIST,
+  TOGGLE_COURSE_SELECT
+} from "../actions";
 
 const initalState = {
   wishlist: {},
@@ -19,7 +23,6 @@ const wishlistReducer = (state = initalState.wishlist, action) => {
             action.payload.course.registrationNumber
         ).length !== 0
       ) {
-        console.log("course exists");
         // If course exists, remove it
         return {
           ...state,
@@ -43,6 +46,17 @@ const wishlistReducer = (state = initalState.wishlist, action) => {
           ...arrSpread
         ]
       };
+    case CLEAR_WISHLIST:
+      if (
+        state[action.payload.semester + action.payload.year] !== undefined &&
+        state[action.payload.semester + action.payload.year].length > 0
+      ) {
+        return {
+          ...state,
+          [action.payload.semester + action.payload.year]: []
+        };
+      }
+      return state;
     default:
       return state;
   }
@@ -50,7 +64,7 @@ const wishlistReducer = (state = initalState.wishlist, action) => {
 
 const courseSelectReducer = (state = initalState.scheduled, action) => {
   switch (action.type) {
-    case SELECT_COURSE:
+    case TOGGLE_COURSE_SELECT:
       // let { year, semester,  courseRegistrationNumber, recitationRegistrationNumber } = action.payload;
       if (
         state[action.payload.semester + action.payload.year] !== undefined &&
@@ -59,8 +73,18 @@ const courseSelectReducer = (state = initalState.scheduled, action) => {
             selection.courseRegistrationNumber ===
             action.payload.courseRegistrationNumber
         ).length !== 0
-      )
-        return state;
+      ) {
+        return {
+          ...state,
+          [action.payload.semester + action.payload.year]: state[
+            action.payload.semester + action.payload.year
+          ].filter(
+            course =>
+              course.courseRegistrationNumber !==
+              action.payload.courseRegistrationNumber
+          )
+        };
+      }
 
       const arrSpread =
         state[action.payload.semester + action.payload.year] ?? [];
@@ -70,15 +94,12 @@ const courseSelectReducer = (state = initalState.scheduled, action) => {
         [action.payload.semester + action.payload.year]: [
           ...arrSpread,
           {
-            courseeRegistrationNumber: action.payload.courseRegistrationNumber,
+            courseRegistrationNumber: action.payload.courseRegistrationNumber,
             recitationRegistrationNumber:
               action.payload.recitationRegistrationNumber
           }
         ]
       };
-    case UNSELECT_COURSE:
-      // let { year, semester, courseRegistrationNumber, recitationRegistrationNumber } = action.payload;
-      return state;
     default:
       return state;
   }

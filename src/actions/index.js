@@ -5,16 +5,16 @@ export const wishlistCourse = course => ({
   payload: course // { year, semester, course data}
 });
 
-export const SELECT_COURSE = "SELECT_COURSE";
+export const CLEAR_WISHLIST = "CLEAR_WISHLIST";
 
-export const selectCourse = course => ({
-  type: SELECT_COURSE,
-  payload: course // { year, semester, courseRegistrationNumber, recitationRegistrationNumber }
+export const clearWishlist = ({ year, semester }) => ({
+  type: CLEAR_WISHLIST,
+  payload: { year, semester }
 });
 
-export const UNSELECT_COURSE = "UNSELECT_COURSE";
+export const TOGGLE_COURSE_SELECT = "TOGGLE_COURSE_SELECT";
 
-export const unselectCourse = course => ({
-  type: UNSELECT_COURSE,
+export const toggleCourseSelect = course => ({
+  type: TOGGLE_COURSE_SELECT,
   payload: course // { year, semester, courseRegistrationNumber, recitationRegistrationNumber }
 });

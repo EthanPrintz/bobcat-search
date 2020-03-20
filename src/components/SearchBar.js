@@ -107,10 +107,6 @@ export default function SearchBar(props) {
       .catch(error => console.error(error));
   };
 
-  const _handleSearchResultClick = course => {
-    console.log(course);
-  };
-
   return (
     <>
       <Loader
@@ -141,7 +137,7 @@ export default function SearchBar(props) {
               key={i}
               style={{ textDecoration: "none" }}
             >
-              <Course onClick={() => _handleSearchResultClick(course)}>
+              <Course>
                 <span className="courseSchoolCode">
                   {course.subjectCode.school}-{course.subjectCode.code}
                 </span>
