@@ -10,10 +10,10 @@ import {
 
 // Page Imports
 import SearchPage from "./pages/SearchPage";
-import SchedulePage from "./pages/SchedulePage";
 import SchoolPage from "./pages/SchoolPage";
 import SubjectPage from "./pages/SubjectPage";
 import CoursePage from "./containers/CoursePageContainer";
+import SchedulePage from "./containers/SchedulePageContainer";
 
 function App() {
   // eslint-disable-next-line

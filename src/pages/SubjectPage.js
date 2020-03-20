@@ -26,7 +26,6 @@ export default class SubjectPage extends Component {
         return response.json();
       })
       .then(data => {
-        console.log(data);
         this.setState({ loading: false, courseList: data });
       });
   }
