@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import qs from "qs";
+import styled from "styled-components";
 import { Link } from "react-router-dom";
+
+const DepartmentHeader = styled.div`
+  width: 100vw;
+  padding: 3vmin;
+  font-size: cacl(1vmin + 1rem);
+`;
+
 
 export default class SchoolPage extends Component {
   constructor(props) {
@@ -32,6 +40,9 @@ export default class SchoolPage extends Component {
   render() {
     return (
       <div>
+        <DepartmentHeader>
+          <div id="departmentTitle">{this.state.params.school}</div>
+        </DepartmentHeader>
         {this.state.loading && <span>Loading...</span>}
         {!this.state.loading && (
           <div>

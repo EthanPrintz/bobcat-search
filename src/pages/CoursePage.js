@@ -46,13 +46,22 @@ const CourseHeader = styled.div`
   }
 `;
 
+const SectionsDescription = styled.div`
+  margin-top: calc(12vmin + 6vh);
+  padding: 1.8vmin 2.8vmin;
+  font-size: 1.1rem;
+  font-style: italic;
+  width: 84%;
+  margin-left: 8%;
+`;
+
 const SectionsHeader = styled.div`
   font-weight: bold;
   text-align: center;
   font-size: calc(1.2vmin + 1rem);
   padding: 2vmin;
   color: var(--grey800);
-  margin-top: calc(10vmin + 2rem);
+  margin-top: calc(2vmin + 1rem);
 `;
 
 const DateContainer = styled.div`
@@ -99,23 +108,6 @@ const SectionContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
   }
-
-  &:hover {
-    background-color: var(--grey300);
-  }
-
-  &:hover > ${DateContainer} {
-    border: 0.3rem solid var(--grey400);
-  }
-
-  &:hover > ${DateContainer} > .dayOfWeek {
-    background-color: var(--grey400);
-    color: var(--grey800);
-  }
-
-  &:hover > ${DateContainer} > .timeOfDay {
-    color: var(--grey900);
-  }
 `;
 
 const CourseSections = styled.div`
@@ -133,23 +125,6 @@ const CourseSections = styled.div`
 
     & > ${DateContainer} > .timeOfDay {
       color: var(--grey800);
-    }
-
-    &:hover {
-      background-color: var(--grey300);
-    }
-
-    &:hover > ${DateContainer} {
-      border: 0.3rem solid var(--grey400);
-    }
-
-    &:hover > ${DateContainer} > .dayOfWeek {
-      background-color: var(--grey400);
-      color: var(--grey800);
-    }
-
-    &:hover > ${DateContainer} > .timeOfDay {
-      color: var(--grey900);
     }
   }
 `;
@@ -196,6 +171,9 @@ export default class CoursePage extends React.Component {
           courseData: data.filter(val => val.deptCourseId === courseid)[0],
           loading: false
         });
+        this.state.courseData.sections.every(section => 
+          console.log(section.description === this.state.courseData.sections[0].description)
+        )
       })
       .catch(error => console.error(error));
   }
@@ -227,6 +205,14 @@ export default class CoursePage extends React.Component {
                 <div id="titleName">{courseData.name}</div>
               </div>
             </CourseHeader>
+            {/* Handle course description here if all sections have the same one */}
+            { courseData.sections.every(section => 
+                section.description == courseData.sections[0].description
+              ) && 
+              <SectionsDescription>
+                {courseData.sections[0].description}
+              </SectionsDescription>
+            }
             <SectionsHeader>
               {courseData.sections.length > 1 ? "Sections" : ""}
             </SectionsHeader>
@@ -280,9 +266,11 @@ export default class CoursePage extends React.Component {
                       {section.registrationNumber}
                     </AttributeContainer>
                   </div>
-                  {/* Fix Description Styling */}
-                  <p>{section.description}</p>
-                  {/* Fix Description Styling */}
+                  { !courseData.sections.every(section => 
+                    section.description == courseData.sections[0].description
+                  ) && 
+                    <p>{section.description}</p>
+                  }
                   {section.meetings.map((meeting, i) => (
                     <DateContainer key={i}>
                       <div className="dayOfWeek">
