@@ -3,6 +3,7 @@ import qs from "qs";
 import styled from "styled-components";
 import Moment from "moment";
 import { Link } from "react-router-dom";
+import {convertUnits} from "./utils";
 
 const CourseHeader = styled.div`
   width: 100vw;
@@ -207,7 +208,7 @@ export default class CoursePage extends React.Component {
             </CourseHeader>
             {/* Handle course description here if all sections have the same one */}
             { courseData.sections.every(section => 
-                section.description == courseData.sections[0].description
+                section.description === courseData.sections[0].description
               ) && 
               <SectionsDescription>
                 {courseData.sections[0].description}
@@ -251,7 +252,7 @@ export default class CoursePage extends React.Component {
                     </AttributeContainer>
                     <AttributeContainer>
                       <div className="attributeLabel">Units</div>
-                      {section.minUnits}-{section.maxUnits}
+                      {convertUnits(section.minUnits, section.maxUnits)}
                     </AttributeContainer>
                     <AttributeContainer>
                       <div className="attributeLabel">Status</div>
@@ -267,7 +268,7 @@ export default class CoursePage extends React.Component {
                     </AttributeContainer>
                   </div>
                   { !courseData.sections.every(section => 
-                    section.description == courseData.sections[0].description
+                    section.description === courseData.sections[0].description
                   ) && 
                     <p>{section.description}</p>
                   }
