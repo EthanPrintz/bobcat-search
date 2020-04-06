@@ -3,7 +3,7 @@ import qs from "qs";
 import styled from "styled-components";
 import Moment from "moment";
 import { Link } from "react-router-dom";
-import {convertUnits} from "./utils";
+import {convertUnits, splitLocation, getStatusColor} from "./utils";
 
 const CourseHeader = styled.div`
   width: 100vw;
@@ -130,6 +130,7 @@ const CourseSections = styled.div`
   }
 `;
 
+
 const AttributeContainer = styled.div`
   padding: calc(0.8vmin + 0.8rem);
   font-size: 1.5rem;
@@ -242,20 +243,23 @@ export default class CoursePage extends React.Component {
                   )}
                   <div className="attributes">
                     <AttributeContainer>
-                      <div className="attributeLabel">Instructor</div>
-                      {section.instructors.length > 1 ? "s" : ""}
+                      <div className="attributeLabel">Instructor{section.instructors.length > 1 ? "s" : ""}</div>
                       {section.instructors.join(", ")}
                     </AttributeContainer>
                     <AttributeContainer>
-                      <div className="attributeLabel">Location</div>
-                      {section.location}
+                      <div className="attributeLabel">Building</div>
+                      {splitLocation(section.location).Building}
+                    </AttributeContainer>
+                    <AttributeContainer>
+                      <div className="attributeLabel">Room</div>
+                      {splitLocation(section.location).Room}
                     </AttributeContainer>
                     <AttributeContainer>
                       <div className="attributeLabel">Units</div>
                       {convertUnits(section.minUnits, section.maxUnits)}
                     </AttributeContainer>
                     <AttributeContainer>
-                      <div className="attributeLabel">Status</div>
+                      <div className="attributeLabel" >Status</div>
                       {section.status}
                     </AttributeContainer>
                     <AttributeContainer>
