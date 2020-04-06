@@ -19,7 +19,7 @@ function App() {
   // eslint-disable-next-line
   const [year, setYear] = useState(2020);
   // eslint-disable-next-line
-  const [semester, setSemester] = useState("sp");
+  const [semester, setSemester] = useState("fa");
 
   return (
     <Router>
