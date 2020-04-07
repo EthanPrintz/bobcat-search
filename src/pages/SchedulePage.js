@@ -1,4 +1,21 @@
 import React, { Component } from "react";
+import styled from "styled-components";
+import Moment from "moment";
+import { Link } from "react-router-dom";
+
+const CourseCalendar = styled.div`
+  width: 100vw;
+  height: 50vmin;
+  background-color: var(--grey200);
+  margin: 4vmin 0;
+`;
+
+const CalendarDay = styled.div`
+  width: calc(100vw / 7);
+  height: 100%;
+  float: left;
+  border: 1px solid var(--grey100);
+`;
 
 export default class SchedulePage extends Component {
   constructor(props) {
@@ -13,6 +30,15 @@ export default class SchedulePage extends Component {
     const { year, semester } = this.props;
     return (
       <div>
+        <CourseCalendar>
+          <CalendarDay></CalendarDay>
+          <CalendarDay></CalendarDay>
+          <CalendarDay></CalendarDay>
+          <CalendarDay></CalendarDay>
+          <CalendarDay></CalendarDay>
+          <CalendarDay></CalendarDay>
+          <CalendarDay></CalendarDay>
+        </CourseCalendar>
         {this.props.wishlist.length === 0 ? (
           <span>No courses Wishlisted yet!</span>
         ) : (
