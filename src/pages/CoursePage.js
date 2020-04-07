@@ -64,6 +64,21 @@ const SectionsHeader = styled.div`
   margin-top: calc(2vmin + 1rem);
 `;
 
+const AddButton = styled.div`
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.5rem;
+  border: 2px solid lightgrey;
+  color: lightgrey;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  cursor: pointer;
+  position: absolute;
+  right: 1rem;
+`;
+
 const DateContainer = styled.div`
   border: 0.3rem solid var(--grey200);
   width: calc(6vmin + 8rem);
@@ -96,6 +111,7 @@ const SectionContainer = styled.div`
   background-color: var(--grey100);
   width: 84%;
   margin-left: 8%;
+  position: relative;
 
   & > .sectionNum {
     font-size: 1.6rem;
@@ -226,13 +242,6 @@ export default class CoursePage extends React.Component {
                         course.registrationNumber === section.registrationNumber
                     ).length > 0
                   }
-                  onClick={e =>
-                    this.props.onToggleCourse({
-                      year: this.props.year,
-                      semester: this.props.semester,
-                      course: section
-                    })
-                  }
                 >
                   {courseData.sections.length > 1 ? (
                     <h4 className="sectionNum">{section.code}</h4>
@@ -265,6 +274,14 @@ export default class CoursePage extends React.Component {
                       <div className="attributeLabel">Registration #</div>
                       {section.registrationNumber}
                     </AttributeContainer>
+                    <AddButton
+                      onClick={e =>
+                        this.props.onToggleCourse({
+                          year: this.props.year,
+                          semester: this.props.semester,
+                          course: section
+                        })
+                      }>+</AddButton>
                   </div>
                   { !courseData.sections.every(section => 
                     section.description == courseData.sections[0].description
