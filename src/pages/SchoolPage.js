@@ -59,9 +59,6 @@ export default class SchoolPage extends Component {
                 >
                   <div
                     style={{
-                      borderBottomWidth: 1,
-                      borderBottomColor: "black",
-                      borderBottomStyle: "solid",
                       padding: 15
                     }}
                   >

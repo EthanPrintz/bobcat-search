@@ -195,7 +195,7 @@ export default class CoursePage extends React.Component {
   }
 
   render() {
-    const { loading, courseData } = this.state;
+    const { loading, courseData, wishlist } = this.state;
     return (
       <div>
         {loading && (

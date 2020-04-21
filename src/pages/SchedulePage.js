@@ -17,6 +17,7 @@ const CalendarDay = styled.div`
   border: 1px solid var(--grey100);
 `;
 
+
 export default class SchedulePage extends Component {
   constructor(props) {
     super(props);
@@ -25,19 +26,49 @@ export default class SchedulePage extends Component {
   }
 
   render() {
-    // The code rendered here is just a proof of concept for the use of redux in this project.
-    // It is by no means what should actually be used when the time comes.
     const { year, semester } = this.props;
+    function renderCourses(dayNum, wishlist){
+      let renderList = [];
+      return(
+        wishlist
+        .filter(course => (
+          new Date(course.meetings[0].beginDate).getDay() == dayNum ||
+          new Date(course.meetings[1].beginDate).getDay() == dayNum
+        ))
+        .map((course, i) => (<div key={i}><h3>{course.name}</h3></div>))
+      )
+    }
     return (
       <div>
         <CourseCalendar>
-          <CalendarDay></CalendarDay>
-          <CalendarDay></CalendarDay>
-          <CalendarDay></CalendarDay>
-          <CalendarDay></CalendarDay>
-          <CalendarDay></CalendarDay>
-          <CalendarDay></CalendarDay>
-          <CalendarDay></CalendarDay>
+          <CalendarDay>
+            Monday
+            {renderCourses(1, this.props.wishlist)}
+          </CalendarDay>
+          <CalendarDay>
+            Tuesday
+            {renderCourses(2, this.props.wishlist)}
+          </CalendarDay>
+          <CalendarDay>
+            Wednesday
+            {renderCourses(3, this.props.wishlist)}
+          </CalendarDay>
+          <CalendarDay>
+            Thursday
+            {renderCourses(4, this.props.wishlist)}
+          </CalendarDay>
+          <CalendarDay>
+            Friday
+            {renderCourses(5, this.props.wishlist)}
+          </CalendarDay>
+          <CalendarDay>
+            Saturday
+            {renderCourses(6, this.props.wishlist)}
+          </CalendarDay>
+          <CalendarDay>
+            Sunday
+            {renderCourses(0, this.props.wishlist)}
+          </CalendarDay>
         </CourseCalendar>
         {this.props.wishlist.length === 0 ? (
           <span>No courses Wishlisted yet!</span>
@@ -46,18 +77,7 @@ export default class SchedulePage extends Component {
             <div onClick={() => this.props.onClearWishlist({ year, semester })}>
               Clear Wishlist
             </div>
-            {this.props.wishlist.map((course, i) => (
-              <div
-                key={i}
-                style={{
-                  borderBottomWidth: 1,
-                  borderBottomColor: "black",
-                  borderBottomStyle: "solid"
-                }}
-              >
-                <h3>{course.name}</h3>
-              </div>
-            ))}
+            {}
           </div>
         )}
       </div>
