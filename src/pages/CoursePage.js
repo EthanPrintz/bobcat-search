@@ -165,7 +165,7 @@ export default class CoursePage extends React.Component {
     this.state = {
       params: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }),
       loading: true,
-      courseData: {}
+      courseData: {},
     };
   }
 
@@ -175,23 +175,26 @@ export default class CoursePage extends React.Component {
     fetch(
       `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}?full=true`
     )
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           // handle invalid search parameters
           return;
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         this.setState({
-          courseData: data.filter(val => val.deptCourseId === courseid)[0],
-          loading: false
+          courseData: data.filter((val) => val.deptCourseId === courseid)[0],
+          loading: false,
         });
-        this.state.courseData.sections.every(section => 
-          console.log(section.description === this.state.courseData.sections[0].description)
-        )
+        this.state.courseData.sections.every((section) =>
+          console.log(
+            section.description ===
+              this.state.courseData.sections[0].description
+          )
+        );
       })
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
   }
 
   render() {
@@ -222,13 +225,14 @@ export default class CoursePage extends React.Component {
               </div>
             </CourseHeader>
             {/* Handle course description here if all sections have the same one */}
-            { courseData.sections.every(section => 
-                section.description == courseData.sections[0].description
-              ) && 
+            {courseData.sections.every(
+              (section) =>
+                section.description === courseData.sections[0].description
+            ) && (
               <SectionsDescription>
                 {courseData.sections[0].description}
               </SectionsDescription>
-            }
+            )}
             <SectionsHeader>
               {courseData.sections.length > 1 ? "Sections" : ""}
             </SectionsHeader>
@@ -238,7 +242,7 @@ export default class CoursePage extends React.Component {
                   key={i}
                   waitlisted={
                     this.props.wishlist.filter(
-                      course =>
+                      (course) =>
                         course.registrationNumber === section.registrationNumber
                     ).length > 0
                   }
@@ -275,19 +279,21 @@ export default class CoursePage extends React.Component {
                       {section.registrationNumber}
                     </AttributeContainer>
                     <AddButton
-                      onClick={e =>
+                      onClick={(e) =>
                         this.props.onToggleCourse({
                           year: this.props.year,
                           semester: this.props.semester,
-                          course: section
+                          course: section,
                         })
-                      }>+</AddButton>
+                      }
+                    >
+                      +
+                    </AddButton>
                   </div>
-                  { !courseData.sections.every(section => 
-                    section.description == courseData.sections[0].description
-                  ) && 
-                    <p>{section.description}</p>
-                  }
+                  {!courseData.sections.every(
+                    (section) =>
+                      section.description === courseData.sections[0].description
+                  ) && <p>{section.description}</p>}
                   {section.meetings.map((meeting, i) => (
                     <DateContainer key={i}>
                       <div className="dayOfWeek">

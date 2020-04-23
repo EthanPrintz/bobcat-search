@@ -17,7 +17,6 @@ const CalendarDay = styled.div`
   border: 1px solid var(--grey100);
 `;
 
-
 export default class SchedulePage extends Component {
   constructor(props) {
     super(props);
@@ -27,16 +26,19 @@ export default class SchedulePage extends Component {
 
   render() {
     const { year, semester } = this.props;
-    function renderCourses(dayNum, wishlist){
+    function renderCourses(dayNum, wishlist) {
       let renderList = [];
-      return(
-        wishlist
-        .filter(course => (
-          new Date(course.meetings[0].beginDate).getDay() == dayNum ||
-          new Date(course.meetings[1].beginDate).getDay() == dayNum
-        ))
-        .map((course, i) => (<div key={i}><h3>{course.name}</h3></div>))
-      )
+      return wishlist
+        .filter(
+          (course) =>
+            new Date(course.meetings[0].beginDate).getDay() === dayNum ||
+            new Date(course.meetings[1].beginDate).getDay() === dayNum
+        )
+        .map((course, i) => (
+          <div key={i}>
+            <h3>{course.name}</h3>
+          </div>
+        ));
     }
     return (
       <div>

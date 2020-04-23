@@ -97,15 +97,15 @@ export default function SearchPage(props) {
     // Get Schedge data
     (async () => {
       fetch("https://schedge.a1liu.com/subjects")
-        .then(response => response.json()) // one extra step
-        .then(data => setDepartments({ loading: false, data }))
-        .catch(error => console.error(error));
+        .then((response) => response.json()) // one extra step
+        .then((data) => setDepartments({ loading: false, data }))
+        .catch((error) => console.error(error));
     })();
     (async () => {
       fetch("https://schedge.a1liu.com/schools")
-        .then(response => response.json()) // one extra step
-        .then(data => setSchools({ loading: false, data }))
-        .catch(error => console.error(error));
+        .then((response) => response.json()) // one extra step
+        .then((data) => setSchools({ loading: false, data }))
+        .catch((error) => console.error(error));
     })();
   }, []);
 
@@ -131,7 +131,7 @@ export default function SearchPage(props) {
                     className="schoolLink"
                     to={{
                       pathname: "/school",
-                      search: `?school=${schoolCode}`
+                      search: `?school=${schoolCode}`,
                     }}
                     style={{ textDecoration: "none" }}
                   >
@@ -143,15 +143,13 @@ export default function SearchPage(props) {
                     </div>
                   </Link>
                   {Object.keys(departments.data[schoolCode])
-                    .sort((a, b) => {
-                      return a.localeCompare(b);
-                    })
+                    .sort((a, b) => a.localeCompare(b))
                     .map((departmentCode, i) => (
                       <Link
                         key={i}
                         to={{
                           pathname: "/subject",
-                          search: `?school=${schoolCode}&subject=${departmentCode}`
+                          search: `?school=${schoolCode}&subject=${departmentCode}`,
                         }}
                         style={{ textDecoration: "none", color: "inherit" }}
                       >
