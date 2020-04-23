@@ -142,8 +142,11 @@ export default function SearchPage(props) {
                       </span>
                     </div>
                   </Link>
-                  {Object.keys(departments.data[schoolCode]).map(
-                    (departmentCode, i) => (
+                  {Object.keys(departments.data[schoolCode])
+                    .sort((a, b) => {
+                      return a.localeCompare(b);
+                    })
+                    .map((departmentCode, i) => (
                       <Link
                         key={i}
                         to={{
@@ -164,8 +167,7 @@ export default function SearchPage(props) {
                           </span>
                         </Department>
                       </Link>
-                    )
-                  )}
+                    ))}
                 </School>
               ))}
           </Departments>

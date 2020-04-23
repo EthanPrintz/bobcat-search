@@ -5,7 +5,7 @@ import {
   Switch,
   Route,
   Link,
-  NavLink
+  NavLink,
 } from "react-router-dom";
 
 // Page Imports
@@ -42,33 +42,33 @@ function App() {
         <Switch>
           <Route
             path="/course"
-            render={props => (
+            render={(props) => (
               <CoursePage {...props} year={year} semester={semester} />
             )}
           />
           <Route
             path="/school"
-            render={props => (
+            render={(props) => (
               <SchoolPage {...props} year={year} semester={semester} />
             )}
           />
           <Route
             path="/subject"
-            render={props => (
+            render={(props) => (
               <SubjectPage {...props} year={year} semester={semester} />
             )}
           />
           <Route
             exact
             path="/schedule"
-            render={props => (
+            render={(props) => (
               <SchedulePage {...props} year={year} semester={semester} />
             )}
           />
           <Route
             exact
             path="/"
-            render={props => (
+            render={(props) => (
               <SearchPage {...props} year={year} semester={semester} />
             )}
           />
