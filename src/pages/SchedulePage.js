@@ -24,52 +24,51 @@ export default class SchedulePage extends Component {
     this.state = {};
   }
 
+  _renderCourses = (dayNum, wishlist) =>
+    wishlist
+      .filter(
+        (course) =>
+          new Date(course.meetings[0].beginDate).getDay() === dayNum ||
+          new Date(course.meetings[1].beginDate).getDay() === dayNum
+      )
+      .map((course, i) => (
+        <div key={i}>
+          <h3>{course.name}</h3>
+        </div>
+      ));
+
   render() {
     const { year, semester } = this.props;
-    function renderCourses(dayNum, wishlist) {
-      let renderList = [];
-      return wishlist
-        .filter(
-          (course) =>
-            new Date(course.meetings[0].beginDate).getDay() === dayNum ||
-            new Date(course.meetings[1].beginDate).getDay() === dayNum
-        )
-        .map((course, i) => (
-          <div key={i}>
-            <h3>{course.name}</h3>
-          </div>
-        ));
-    }
     return (
       <div>
         <CourseCalendar>
           <CalendarDay>
             Monday
-            {renderCourses(1, this.props.wishlist)}
+            {this._renderCourses(1, this.props.wishlist)}
           </CalendarDay>
           <CalendarDay>
             Tuesday
-            {renderCourses(2, this.props.wishlist)}
+            {this._renderCourses(2, this.props.wishlist)}
           </CalendarDay>
           <CalendarDay>
             Wednesday
-            {renderCourses(3, this.props.wishlist)}
+            {this._renderCourses(3, this.props.wishlist)}
           </CalendarDay>
           <CalendarDay>
             Thursday
-            {renderCourses(4, this.props.wishlist)}
+            {this._renderCourses(4, this.props.wishlist)}
           </CalendarDay>
           <CalendarDay>
             Friday
-            {renderCourses(5, this.props.wishlist)}
+            {this._renderCourses(5, this.props.wishlist)}
           </CalendarDay>
           <CalendarDay>
             Saturday
-            {renderCourses(6, this.props.wishlist)}
+            {this._renderCourses(6, this.props.wishlist)}
           </CalendarDay>
           <CalendarDay>
             Sunday
-            {renderCourses(0, this.props.wishlist)}
+            {this._renderCourses(0, this.props.wishlist)}
           </CalendarDay>
         </CourseCalendar>
         {this.props.wishlist.length === 0 ? (
