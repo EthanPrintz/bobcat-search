@@ -1,6 +1,20 @@
 import React, { Component } from "react";
 import qs from "qs";
+import styled from "styled-components";
 import { Link } from "react-router-dom";
+
+const CourseContainer = styled.div`
+  padding: 0.5vmax 5vmin;
+  & h4{
+    color: grey
+  }
+  & h3{
+
+  }
+  & p{
+    color: rgb(50,50,50)
+  }
+`
 
 export default class SubjectPage extends Component {
   constructor(props) {
@@ -45,19 +59,16 @@ export default class SubjectPage extends Component {
                 key={i}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <div
-                  style={{
-                    borderBottomWidth: 1,
-                    borderBottomColor: "black",
-                    borderBottomStyle: "solid"
-                  }}
-                >
+                <CourseContainer>
                   <h4>
                     {course.subjectCode.code}-{course.subjectCode.school}.
-                    {course.deptCourseId} {course.name}
+                    {course.deptCourseId} 
                   </h4>
+                  <h3>
+                    {course.name}
+                  </h3>
                   <p>{course.sections.length} Sections</p>
-                </div>
+                </CourseContainer>
               </Link>
             ))}
           </div>

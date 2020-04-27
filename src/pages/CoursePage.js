@@ -65,6 +65,21 @@ const SectionsHeader = styled.div`
   margin-top: calc(2vmin + 1rem);
 `;
 
+const AddButton = styled.div`
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.5rem;
+  border: 2px solid lightgrey;
+  color: lightgrey;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  cursor: pointer;
+  position: absolute;
+  right: 1rem;
+`;
+
 const DateContainer = styled.div`
   border: 0.3rem solid var(--grey200);
   width: calc(6vmin + 8rem);
@@ -97,6 +112,7 @@ const SectionContainer = styled.div`
   background-color: var(--grey100);
   width: 84%;
   margin-left: 8%;
+  position: relative;
 
   & > .sectionNum {
     font-size: 1.6rem;
@@ -151,7 +167,7 @@ export default class CoursePage extends React.Component {
     this.state = {
       params: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }),
       loading: true,
-      courseData: {}
+      courseData: {},
     };
   }
 
@@ -161,27 +177,30 @@ export default class CoursePage extends React.Component {
     fetch(
       `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}?full=true`
     )
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           // handle invalid search parameters
           return;
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         this.setState({
-          courseData: data.filter(val => val.deptCourseId === courseid)[0],
-          loading: false
+          courseData: data.filter((val) => val.deptCourseId === courseid)[0],
+          loading: false,
         });
-        this.state.courseData.sections.every(section => 
-          console.log(section.description === this.state.courseData.sections[0].description)
-        )
+        this.state.courseData.sections.every((section) =>
+          console.log(
+            section.description ===
+              this.state.courseData.sections[0].description
+          )
+        );
       })
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
   }
 
   render() {
-    const { loading, courseData } = this.state;
+    const { loading, courseData, wishlist } = this.state;
     return (
       <div>
         {loading && (
@@ -208,13 +227,14 @@ export default class CoursePage extends React.Component {
               </div>
             </CourseHeader>
             {/* Handle course description here if all sections have the same one */}
-            { courseData.sections.every(section => 
+            {courseData.sections.every(
+              (section) =>
                 section.description === courseData.sections[0].description
-              ) && 
+            ) && (
               <SectionsDescription>
                 {courseData.sections[0].description}
               </SectionsDescription>
-            }
+            )}
             <SectionsHeader>
               {courseData.sections.length > 1 ? "Sections" : ""}
             </SectionsHeader>
@@ -224,16 +244,9 @@ export default class CoursePage extends React.Component {
                   key={i}
                   waitlisted={
                     this.props.wishlist.filter(
-                      course =>
+                      (course) =>
                         course.registrationNumber === section.registrationNumber
                     ).length > 0
-                  }
-                  onClick={e =>
-                    this.props.onToggleCourse({
-                      year: this.props.year,
-                      semester: this.props.semester,
-                      course: section
-                    })
                   }
                 >
                   {courseData.sections.length > 1 ? (
@@ -270,12 +283,22 @@ export default class CoursePage extends React.Component {
                       <div className="attributeLabel">Registration #</div>
                       {section.registrationNumber}
                     </AttributeContainer>
+                    <AddButton
+                      onClick={(e) =>
+                        this.props.onToggleCourse({
+                          year: this.props.year,
+                          semester: this.props.semester,
+                          course: section,
+                        })
+                      }
+                    >
+                      +
+                    </AddButton>
                   </div>
-                  { !courseData.sections.every(section => 
-                    section.description === courseData.sections[0].description
-                  ) && 
-                    <p>{section.description}</p>
-                  }
+                  {!courseData.sections.every(
+                    (section) =>
+                      section.description === courseData.sections[0].description
+                  ) && <p>{section.description}</p>}
                   {section.meetings.map((meeting, i) => (
                     <DateContainer key={i}>
                       <div className="dayOfWeek">
