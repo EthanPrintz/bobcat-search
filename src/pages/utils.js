@@ -13,8 +13,10 @@ export function splitLocation(location) {
             "Building" : locations[0],
             "Room": roomNumber[1]
         }
-    }   
-    return location;
+    }
+    return {
+      "Building": location
+    };
 }
 
 export function getStatusColor(status) {

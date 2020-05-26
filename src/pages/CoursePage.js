@@ -2,7 +2,7 @@ import React from "react";
 import qs from "qs";
 import styled from "styled-components";
 import Moment from "moment";
-import { Link } from "react-router-dom";
+import { Link} from "react-router-dom";
 import {convertUnits, splitLocation, getStatusColor} from "./utils";
 
 const CourseHeader = styled.div`
@@ -216,7 +216,7 @@ export default class CoursePage extends React.Component {
         {!loading && (
           <>
             <CourseHeader>
-              <Link to="/" style={{ textDecoration: "none" }}>
+              <Link to= {`/subject?school=${courseData.subjectCode.school}&subject=${courseData.subjectCode.code}`} style={{ textDecoration: "none" }}>
                 <img src="./img/go-back.svg" alt="Go back" id="backButton" />
               </Link>
               <div>
