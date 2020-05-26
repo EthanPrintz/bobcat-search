@@ -207,7 +207,7 @@ export default class CoursePage extends React.Component {
           <>
             <span>Loading...</span>
             <CourseHeader>
-              <Link to="/" style={{ textDecoration: "none" }}>
+              <Link to= {`/subject?school=${courseData.subjectCode.school}&subject=${courseData.subjectCode.code}`} style={{ textDecoration: "none" }}>
                 <img src="./img/go-back.svg" alt="Go back" id="backButton" />
               </Link>
             </CourseHeader>
