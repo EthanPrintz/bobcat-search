@@ -5,7 +5,7 @@ import {
   Switch,
   Route,
   Link,
-  NavLink,
+  NavLink
 } from "react-router-dom";
 
 // Page Imports
@@ -20,6 +20,7 @@ function App() {
   const [year, setYear] = useState(2020);
   // eslint-disable-next-line
   const [semester, setSemester] = useState("fa");
+  const [toggle, setToggle] = useState(false)
 
   return (
     <Router>
