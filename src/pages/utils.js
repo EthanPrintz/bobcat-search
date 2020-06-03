@@ -13,20 +13,9 @@ export function splitLocation(location) {
             "Building" : locations[0],
             "Room": roomNumber[1]
         }
-    }   
-    return location;
-}
-
-export function getStatusColor(status) {
-    switch (status) {
-      case "WaitList":
-        return "orange";
-      case "Open":
-        return "green";
-      case "Closed":
-        return "red";
-      default:
-        return "black";
     }
+    return {
+      "Building": location
+    };
 }
   
