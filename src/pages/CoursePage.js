@@ -5,22 +5,32 @@ import Moment from 'moment';
 import { Link } from 'react-router-dom';
 import { convertUnits, splitLocation, getStatusColor } from './utils';
 
-const CourseHeader = styled.div`
+const ColorHeader = styled.div`
   width: 100vw;
-  height: calc(14vmin + 3rem);
-  padding: 2vmin 4vmin;
+  height: calc(14vmin + 5rem);
   background: linear-gradient(
     167deg,
     var(--purpleMain) 21%,
     #712991 60%,
     rgba(135, 37, 144, 1) 82%
   );
-  color: var(--grey100);
   position: absolute;
   top: 0;
   left: 0;
   display: flex;
   align-items: flex-end;
+`;
+
+const CourseHeader = styled.div`
+  width: 90vw;
+  margin-left: 5vw;
+  background-color: var(--grey100);
+  color: var(--grey800);
+  padding: 3vmin 4vmin 10vmin 4vmin;
+  border-top-left-radius: 0.8rem;
+  border-top-right-radius: 0.8rem;
+  box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.15);
+  margin-bottom: calc(-3vh - 5vmin);
 
   & #backButton {
     position: absolute;
@@ -50,10 +60,12 @@ const CourseHeader = styled.div`
 const SectionsDescription = styled.div`
   margin-top: calc(12vmin + 6vh);
   padding: 1.8vmin 2.8vmin;
-  font-size: 1.1rem;
-  font-style: italic;
+  font-size: 1.2rem;
+  line-height: 1.65rem;
   width: 84%;
   margin-left: 8%;
+  color: var(--grey800);
+  position: relative;
 `;
 
 const SectionsHeader = styled.div`
@@ -127,23 +139,12 @@ const SectionContainer = styled.div`
   }
 `;
 
-const CourseSections = styled.div`
-  & ${SectionContainer}:nth-child(odd) {
-    background-color: var(--grey200);
+const CourseSections = styled.div``;
 
-    & > ${DateContainer} {
-      border: 0.3rem solid var(--grey300);
-    }
-
-    & > ${DateContainer} > .dayOfWeek {
-      background-color: var(--grey300);
-      color: var(--grey700);
-    }
-
-    & > ${DateContainer} > .timeOfDay {
-      color: var(--grey800);
-    }
-  }
+const SectionDescription = styled.div`
+  padding: 0 1.5rem 1.5rem 0.5rem;
+  max-width: 68%;
+  color: var(--grey700);
 `;
 
 const AttributeContainer = styled.div`
@@ -199,29 +200,32 @@ export default class CoursePage extends React.Component {
         {loading && (
           <>
             <span>Loading...</span>
-            <CourseHeader>
+            <ColorHeader>
               <Link to="/" style={{ textDecoration: 'none' }}>
                 <img src="./img/go-back.svg" alt="Go back" id="backButton" />
               </Link>
-            </CourseHeader>
+            </ColorHeader>
           </>
         )}
         {!loading && (
           <>
-            <CourseHeader>
-              <Link
-                to={`/subject?school=${courseData.subjectCode.school}&subject=${courseData.subjectCode.code}`}
-                style={{ textDecoration: 'none' }}
-              >
-                <img src="./img/go-back.svg" alt="Go back" id="backButton" />
-              </Link>
-              <div>
-                <div id="titleDepartment">
-                  {courseData.subjectCode.code}-{courseData.subjectCode.school}
+            <ColorHeader>
+              <CourseHeader>
+                <Link
+                  to={`/subject?school=${courseData.subjectCode.school}&subject=${courseData.subjectCode.code}`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <img src="./img/go-back.svg" alt="Go back" id="backButton" />
+                </Link>
+                <div>
+                  <div id="titleDepartment">
+                    {courseData.subjectCode.code}-
+                    {courseData.subjectCode.school}
+                  </div>
+                  <div id="titleName">{courseData.name}</div>
                 </div>
-                <div id="titleName">{courseData.name}</div>
-              </div>
-            </CourseHeader>
+              </CourseHeader>
+            </ColorHeader>
             {/* Handle course description here if all sections have the same one */}
             <SectionsDescription>
               {courseData.description}
@@ -261,10 +265,12 @@ export default class CoursePage extends React.Component {
                       <div className="attributeLabel">Building</div>
                       {splitLocation(section.location).Building}
                     </AttributeContainer>
-                    <AttributeContainer>
-                      <div className="attributeLabel">Room</div>
-                      {splitLocation(section.location).Room}
-                    </AttributeContainer>
+                    {splitLocation(section.location).Room && (
+                      <AttributeContainer>
+                        <div className="attributeLabel">Room</div>
+                        {splitLocation(section.location).Room}
+                      </AttributeContainer>
+                    )}
                     <AttributeContainer>
                       <div className="attributeLabel">Units</div>
                       {convertUnits(section.minUnits, section.maxUnits)}
@@ -295,21 +301,28 @@ export default class CoursePage extends React.Component {
                   </div>
                   {!courseData.sections.every(
                     (section) => section.notes === courseData.sections[0].notes
-                  ) && <p>{section.notes}</p>}
-                  {section.meetings.map((meeting, i) => (
-                    <DateContainer key={i}>
-                      <div className="dayOfWeek">
-                        {Moment(meeting.beginDate).format('dddd')}
-                      </div>
-                      <div className="timeOfDay">
-                        {Moment(meeting.beginDate).format('h:mm A') +
-                          Moment(meeting.beginDate)
-                            .add(meeting.minutesDuration, 'minutes')
-                            .format(' - h:mm A')}
-                      </div>
-                    </DateContainer>
-                  ))}
-                  {/* Handle Recitations */}
+                  ) && <SectionDescription>{section.notes}</SectionDescription>}
+                  {section.meetings
+                    // Sort meeting times by day of week
+                    .sort(
+                      (a, b) =>
+                        Moment(a.beginDate).format('d') -
+                        Moment(b.beginDate).format('d')
+                    )
+                    // Map metting times to dom
+                    .map((meeting, i) => (
+                      <DateContainer key={i}>
+                        <div className="dayOfWeek">
+                          {Moment(meeting.beginDate).format('dddd')}
+                        </div>
+                        <div className="timeOfDay">
+                          {Moment(meeting.beginDate).format('h:mm A') +
+                            Moment(meeting.beginDate)
+                              .add(meeting.minutesDuration, 'minutes')
+                              .format(' - h:mm A')}
+                        </div>
+                      </DateContainer>
+                    ))}
                   {/* Handle Recitations */}
                 </SectionContainer>
               ))}
