@@ -1,9 +1,9 @@
-import React from "react";
-import qs from "qs";
-import styled from "styled-components";
-import Moment from "moment";
-import { Link} from "react-router-dom";
-import {convertUnits, splitLocation, getStatusColor} from "./utils";
+import React from 'react';
+import qs from 'qs';
+import styled from 'styled-components';
+import Moment from 'moment';
+import { Link } from 'react-router-dom';
+import { convertUnits, splitLocation, getStatusColor } from './utils';
 
 const CourseHeader = styled.div`
   width: 100vw;
@@ -146,7 +146,6 @@ const CourseSections = styled.div`
   }
 `;
 
-
 const AttributeContainer = styled.div`
   padding: calc(0.8vmin + 0.8rem);
   font-size: 1.5rem;
@@ -189,12 +188,6 @@ export default class CoursePage extends React.Component {
           courseData: data.filter((val) => val.deptCourseId === courseid)[0],
           loading: false,
         });
-        this.state.courseData.sections.every((section) =>
-          console.log(
-            section.description ===
-              this.state.courseData.sections[0].description
-          )
-        );
       })
       .catch((error) => console.error(error));
   }
@@ -207,7 +200,7 @@ export default class CoursePage extends React.Component {
           <>
             <span>Loading...</span>
             <CourseHeader>
-              <Link to= "/" style={{ textDecoration: "none" }}>
+              <Link to="/" style={{ textDecoration: 'none' }}>
                 <img src="./img/go-back.svg" alt="Go back" id="backButton" />
               </Link>
             </CourseHeader>
@@ -216,7 +209,10 @@ export default class CoursePage extends React.Component {
         {!loading && (
           <>
             <CourseHeader>
-              <Link to= {`/subject?school=${courseData.subjectCode.school}&subject=${courseData.subjectCode.code}`} style={{ textDecoration: "none" }}>
+              <Link
+                to={`/subject?school=${courseData.subjectCode.school}&subject=${courseData.subjectCode.code}`}
+                style={{ textDecoration: 'none' }}
+              >
                 <img src="./img/go-back.svg" alt="Go back" id="backButton" />
               </Link>
               <div>
@@ -227,16 +223,16 @@ export default class CoursePage extends React.Component {
               </div>
             </CourseHeader>
             {/* Handle course description here if all sections have the same one */}
-            {courseData.sections.every(
-              (section) =>
-                section.description === courseData.sections[0].description
-            ) && (
-              <SectionsDescription>
-                {courseData.sections[0].description}
-              </SectionsDescription>
-            )}
+            <SectionsDescription>
+              {courseData.description}
+              <br />
+              <br />
+              {courseData.sections.every(
+                (section) => section.notes === courseData.sections[0].notes
+              ) && courseData.sections[0].notes}
+            </SectionsDescription>
             <SectionsHeader>
-              {courseData.sections.length > 1 ? "Sections" : ""}
+              {courseData.sections.length > 1 ? 'Sections' : ''}
             </SectionsHeader>
             <CourseSections>
               {courseData.sections.map((section, i) => (
@@ -252,12 +248,14 @@ export default class CoursePage extends React.Component {
                   {courseData.sections.length > 1 ? (
                     <h4 className="sectionNum">{section.code}</h4>
                   ) : (
-                    ""
+                    ''
                   )}
                   <div className="attributes">
                     <AttributeContainer>
-                      <div className="attributeLabel">Instructor{section.instructors.length > 1 ? "s" : ""}</div>
-                      {section.instructors.join(", ")}
+                      <div className="attributeLabel">
+                        Instructor{section.instructors.length > 1 ? 's' : ''}
+                      </div>
+                      {section.instructors.join(', ')}
                     </AttributeContainer>
                     <AttributeContainer>
                       <div className="attributeLabel">Building</div>
@@ -272,7 +270,7 @@ export default class CoursePage extends React.Component {
                       {convertUnits(section.minUnits, section.maxUnits)}
                     </AttributeContainer>
                     <AttributeContainer>
-                      <div className="attributeLabel" >Status</div>
+                      <div className="attributeLabel">Status</div>
                       {section.status}
                     </AttributeContainer>
                     <AttributeContainer>
@@ -296,19 +294,18 @@ export default class CoursePage extends React.Component {
                     </AddButton>
                   </div>
                   {!courseData.sections.every(
-                    (section) =>
-                      section.description === courseData.sections[0].description
-                  ) && <p>{section.description}</p>}
+                    (section) => section.notes === courseData.sections[0].notes
+                  ) && <p>{section.notes}</p>}
                   {section.meetings.map((meeting, i) => (
                     <DateContainer key={i}>
                       <div className="dayOfWeek">
-                        {Moment(meeting.beginDate).format("dddd")}
+                        {Moment(meeting.beginDate).format('dddd')}
                       </div>
                       <div className="timeOfDay">
-                        {Moment(meeting.beginDate).format("h:mm A") +
+                        {Moment(meeting.beginDate).format('h:mm A') +
                           Moment(meeting.beginDate)
-                            .add(meeting.minutesDuration, "minutes")
-                            .format(" - h:mm A")}
+                            .add(meeting.minutesDuration, 'minutes')
+                            .format(' - h:mm A')}
                       </div>
                     </DateContainer>
                   ))}
