@@ -355,7 +355,7 @@ export default class CoursePage extends React.Component {
                       </DateContainer>
                     ))} */}
                     {/* Sections with one meeting a week */}
-                    {sortedSectionMeetings.length == 1 && (
+                    {sortedSectionMeetings.length === 1 && (
                       <DateContainer>
                         <BoldedDate>
                           {Moment(sortedSectionMeetings[0].beginDate).format(
@@ -381,7 +381,7 @@ export default class CoursePage extends React.Component {
                       </DateContainer>
                     )}
                     {/* Sections with two identical meetings a week */}
-                    {sortedSectionMeetings.length == 2 &&
+                    {sortedSectionMeetings.length === 2 &&
                       Moment(sortedSectionMeetings[0].beginDate).format(
                         'h:mm'
                       ) ===
@@ -422,7 +422,7 @@ export default class CoursePage extends React.Component {
                         </DateContainer>
                       )}
                     {/* Section with two different meetings a week */}
-                    {sortedSectionMeetings.length == 2 &&
+                    {sortedSectionMeetings.length === 2 &&
                       !(
                         Moment(sortedSectionMeetings[0].beginDate).format(
                           'h:mm'
@@ -516,16 +516,16 @@ export default class CoursePage extends React.Component {
                         <CalendarTodayTwoTone
                           style={{
                             color:
-                              section.status == 'Open' ? green[500] : red[500],
+                              section.status === 'Open' ? green[500] : red[500],
                           }}
                         />
                         <span
                           style={{
                             color:
-                              section.status == 'Open' ? green[500] : red[500],
+                              section.status === 'Open' ? green[500] : red[500],
                           }}
                         >
-                          {section.status == 'Open'
+                          {section.status === 'Open'
                             ? `Add to Calendar`
                             : `Section Closed`}
                         </span>
