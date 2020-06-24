@@ -6,187 +6,8 @@ import { Link } from 'react-router-dom';
 import { convertUnits, splitLocation, getStatusColor } from './utils';
 import { CalendarTodayTwoTone, AddBoxTwoTone } from '@material-ui/icons';
 import { green, red, grey } from '@material-ui/core/colors';
-
-const ColorHeader = styled.div`
-  width: 100vw;
-  height: calc(14vmin + 5rem);
-  background: linear-gradient(
-    167deg,
-    var(--purpleMain) 21%,
-    #712991 60%,
-    rgba(135, 37, 144, 1) 82%
-  );
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: flex-end;
-`;
-
-const CourseHeader = styled.div`
-  width: 90vw;
-  margin-left: 5vw;
-  background-color: var(--grey100);
-  color: var(--grey800);
-  padding: 3vmin 4vmin 10vmin 4%;
-  border-top-left-radius: 0.8rem;
-  border-top-right-radius: 0.8rem;
-  box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.15);
-  margin-bottom: calc(-3vh - 5vmin);
-
-  & #backButton {
-    position: absolute;
-    z-index: 2;
-    top: 2vmin;
-    left: 2vmin;
-    height: 2.1rem;
-    opacity: 0.7;
-    transition: 0.15s;
-  }
-  & #backButton:hover {
-    opacity: 1;
-  }
-
-  & #titleDepartment {
-    font-size: calc(1vmin + 0.7rem);
-    margin: 0 0 -0.5vmin 0.3vmin;
-    font-family: var(--grey200);
-  }
-
-  & #titleName {
-    font-size: calc(2.2vmin + 1.4rem);
-    font-weight: bold;
-  }
-`;
-
-const SectionsDescription = styled.div`
-  margin-top: calc(12vmin + 6vh);
-  padding: 1.8vmin 2.8vmin;
-  font-size: 1.2rem;
-  line-height: 1.65rem;
-  width: 74%;
-  margin-left: 13%;
-  color: var(--grey800);
-  position: relative;
-`;
-
-const SectionsHeader = styled.div`
-  font-weight: bold;
-  text-align: center;
-  font-size: calc(1.2vmin + 1rem);
-  padding: 2vmin;
-  color: var(--grey800);
-  margin-top: calc(2vmin + 1rem);
-`;
-
-const AddBar = styled.div`
-  padding: 0.5rem;
-  height: 6vh;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-`;
-
-const CalendarButton = styled.div`
-  font-size: 1.1rem;
-  height: 100%;
-  width: 12rem;
-  border-radius: 0.6rem;
-  padding: 0.8rem 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background-color: ${grey[200]};
-  margin-right: 2rem;
-  transition: 0.1s;
-
-  :hover {
-    background-color: ${grey[300]};
-  }
-
-  & > svg {
-    margin-right: 0.65rem;
-  }
-`;
-
-const DateContainer = styled.div`
-  color: ${grey[800]};
-  margin: -0.2rem 0 1rem 1rem;
-  font-size: 1.25rem;
-`;
-
-const BoldedDate = styled.span`
-  font-weight: bold;
-`;
-
-// const DateContainer = styled.div`
-//   border: 0.3rem solid var(--grey200);
-//   width: calc(6vmin + 8rem);
-//   border-radius: 0.35rem;
-//   text-align: center;
-//   display: inline-block;
-//   margin: 0.5vmin calc(1.2vmin + 2rem) 0.5vmin 0;
-//   margin-bottom: calc(1rem + 1vmin);
-
-//   & > .dayOfWeek {
-//     background-color: var(--grey200);
-//     color: var(--grey600);
-//     padding: 0.4rem calc(0.5vmin + 0.4rem);
-//     font-weight: bold;
-//     font-family: var(--primaryFont);
-//     font-size: 1.2rem;
-//   }
-
-//   & > .timeOfDay {
-//     padding: 0.4rem calc(0.5vmin + 0.4rem);
-//     font-family: var(--condensedFont);
-//     color: var(--grey700);
-//     font-weight: 500;
-//     font-size: 1.1rem;
-//   }
-// `;
-
-const SectionContainer = styled.div`
-  padding: 1.8vmin 2.8vmin;
-  background-color: var(--grey100);
-  width: 84%;
-  margin-left: 8%;
-  position: relative;
-
-  & > .sectionNum {
-    font-size: 1.6rem;
-    font-family: var(--condensedFont);
-    color: var(--grey700);
-    margin: 0 0 -1rem 1rem;
-  }
-
-  & > .attributes {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
-
-const CourseSections = styled.div``;
-
-const SectionDescription = styled.div`
-  padding: 0 1.5rem 1.5rem 0.5rem;
-  max-width: 68%;
-  color: var(--grey700);
-`;
-
-const AttributeContainer = styled.div`
-  padding: calc(0.8vmin + 0.8rem);
-  font-size: 1.5rem;
-  color: var(--grey800);
-  font-weight: bold;
-
-  & > .attributeLabel {
-    font-size: 1rem;
-    font-family: var(--condensedFont);
-    color: var(--grey700);
-  }
-`;
+// Import major progressions
+import { progressions } from '../majorProgressions';
 
 export default class CoursePage extends React.Component {
   constructor(props) {
@@ -229,9 +50,11 @@ export default class CoursePage extends React.Component {
           <>
             <span>Loading...</span>
             <ColorHeader>
-              <Link to="/" style={{ textDecoration: 'none' }}>
-                <img src="./img/go-back.svg" alt="Go back" id="backButton" />
-              </Link>
+              <CourseHeader>
+                <Link to="/" style={{ textDecoration: 'none' }}>
+                  <img src="./img/go-back.svg" alt="Go back" id="backButton" />
+                </Link>
+              </CourseHeader>
             </ColorHeader>
           </>
         )}
@@ -257,11 +80,15 @@ export default class CoursePage extends React.Component {
             {/* Handle course description here if all sections have the same one */}
             <SectionsDescription>
               {courseData.description}
-              <br />
-              <br />
               {courseData.sections.every(
                 (section) => section.notes === courseData.sections[0].notes
-              ) && courseData.sections[0].notes}
+              ) && (
+                <>
+                  <br />
+                  <br />
+                  {courseData.sections[0].notes}
+                </>
+              )}
             </SectionsDescription>
             {courseData.sections.length > 1 ? (
               <SectionsHeader>Sections</SectionsHeader>
@@ -333,27 +160,7 @@ export default class CoursePage extends React.Component {
                     ) && (
                       <SectionDescription>{section.notes}</SectionDescription>
                     )}
-                    {/* {section.meetings
-                    // Sort meeting times by day of week
-                    .sort(
-                      (a, b) =>
-                        Moment(a.beginDate).format('d') -
-                        Moment(b.beginDate).format('d')
-                    )
-                    // Map metting times to dom
-                    .map((meeting, i) => (
-                      <DateContainer key={i}>
-                        <div className="dayOfWeek">
-                          {Moment(meeting.beginDate).format('dddd')}
-                        </div>
-                        <div className="timeOfDay">
-                          {Moment(meeting.beginDate).format('h:mm A') +
-                            Moment(meeting.beginDate)
-                              .add(meeting.minutesDuration, 'minutes')
-                              .format(' - h:mm A')}
-                        </div>
-                      </DateContainer>
-                    ))} */}
+
                     {/* Sections with one meeting a week */}
                     {sortedSectionMeetings.length === 1 && (
                       <DateContainer>
@@ -556,3 +363,157 @@ export default class CoursePage extends React.Component {
     );
   }
 }
+
+const ColorHeader = styled.div`
+  width: 100vw;
+  height: calc(14vmin + 5rem);
+  background: linear-gradient(
+    167deg,
+    var(--purpleMain) 21%,
+    #712991 60%,
+    rgba(135, 37, 144, 1) 82%
+  );
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+`;
+
+const CourseHeader = styled.div`
+  width: 90vw;
+  margin-left: 5vw;
+  background-color: var(--grey100);
+  color: var(--grey800);
+  padding: 3vmin 4vmin 10vmin 4%;
+  border-top-left-radius: 0.8rem;
+  border-top-right-radius: 0.8rem;
+  box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.15);
+  margin-bottom: calc(-3vh - 5vmin);
+
+  & #backButton {
+    position: absolute;
+    z-index: 2;
+    top: 2vmin;
+    left: 2vmin;
+    height: 2.1rem;
+    opacity: 0.7;
+    transition: 0.15s;
+  }
+  & #backButton:hover {
+    opacity: 1;
+  }
+
+  & #titleDepartment {
+    font-size: calc(1vmin + 0.7rem);
+    margin: 0 0 -0.5vmin 0.3vmin;
+    font-family: var(--grey200);
+  }
+
+  & #titleName {
+    font-size: calc(2.2vmin + 1.4rem);
+    font-weight: bold;
+  }
+`;
+
+const SectionsDescription = styled.div`
+  margin-top: calc(12vmin + 6vh);
+  padding: 1.8vmin 2.8vmin;
+  font-size: 1.2rem;
+  line-height: 1.65rem;
+  width: 73%;
+  margin-left: 9%;
+  color: var(--grey800);
+  position: relative;
+`;
+
+const SectionsHeader = styled.div`
+  font-weight: bold;
+  text-align: center;
+  font-size: calc(1.2vmin + 1rem);
+  padding: 2vmin;
+  color: var(--grey800);
+  margin-top: calc(2vmin + 1rem);
+`;
+
+const AddBar = styled.div`
+  padding: 0.5rem;
+  height: 6vh;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+const CalendarButton = styled.div`
+  font-size: 1.1rem;
+  height: 100%;
+  width: 12rem;
+  border-radius: 0.6rem;
+  padding: 0.8rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: ${grey[200]};
+  margin-right: 2rem;
+  transition: 0.1s;
+
+  :hover {
+    background-color: ${grey[300]};
+  }
+
+  & > svg {
+    margin-right: 0.65rem;
+  }
+`;
+
+const DateContainer = styled.div`
+  color: ${grey[800]};
+  margin: -0.2rem 0 1rem 1rem;
+  font-size: 1.25rem;
+`;
+
+const BoldedDate = styled.span`
+  font-weight: bold;
+`;
+
+const SectionContainer = styled.div`
+  padding: 1.8vmin 2.8vmin;
+  background-color: var(--grey100);
+  width: 84%;
+  margin-left: 8%;
+  position: relative;
+
+  & > .sectionNum {
+    font-size: 1.6rem;
+    font-family: var(--condensedFont);
+    color: var(--grey700);
+    margin: 0 0 -1rem 1rem;
+  }
+
+  & > .attributes {
+    display: flex;
+    flex-wrap: wrap;
+  }
+`;
+
+const CourseSections = styled.div``;
+
+const SectionDescription = styled.div`
+  padding: 0 1.5rem 1.5rem 0.5rem;
+  max-width: 68%;
+  color: var(--grey700);
+`;
+
+const AttributeContainer = styled.div`
+  padding: calc(0.8vmin + 0.8rem);
+  font-size: 1.5rem;
+  color: var(--grey800);
+  font-weight: bold;
+
+  & > .attributeLabel {
+    font-size: 1rem;
+    font-family: var(--condensedFont);
+    color: var(--grey700);
+  }
+`;

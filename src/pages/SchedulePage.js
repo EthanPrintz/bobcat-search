@@ -1,20 +1,25 @@
-import React, { Component } from "react";
-import styled from "styled-components";
-import Moment from "moment";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import styled from 'styled-components';
+import Moment from 'moment';
+import { Link } from 'react-router-dom';
 
 const CourseCalendar = styled.div`
   width: 100vw;
   height: 50vmin;
-  background-color: var(--grey200);
   margin: 4vmin 0;
 `;
 
 const CalendarDay = styled.div`
-  width: calc(100vw / 7);
+  width: calc(100vw / 6);
   height: 100%;
   float: left;
-  border: 1px solid var(--grey100);
+  border: 1px solid var(--grey300);
+`;
+
+const CalendarWeekend = styled.div`
+  width: 100%;
+  height: 50%;
+  border: 1px solid var(--grey300);
 `;
 
 export default class SchedulePage extends Component {
@@ -63,12 +68,14 @@ export default class SchedulePage extends Component {
             {this._renderCourses(5, this.props.wishlist)}
           </CalendarDay>
           <CalendarDay>
-            Saturday
-            {this._renderCourses(6, this.props.wishlist)}
-          </CalendarDay>
-          <CalendarDay>
-            Sunday
-            {this._renderCourses(0, this.props.wishlist)}
+            <CalendarWeekend>
+              Saturday
+              {this._renderCourses(6, this.props.wishlist)}
+            </CalendarWeekend>
+            <CalendarWeekend>
+              Sunday
+              {this._renderCourses(0, this.props.wishlist)}
+            </CalendarWeekend>
           </CalendarDay>
         </CourseCalendar>
         {this.props.wishlist.length === 0 ? (

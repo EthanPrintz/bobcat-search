@@ -164,7 +164,7 @@ const Course = styled.div`
   width: 38vmin;
   min-height: 5vmax;
   background-color: ${grey[100]};
-  margin: 1.6vmax;
+  margin: 1vmax;
   border-radius: 0.3rem;
   border-bottom: 0.2rem solid ${grey[300]};
 
