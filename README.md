@@ -1,5 +1,6 @@
 ![Bobcat Logo](https://drive.google.com/uc?export=view&id=1_3gVzbDrD8dozXX7tndp3Uhxfdm406FE)
-Bobcast Search open source course search frontend for the NYU community, created in React and Redux with data calls to Albert Liu's Schedge API. It aims to be faster, better designed, and more feature rich than the official NYU course search. Created by Ethan Printz, Evan Silverman, Khanh Nguyen and Albert Liu. 
+<br/><br/>
+Bobcast Search is an course search frontend for the NYU community, created in React and Redux with data calls to Albert Liu's Schedge API backend. It aims to be faster, better designed, and more feature rich than the official NYU course search. Created by Ethan Printz, Evan Silverman, Khanh Nguyen and Albert Liu. 
 Anyone is welcome to contribute to the project. 
 
 ## Setup
