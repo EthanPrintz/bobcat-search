@@ -99,6 +99,7 @@ export default class CoursePage extends React.Component {
             <CourseSections>
               {courseData.sections.map((section, i) => {
                 // Sort section meetings by day of week
+                console.log(section.name === courseData.name);
                 let sortedSectionMeetings = section.meetings.sort(
                   (a, b) =>
                     Moment(a.beginDate).format("d") -
@@ -116,6 +117,11 @@ export default class CoursePage extends React.Component {
                       ).length > 0
                     }
                   >
+                    {courseData.name !== section.name ? (
+                      <h3 className="sectionName">{section.name}</h3>
+                    ) : (
+                      ""
+                    )}
                     {courseData.sections.length > 1 ? (
                       <h4 className="sectionNum">{section.code}</h4>
                     ) : (
@@ -484,6 +490,13 @@ const SectionContainer = styled.div`
   width: 84%;
   margin-left: 8%;
   position: relative;
+
+  & > .sectionName {
+    font-size: 1.8rem;
+    font-family: var(--condensedFont);
+    color: var(--grey800);
+    margin-bottom: 0.25rem;
+  }
 
   & > .sectionNum {
     font-size: 1.6rem;
