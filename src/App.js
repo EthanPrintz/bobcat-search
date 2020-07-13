@@ -5,7 +5,7 @@ import {
   Switch,
   Route,
   Link,
-  NavLink
+  NavLink,
 } from "react-router-dom";
 
 // Page Imports
@@ -16,11 +16,11 @@ import CoursePage from "./containers/CoursePageContainer";
 import SchedulePage from "./containers/SchedulePageContainer";
 
 function App() {
-  // eslint-disable-next-line
+  /* eslint-disable no-unused-vars */
   const [year, setYear] = useState(2020);
-  // eslint-disable-next-line
   const [semester, setSemester] = useState("fa");
-  const [toggle, setToggle] = useState(false)
+  const [toggle, setToggle] = useState(false);
+  /* eslint-enable no-unused-vars */
 
   return (
     <Router>

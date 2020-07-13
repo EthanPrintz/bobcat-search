@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
-import styled from 'styled-components';
-import Moment from 'moment';
-import { Link } from 'react-router-dom';
+import React, { Component } from "react";
+import styled from "styled-components";
+// import { Link } from 'react-router-dom';
 
 const CourseCalendar = styled.div`
   width: 100vw;

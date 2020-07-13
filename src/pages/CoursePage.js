@@ -1,13 +1,13 @@
-import React from 'react';
-import qs from 'qs';
-import styled from 'styled-components';
-import Moment from 'moment';
-import { Link } from 'react-router-dom';
-import { convertUnits, splitLocation, getStatusColor } from './utils';
-import { CalendarTodayTwoTone, AddBoxTwoTone } from '@material-ui/icons';
-import { green, red, grey } from '@material-ui/core/colors';
+import React from "react";
+import qs from "qs";
+import styled from "styled-components";
+import Moment from "moment";
+import { Link } from "react-router-dom";
+import { convertUnits, splitLocation, getStatusColor } from "./utils"; // eslint-disable-line no-unused-vars
+import { CalendarTodayTwoTone, AddBoxTwoTone } from "@material-ui/icons";
+import { green, red, grey } from "@material-ui/core/colors";
 // Import major progressions
-import { progressions } from '../majorProgressions';
+import { progressions } from "../majorProgressions"; // eslint-disable-line no-unused-vars
 
 export default class CoursePage extends React.Component {
   constructor(props) {
@@ -43,6 +43,7 @@ export default class CoursePage extends React.Component {
   }
 
   render() {
+    // eslint-disable-next-line no-unused-vars
     const { loading, courseData, wishlist } = this.state;
     return (
       <div>
@@ -51,7 +52,7 @@ export default class CoursePage extends React.Component {
             <span>Loading...</span>
             <ColorHeader>
               <CourseHeader>
-                <Link to="/" style={{ textDecoration: 'none' }}>
+                <Link to="/" style={{ textDecoration: "none" }}>
                   <img src="./img/go-back.svg" alt="Go back" id="backButton" />
                 </Link>
               </CourseHeader>
@@ -64,7 +65,7 @@ export default class CoursePage extends React.Component {
               <CourseHeader>
                 <Link
                   to={`/subject?school=${courseData.subjectCode.school}&subject=${courseData.subjectCode.code}`}
-                  style={{ textDecoration: 'none' }}
+                  style={{ textDecoration: "none" }}
                 >
                   <img src="./img/go-back.svg" alt="Go back" id="backButton" />
                 </Link>
@@ -93,15 +94,15 @@ export default class CoursePage extends React.Component {
             {courseData.sections.length > 1 ? (
               <SectionsHeader>Sections</SectionsHeader>
             ) : (
-              ''
+              ""
             )}
             <CourseSections>
               {courseData.sections.map((section, i) => {
                 // Sort section meetings by day of week
                 let sortedSectionMeetings = section.meetings.sort(
                   (a, b) =>
-                    Moment(a.beginDate).format('d') -
-                    Moment(b.beginDate).format('d')
+                    Moment(a.beginDate).format("d") -
+                    Moment(b.beginDate).format("d")
                 );
                 // Return
                 return (
@@ -118,14 +119,14 @@ export default class CoursePage extends React.Component {
                     {courseData.sections.length > 1 ? (
                       <h4 className="sectionNum">{section.code}</h4>
                     ) : (
-                      ''
+                      ""
                     )}
                     <div className="attributes">
                       <AttributeContainer>
                         <div className="attributeLabel">
-                          Instructor{section.instructors.length > 1 ? 's' : ''}
+                          Instructor{section.instructors.length > 1 ? "s" : ""}
                         </div>
-                        {section.instructors.join(', ')}
+                        {section.instructors.join(", ")}
                       </AttributeContainer>
                       <AttributeContainer>
                         <div className="attributeLabel">Building</div>
@@ -166,65 +167,65 @@ export default class CoursePage extends React.Component {
                       <DateContainer>
                         <BoldedDate>
                           {Moment(sortedSectionMeetings[0].beginDate).format(
-                            'dddd'
+                            "dddd"
                           )}
-                          s{' '}
+                          s{" "}
                         </BoldedDate>
-                        from{' '}
+                        from{" "}
                         <BoldedDate>
                           {Moment(sortedSectionMeetings[0].beginDate).format(
-                            'h:mm A'
-                          )}{' '}
+                            "h:mm A"
+                          )}{" "}
                         </BoldedDate>
-                        to{' '}
+                        to{" "}
                         <BoldedDate>
                           {Moment(sortedSectionMeetings[0].beginDate)
                             .add(
                               sortedSectionMeetings[0].minutesDuration,
-                              'minutes'
+                              "minutes"
                             )
-                            .format('h:mm A')}
+                            .format("h:mm A")}
                         </BoldedDate>
                       </DateContainer>
                     )}
                     {/* Sections with two identical meetings a week */}
                     {sortedSectionMeetings.length === 2 &&
                       Moment(sortedSectionMeetings[0].beginDate).format(
-                        'h:mm'
+                        "h:mm"
                       ) ===
                         Moment(sortedSectionMeetings[1].beginDate).format(
-                          'h:mm'
+                          "h:mm"
                         ) &&
                       sortedSectionMeetings[0].minutesDuration ===
                         sortedSectionMeetings[1].minutesDuration && (
                         <DateContainer>
                           <BoldedDate>
                             {Moment(sortedSectionMeetings[0].beginDate).format(
-                              'dddd'
+                              "dddd"
                             )}
-                            s{' '}
+                            s{" "}
                           </BoldedDate>
-                          and{' '}
+                          and{" "}
                           <BoldedDate>
                             {Moment(sortedSectionMeetings[1].beginDate).format(
-                              'dddd'
+                              "dddd"
                             )}
-                            s{' '}
+                            s{" "}
                           </BoldedDate>
-                          from{' '}
+                          from{" "}
                           <BoldedDate>
                             {Moment(sortedSectionMeetings[0].beginDate).format(
-                              'h:mm A'
-                            )}{' '}
+                              "h:mm A"
+                            )}{" "}
                           </BoldedDate>
-                          to{' '}
+                          to{" "}
                           <BoldedDate>
                             {Moment(sortedSectionMeetings[0].beginDate)
                               .add(
                                 sortedSectionMeetings[0].minutesDuration,
-                                'minutes'
+                                "minutes"
                               )
-                              .format('h:mm A')}
+                              .format("h:mm A")}
                           </BoldedDate>
                         </DateContainer>
                       )}
@@ -232,10 +233,10 @@ export default class CoursePage extends React.Component {
                     {sortedSectionMeetings.length === 2 &&
                       !(
                         Moment(sortedSectionMeetings[0].beginDate).format(
-                          'h:mm'
+                          "h:mm"
                         ) ===
                           Moment(sortedSectionMeetings[1].beginDate).format(
-                            'h:mm'
+                            "h:mm"
                           ) &&
                         sortedSectionMeetings[0].minutesDuration ===
                           sortedSectionMeetings[1].minutesDuration
@@ -243,46 +244,46 @@ export default class CoursePage extends React.Component {
                         <DateContainer>
                           <BoldedDate>
                             {Moment(sortedSectionMeetings[0].beginDate).format(
-                              'dddd'
+                              "dddd"
                             )}
-                            s{' '}
+                            s{" "}
                           </BoldedDate>
-                          from{' '}
+                          from{" "}
                           <BoldedDate>
                             {Moment(sortedSectionMeetings[0].beginDate).format(
-                              'h:mm A'
-                            )}{' '}
+                              "h:mm A"
+                            )}{" "}
                           </BoldedDate>
-                          to{' '}
+                          to{" "}
                           <BoldedDate>
                             {Moment(sortedSectionMeetings[0].beginDate)
                               .add(
                                 sortedSectionMeetings[0].minutesDuration,
-                                'minutes'
+                                "minutes"
                               )
-                              .format('h:mm A')}
+                              .format("h:mm A")}
                           </BoldedDate>
-                          {' and '}
+                          {" and "}
                           <BoldedDate>
                             {Moment(sortedSectionMeetings[1].beginDate).format(
-                              'dddd'
+                              "dddd"
                             )}
-                            s{' '}
+                            s{" "}
                           </BoldedDate>
-                          from{' '}
+                          from{" "}
                           <BoldedDate>
                             {Moment(sortedSectionMeetings[1].beginDate).format(
-                              'h:mm A'
-                            )}{' '}
+                              "h:mm A"
+                            )}{" "}
                           </BoldedDate>
-                          to{' '}
+                          to{" "}
                           <BoldedDate>
                             {Moment(sortedSectionMeetings[1].beginDate)
                               .add(
                                 sortedSectionMeetings[1].minutesDuration,
-                                'minutes'
+                                "minutes"
                               )
-                              .format('h:mm A')}
+                              .format("h:mm A")}
                           </BoldedDate>
                         </DateContainer>
                       )}
@@ -292,19 +293,19 @@ export default class CoursePage extends React.Component {
                         {sortedSectionMeetings.map((meeting, i) => (
                           <>
                             <BoldedDate>
-                              {Moment(meeting.beginDate).format('dddd')}s{' '}
+                              {Moment(meeting.beginDate).format("dddd")}s{" "}
                             </BoldedDate>
-                            from{' '}
+                            from{" "}
                             <BoldedDate>
-                              {Moment(meeting.beginDate).format('h:mm A')}{' '}
+                              {Moment(meeting.beginDate).format("h:mm A")}{" "}
                             </BoldedDate>
-                            to{' '}
+                            to{" "}
                             <BoldedDate>
                               {Moment(meeting.beginDate)
-                                .add(meeting.minutesDuration, 'minutes')
-                                .format('h:mm A')}
+                                .add(meeting.minutesDuration, "minutes")
+                                .format("h:mm A")}
                             </BoldedDate>
-                            {i < sortedSectionMeetings.length - 1 && ', '}
+                            {i < sortedSectionMeetings.length - 1 && ", "}
                             <br />
                           </>
                         ))}
@@ -323,16 +324,16 @@ export default class CoursePage extends React.Component {
                         <CalendarTodayTwoTone
                           style={{
                             color:
-                              section.status === 'Open' ? green[500] : red[500],
+                              section.status === "Open" ? green[500] : red[500],
                           }}
                         />
                         <span
                           style={{
                             color:
-                              section.status === 'Open' ? green[500] : red[500],
+                              section.status === "Open" ? green[500] : red[500],
                           }}
                         >
-                          {section.status === 'Open'
+                          {section.status === "Open"
                             ? `Add to Calendar`
                             : `Section Closed`}
                         </span>

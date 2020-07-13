@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import qs from 'qs';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { grey } from '@material-ui/core/colors';
+import React, { Component } from "react";
+import qs from "qs";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import { grey } from "@material-ui/core/colors";
 
 export default class SubjectPage extends Component {
   constructor(props) {
@@ -13,7 +13,7 @@ export default class SubjectPage extends Component {
       courseLoading: true,
       departmentLoading: true,
       schoolLoading: true,
-      courseList: {},
+      courseList: [],
       departmentList: {},
       schoolList: {},
     };
@@ -36,8 +36,9 @@ export default class SubjectPage extends Component {
         // Save data to local state
         this.setState({ courseLoading: false, courseList: data });
       });
+
     // Fetch department names
-    fetch(`https://schedge.torchnyu.com/subjects`)
+    fetch(`https://schedge.a1liu.com/subjects`)
       .then((response) => {
         if (!response.ok) {
           // Handle invalid search parameters
@@ -49,8 +50,9 @@ export default class SubjectPage extends Component {
         // Save data to local state
         this.setState({ departmentLoading: false, departmentList: data });
       });
+
     // Fetch school names
-    fetch(`https://schedge.torchnyu.com/schools`)
+    fetch(`https://schedge.a1liu.com/schools`)
       .then((response) => {
         if (!response.ok) {
           // Handle invalid search parameters
@@ -65,6 +67,7 @@ export default class SubjectPage extends Component {
   }
 
   render() {
+    const { school, subject } = this.state.params;
     return (
       <PageContainer>
         <HeaderBackground></HeaderBackground>
@@ -79,33 +82,27 @@ export default class SubjectPage extends Component {
           <div>
             <DepartmentHeader>
               <SchoolName>
-                {
-                  this.state.schoolList[
-                    this.state.courseList[0].subjectCode.school
-                  ].name
-                }
+                {(this.state.schoolList[school]?.name.length === 0
+                  ? school
+                  : this.state.schoolList[school]?.name) ?? school}
               </SchoolName>
               <DepartmentName>
-                {
-                  this.state.departmentList[
-                    this.state.courseList[0].subjectCode.school
-                  ][this.state.courseList[0].subjectCode.code].name
-                }
+                {this.state.departmentList[school][subject]?.name}
               </DepartmentName>
             </DepartmentHeader>
             <CourseContainer>
               {this.state.courseList.map((course, i) => (
                 <Link
                   to={{
-                    pathname: '/course',
+                    pathname: "/course",
                     search: `?&school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}`,
                   }}
                   key={i}
-                  style={{ textDecoration: 'none', color: 'inherit' }}
+                  style={{ textDecoration: "none", color: "inherit" }}
                 >
                   <Course>
                     <h4>
-                      {course.subjectCode.code}-{course.subjectCode.school}{' '}
+                      {course.subjectCode.code}-{course.subjectCode.school}{" "}
                       {course.deptCourseId}
                     </h4>
                     <h3>{course.name}</h3>

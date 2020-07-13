@@ -100,8 +100,7 @@ export default function SearchPage(props) {
         .then((response) => response.json()) // one extra step
         .then((data) => setDepartments({ loading: false, data }))
         .catch((error) => console.error(error));
-    })();
-    (async () => {
+
       fetch("https://schedge.a1liu.com/schools")
         .then((response) => response.json()) // one extra step
         .then((data) => setSchools({ loading: false, data }))
