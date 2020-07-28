@@ -12,10 +12,12 @@ body {
 nav {
   position: relative;
   width: 100%;
-  min-height: 6rem;
+  height: 6rem;
+  background: #00000000;
 }
 
 nav ul {
+  height: 100%;
   list-style: none;
   display: flex;
   justify-content: space-between;
@@ -29,7 +31,6 @@ nav li {
 
 #title {
   font-size: 2rem;
-  height: 100%;
   padding: 1rem;
 }
 
@@ -40,7 +41,7 @@ nav li {
 }
 
 .icon {
-  width: 150px;
+  width: 100px;
 }
 
 .icon img {
