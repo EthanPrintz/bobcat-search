@@ -158,7 +158,8 @@ const CourseContainer = styled.div`
 `;
 
 const Course = styled.div`
-  padding: 0.5vmax 2vmin;
+  padding: 0.75vmax 3vmin;
+  word-break: break-word;
   width: 30vmin;
   min-height: 5vmax;
   background-color: ${grey[100]};
