@@ -38,12 +38,12 @@ function App() {
               {
                 toggle !== "/schedule" ?
                 (
-                  <NavLink to={toggle} onClick={() => { console.log("true and ", toggle); setToggle("/schedule"); }}>
+                  <NavLink to={toggle} onClick={() => setToggle("/schedule")}>
                     <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
                   </NavLink>
                 ) :
                 (
-                  <NavLink to="/schedule" onClick={() => { console.log("false and ", toggle); setToggle(getPath); }}>
+                  <NavLink to="/schedule" onClick={() => setToggle(getPath)}>
                     <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
                   </NavLink>
                 )
