@@ -31,9 +31,19 @@ function App() {
               <Link to="/">Bobcat Search</Link>
             </li>
             <li className="icon">
-              <NavLink to="/schedule">
-                <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
-              </NavLink>
+              {
+                toggle ?
+                (
+                  <NavLink to="/" onClick={() => { setToggle(false); }}>
+                    <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
+                  </NavLink>
+                ) :
+                (
+                  <NavLink to="/schedule" onClick={() => { setToggle(true); }}>
+                    <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
+                  </NavLink>
+                )
+              }
             </li>
           </ul>
         </nav>
