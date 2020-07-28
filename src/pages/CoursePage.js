@@ -373,7 +373,8 @@ export default class CoursePage extends React.Component {
 
 const ColorHeader = styled.div`
   width: 100vw;
-  height: calc(14vmin + 8rem);
+  /* height: calc(14vmin + 8rem); */
+  padding-top: 6rem;
   margin-top: -6rem;
   background: linear-gradient(
     167deg,
@@ -385,7 +386,7 @@ const ColorHeader = styled.div`
   display: flex;
   align-items: flex-end;
   @media (max-width: 1000px) {
-    height: calc(14vmin + 13rem);
+    padding-top: 5rem;
   }
 `;
 
