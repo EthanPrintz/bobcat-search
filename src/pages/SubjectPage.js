@@ -128,13 +128,12 @@ const PageContainer = styled.div`
 
 const HeaderBackground = styled.div`
   width: 100vw;
-  height: 5rem;
+  height: 2rem;
   background-color: ${grey[200]};
-  margin-top: -3.5rem;
 `;
 
 const DepartmentHeader = styled.div`
-  margin: 2vmin 0 2vmin 4vmax;
+  margin: 2vmin 2vmin 4vmin 4vmax;
 `;
 
 const SchoolName = styled.div`
@@ -152,18 +151,27 @@ const DepartmentName = styled.div`
 const CourseContainer = styled.div`
   display: flex;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
+  width: 85vw;
+  margin: 0 auto;
 `;
 
 const Course = styled.div`
   padding: 0.5vmax 2vmin;
-  width: 38vmin;
+  width: 30vmin;
   min-height: 5vmax;
   background-color: ${grey[100]};
   margin: 1vmax;
   border-radius: 0.3rem;
   border-bottom: 0.2rem solid ${grey[300]};
+  @media (max-width: 1000px) {
+    width: 38vmin;
+  }
+
+  &:hover {
+    border-color: ${grey[400]};
+  }
 
   & > h4 {
     color: ${grey[600]};
