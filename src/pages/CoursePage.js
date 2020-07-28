@@ -373,18 +373,20 @@ export default class CoursePage extends React.Component {
 
 const ColorHeader = styled.div`
   width: 100vw;
-  height: calc(14vmin + 5rem);
+  height: calc(14vmin + 8rem);
+  margin-top: -6rem;
   background: linear-gradient(
     167deg,
     var(--purpleMain) 21%,
     #712991 60%,
     rgba(135, 37, 144, 1) 82%
   );
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   display: flex;
   align-items: flex-end;
+  @media (max-width: 1000px) {
+    height: calc(14vmin + 13rem);
+  }
 `;
 
 const CourseHeader = styled.div`
@@ -401,9 +403,9 @@ const CourseHeader = styled.div`
   & #backButton {
     position: absolute;
     z-index: 2;
-    top: 2vmin;
-    left: 2vmin;
-    height: 2.1rem;
+    top: 2.5vmin;
+    left: 5vw;
+    height: 2.5rem;
     opacity: 0.7;
     transition: 0.15s;
   }
@@ -424,7 +426,6 @@ const CourseHeader = styled.div`
 `;
 
 const SectionsDescription = styled.div`
-  margin-top: calc(12vmin + 6vh);
   padding: 1.8vmin 2.8vmin;
   font-size: 1.2rem;
   line-height: 1.65rem;
@@ -432,6 +433,9 @@ const SectionsDescription = styled.div`
   margin-left: 9%;
   color: var(--grey800);
   position: relative;
+  @media (max-width: 1000px) {
+    margin-top: calc(12vmin);
+  }
 `;
 
 const SectionsHeader = styled.div`
