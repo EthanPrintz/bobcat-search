@@ -58,3 +58,9 @@ nav li {
 .icon a.active img {
   background-color: var(--grey300);
 }
+
+@media (max-width: 1000px) {
+  nav ul {
+    padding: 0 0.5rem;
+  }
+}
