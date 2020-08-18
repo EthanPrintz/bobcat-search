@@ -53,6 +53,9 @@ const Departments = styled.div`
   grid-gap: 1rem;
   padding: 6rem 2rem 2rem 2rem;
   animation: ${deptFadeIn} 0.8s ease forwards;
+  @media (max-width: 1000px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const School = styled.div`
@@ -64,6 +67,7 @@ const School = styled.div`
     font-family: var(--condensedFont);
     text-align: center;
     margin: 1rem 0;
+    position: sticky;
 
     & > .schoolCode {
       padding: 0.3rem;
