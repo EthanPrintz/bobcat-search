@@ -6,7 +6,6 @@ import styled from "styled-components";
 import * as actions from "../redux/modules/wishlist";
 
 function SchedulePage({ year, semester, wishlist, clearWishlist }) {
-  console.log(wishlist);
   const _renderCourses = (dayNum, wishlist) =>
     wishlist
       .filter(

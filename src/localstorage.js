@@ -15,6 +15,6 @@ export const saveState = (state) => {
     const serializedState = JSON.stringify(state);
     localStorage.setItem("bobcat-store", serializedState);
   } catch (err) {
-    console.log("Could not save state to local storage", err);
+    console.error("Could not save state to local storage", err);
   }
 };
