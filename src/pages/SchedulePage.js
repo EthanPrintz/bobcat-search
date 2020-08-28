@@ -1,13 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import styled from "styled-components";
 
-export default function SchedulePage({
-  year,
-  semester,
-  wishlist,
-  onClearWishlist,
-}) {
+import * as actions from "../redux/modules/wishlist";
+
+function SchedulePage({ year, semester, wishlist, clearWishlist }) {
+  console.log(wishlist);
   const _renderCourses = (dayNum, wishlist) =>
     wishlist
       .filter(
@@ -61,8 +60,8 @@ export default function SchedulePage({
         <div>
           <div
             style={{ cursor: "pointer" }}
-            onClick={() => onClearWishlist({ year, semester })}
-            onKeyPress={() => onClearWishlist({ year, semester })}
+            onClick={() => clearWishlist({ year, semester })}
+            onKeyPress={() => clearWishlist({ year, semester })}
             role="button"
             tabIndex={0}
           >
@@ -79,7 +78,7 @@ SchedulePage.propTypes = {
   year: PropTypes.number.isRequired,
   semester: PropTypes.string.isRequired,
   wishlist: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onClearWishlist: PropTypes.func.isRequired,
+  clearWishlist: PropTypes.func.isRequired,
 };
 
 const CourseCalendar = styled.div`
@@ -111,3 +110,10 @@ const CalendarWeekend = styled.div`
     min-height: 75px;
   }
 `;
+
+const mapStateToProps = (state, props) => ({
+  wishlist: state.wishlist[props.semester + props.year] || [],
+  scheduled: state.scheduled[props.semester + props.year] || [],
+});
+
+export default connect(mapStateToProps, actions)(SchedulePage);

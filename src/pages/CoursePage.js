@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import qs from "qs";
 import styled from "styled-components";
 import Moment from "moment";
@@ -9,14 +10,9 @@ import { CalendarTodayTwoTone, AddBoxTwoTone } from "@material-ui/icons";
 import { green, red, grey } from "@material-ui/core/colors";
 // Import major progressions
 import { progressions } from "../majorProgressions"; // eslint-disable-line no-unused-vars
+import * as actions from "../redux/modules/wishlist";
 
-export default function CoursePage({
-  year,
-  semester,
-  location,
-  wishlist,
-  onToggleCourse,
-}) {
+function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
   const { school, subject, courseid } = qs.parse(location.search, {
     ignoreQueryPrefix: true,
   });
@@ -314,7 +310,7 @@ export default function CoursePage({
                   <AddBar>
                     <CalendarButton
                       onClick={() =>
-                        onToggleCourse({
+                        wishlistCourse({
                           year,
                           semester,
                           course: section,
@@ -371,7 +367,7 @@ CoursePage.propTypes = {
     search: PropTypes.string.isRequired,
   }),
   wishlist: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onToggleCourse: PropTypes.func.isRequired,
+  wishlistCourse: PropTypes.func.isRequired,
 };
 
 const ColorHeader = styled.div`
@@ -539,3 +535,10 @@ const AttributeContainer = styled.div`
     color: var(--grey700);
   }
 `;
+
+const mapStateToProps = (state, props) => ({
+  wishlist: state.wishlist[props.semester + props.year] || [],
+  scheduled: state.scheduled[props.semester + props.year] || [],
+});
+
+export default connect(mapStateToProps, actions)(CoursePage);

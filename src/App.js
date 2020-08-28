@@ -12,13 +12,11 @@ import {
 import SearchPage from "./pages/SearchPage";
 import SchoolPage from "./pages/SchoolPage";
 import SubjectPage from "./pages/SubjectPage";
-import CoursePage from "./containers/CoursePageContainer";
-import SchedulePage from "./containers/SchedulePageContainer";
+import CoursePage from "./pages/CoursePage";
+import SchedulePage from "./pages/SchedulePage";
 
 function App() {
-  const getPath = () => {
-    return window.location.pathname + window.location.search;
-  };
+  const getPath = () => window.location.pathname + window.location.search;
 
   /* eslint-disable no-unused-vars */
   const [year, setYear] = useState(2020);
