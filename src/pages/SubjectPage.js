@@ -1,122 +1,125 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import qs from "qs";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { grey } from "@material-ui/core/colors";
 
-export default class SubjectPage extends Component {
-  constructor(props) {
-    super(props);
+export default function SubjectPage({ year, semester, location }) {
+  const { school, subject } = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+  });
 
-    this.state = {
-      params: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }),
-      courseLoading: true,
-      departmentLoading: true,
-      schoolLoading: true,
-      courseList: [],
-      departmentList: {},
-      schoolList: {},
-    };
-  }
+  const [courseList, setCourseList] = useState({ loading: true, data: [] });
+  const [departmentList, setDepartmentList] = useState({
+    loading: true,
+    data: {},
+  });
+  const [schoolList, setSchoolList] = useState({ loading: true, data: {} });
 
-  componentDidMount() {
-    const { school, subject } = this.state.params;
-    const { year, semester } = this.props;
-
-    // Fetch courses within department
-    fetch(`https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}`)
-      .then((response) => {
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await fetch(
+          `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}`
+        );
         if (!response.ok) {
           // handle invalid search parameters
           return;
         }
-        return response.json();
-      })
-      .then((data) => {
-        // Save data to local state
-        this.setState({ courseLoading: false, courseList: data });
-      });
-
-    // Fetch department names
-    fetch(`https://schedge.a1liu.com/subjects`)
-      .then((response) => {
+        const data = await response.json();
+        setCourseList(() => ({ loading: false, data }));
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+    (async () => {
+      try {
+        const response = await fetch("https://schedge.a1liu.com/subjects");
         if (!response.ok) {
-          // Handle invalid search parameters
+          // handle invalid search parameters
           return;
         }
-        return response.json();
-      })
-      .then((data) => {
-        // Save data to local state
-        this.setState({ departmentLoading: false, departmentList: data });
-      });
+        const data = await response.json();
+        setDepartmentList(() => ({ loading: false, data }));
+      } catch (error) {
+        console.error(error);
+      }
+    })();
 
-    // Fetch school names
-    fetch(`https://schedge.a1liu.com/schools`)
-      .then((response) => {
+    (async () => {
+      try {
+        const response = await fetch("https://schedge.a1liu.com/schools");
         if (!response.ok) {
-          // Handle invalid search parameters
+          // handle invalid search parameters
           return;
         }
-        return response.json();
-      })
-      .then((data) => {
-        // Save data to local state
-        this.setState({ schoolLoading: false, schoolList: data });
-      });
-  }
+        const data = await response.json();
+        setSchoolList(() => ({ loading: false, data }));
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [year, semester, school, subject]);
 
-  render() {
-    const { school, subject } = this.state.params;
-    return (
-      <PageContainer>
-        <HeaderBackground></HeaderBackground>
-        {this.state.courseLoading &&
-          this.state.schoolLoading &&
-          this.state.departmentLoading && <span></span>}
-        {!(
-          this.state.courseLoading ||
-          this.state.schoolLoading ||
-          this.state.departmentLoading
-        ) && (
-          <div>
-            <DepartmentHeader>
-              <SchoolName>
-                {(this.state.schoolList[school]?.name.length === 0
-                  ? school
-                  : this.state.schoolList[school]?.name) ?? school}
-              </SchoolName>
-              <DepartmentName>
-                {this.state.departmentList[school][subject]?.name}
-              </DepartmentName>
-            </DepartmentHeader>
-            <CourseContainer>
-              {this.state.courseList.map((course, i) => (
-                <Link
-                  to={{
-                    pathname: "/course",
-                    search: `?&school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}`,
-                  }}
-                  key={i}
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  <Course>
-                    <h4>
-                      {course.subjectCode.code}-{course.subjectCode.school}{" "}
-                      {course.deptCourseId}
-                    </h4>
-                    <h3>{course.name}</h3>
-                    <p>{course.sections.length} Sections</p>
-                  </Course>
-                </Link>
-              ))}
-            </CourseContainer>
-          </div>
-        )}
-      </PageContainer>
-    );
-  }
+  return (
+    <PageContainer>
+      <HeaderBackground></HeaderBackground>
+      {courseList.loading && schoolList.loading && departmentList.loading && (
+        <span></span>
+      )}
+      {!(
+        courseList.loading ||
+        schoolList.loading ||
+        departmentList.loading
+      ) && (
+        <div>
+          <DepartmentHeader>
+            <SchoolName>
+              {schoolList.data[school].name
+                ? schoolList.data[school].name
+                : school}
+            </SchoolName>
+            <DepartmentName>
+              {departmentList.data[school][subject].name
+                ? departmentList.data[school][subject].name
+                : ""}
+            </DepartmentName>
+          </DepartmentHeader>
+          <CourseContainer>
+            {courseList.data.map((course, i) => (
+              <Link
+                to={{
+                  pathname: "/course",
+                  search: `?&school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}`,
+                }}
+                key={i}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <Course>
+                  <h4>
+                    {course.subjectCode.code}-{course.subjectCode.school}{" "}
+                    {course.deptCourseId}
+                  </h4>
+                  <h3>{course.name}</h3>
+                  <p>{course.sections.length} Sections</p>
+                </Course>
+              </Link>
+            ))}
+          </CourseContainer>
+        </div>
+      )}
+    </PageContainer>
+  );
 }
+
+SubjectPage.propTypes = {
+  year: PropTypes.number.isRequired,
+  semester: PropTypes.string.isRequired,
+  location: PropTypes.shape({
+    search: PropTypes.string.isRequired,
+  }),
+};
 
 // Styled components
 

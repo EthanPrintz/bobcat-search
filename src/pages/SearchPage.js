@@ -1,7 +1,119 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import styled, { keyframes } from "styled-components";
 import { Link } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
+
+export default function SearchPage({ year, semester }) {
+  // Set state
+  const [departments, setDepartments] = useState({ loading: true, data: {} });
+  const [schools, setSchools] = useState({ loading: true, data: {} });
+
+  // Query departments on component mount
+  useEffect(() => {
+    // Get Schedge data and load it asyncronously
+    (async () => {
+      try {
+        const response = await fetch("https://schedge.a1liu.com/subjects");
+        if (!response.ok) {
+          // handle invalid search parameters
+          return;
+        }
+        const data = await response.json();
+        setDepartments(() => ({ loading: false, data }));
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+
+    (async () => {
+      try {
+        const response = await fetch("https://schedge.a1liu.com/schools");
+        if (!response.ok) {
+          // handle invalid search parameters
+          return;
+        }
+        const data = await response.json();
+        setSchools(() => ({ loading: false, data }));
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, []);
+
+  return (
+    <div id="pageContainer">
+      <SearchContainer>
+        <SearchBar year={year} semester={semester} />
+      </SearchContainer>
+      <DepartmentContainer>
+        <div id="departmentTitle">Majors</div>
+        {!schools.loading && !departments.loading && (
+          <Departments>
+            {Object.keys(departments.data)
+              .sort((a, b) => {
+                return (
+                  Object.keys(departments.data[b]).length -
+                  Object.keys(departments.data[a]).length
+                );
+              })
+              .map((schoolCode, i) => (
+                <School key={i}>
+                  <Link
+                    className="schoolLink"
+                    to={{
+                      pathname: "/school",
+                      search: `?school=${schoolCode}`,
+                    }}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <div className="schoolTitle">
+                      <span className="schoolCode">{schoolCode}</span>
+                      <span className="schoolName">
+                        {schools.data[schoolCode]
+                          ? schools.data[schoolCode].name
+                          : ""}
+                      </span>
+                    </div>
+                  </Link>
+                  {Object.keys(departments.data[schoolCode])
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((departmentCode, i) => (
+                      <Link
+                        key={i}
+                        to={{
+                          pathname: "/subject",
+                          search: `?school=${schoolCode}&subject=${departmentCode}`,
+                        }}
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        <Department>
+                          <span className="departmentCode">
+                            {departmentCode}
+                          </span>
+                          <span className="departmentName">
+                            &nbsp;
+                            {departments.data[schoolCode][departmentCode] &&
+                              departments.data[schoolCode][
+                                departmentCode
+                              ].name.replace(/,/g, "")}
+                          </span>
+                        </Department>
+                      </Link>
+                    ))}
+                </School>
+              ))}
+          </Departments>
+        )}
+      </DepartmentContainer>
+    </div>
+  );
+}
+
+SearchPage.propTypes = {
+  year: PropTypes.number.isRequired,
+  semester: PropTypes.string.isRequired,
+};
 
 // Keyframe Animations
 const fadeIn = keyframes`
@@ -90,90 +202,3 @@ const Department = styled.div`
     font-weight: 700;
   }
 `;
-
-export default function SearchPage(props) {
-  // Set state
-  const [departments, setDepartments] = useState({ loading: true, data: {} });
-  const [schools, setSchools] = useState({ loading: true, data: {} });
-
-  // Query departments on component mount
-  useEffect(() => {
-    // Get Schedge data
-    (async () => {
-      fetch("https://schedge.a1liu.com/subjects")
-        .then((response) => response.json()) // one extra step
-        .then((data) => setDepartments({ loading: false, data }))
-        .catch((error) => console.error(error));
-
-      fetch("https://schedge.a1liu.com/schools")
-        .then((response) => response.json()) // one extra step
-        .then((data) => setSchools({ loading: false, data }))
-        .catch((error) => console.error(error));
-    })();
-  }, []);
-
-  return (
-    <div id="pageContainer">
-      <SearchContainer>
-        <SearchBar year={props.year} semester={props.semester} />
-      </SearchContainer>
-      <DepartmentContainer>
-        <div id="departmentTitle">Majors</div>
-        {!schools.loading && !departments.loading && (
-          <Departments>
-            {Object.keys(departments.data)
-              .sort((a, b) => {
-                return (
-                  Object.keys(departments.data[b]).length -
-                  Object.keys(departments.data[a]).length
-                );
-              })
-              .map((schoolCode, i) => (
-                <School key={i}>
-                  <Link
-                    className="schoolLink"
-                    to={{
-                      pathname: "/school",
-                      search: `?school=${schoolCode}`,
-                    }}
-                    style={{ textDecoration: "none" }}
-                  >
-                    <div className="schoolTitle">
-                      <span className="schoolCode">{schoolCode}</span>
-                      <span className="schoolName">
-                        {schools.data[schoolCode]?.name ?? ""}
-                      </span>
-                    </div>
-                  </Link>
-                  {Object.keys(departments.data[schoolCode])
-                    .sort((a, b) => a.localeCompare(b))
-                    .map((departmentCode, i) => (
-                      <Link
-                        key={i}
-                        to={{
-                          pathname: "/subject",
-                          search: `?school=${schoolCode}&subject=${departmentCode}`,
-                        }}
-                        style={{ textDecoration: "none", color: "inherit" }}
-                      >
-                        <Department>
-                          <span className="departmentCode">
-                            {departmentCode}
-                          </span>
-                          <span className="departmentName">
-                            &nbsp;
-                            {departments.data[schoolCode][
-                              departmentCode
-                            ]?.name.replace(/,/g, "")}
-                          </span>
-                        </Department>
-                      </Link>
-                    ))}
-                </School>
-              ))}
-          </Departments>
-        )}
-      </DepartmentContainer>
-    </div>
-  );
-}

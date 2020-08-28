@@ -5,7 +5,7 @@ import {
   Switch,
   Route,
   Link,
-  NavLink
+  NavLink,
 } from "react-router-dom";
 
 // Page Imports
@@ -16,14 +16,18 @@ import CoursePage from "./containers/CoursePageContainer";
 import SchedulePage from "./containers/SchedulePageContainer";
 
 function App() {
-  const getPath = () => { return window.location.pathname + window.location.search; }
+  const getPath = () => {
+    return window.location.pathname + window.location.search;
+  };
 
   /* eslint-disable no-unused-vars */
   const [year, setYear] = useState(2020);
   const [semester, setSemester] = useState("fa");
   // if we start on schedule page, the first toggle brings us to home
   // otherwise, the first toggle brings us to schedule page
-  const [toggle, setToggle] = useState(getPath() === "/schedule" ? "/" : "/schedule");
+  const [toggle, setToggle] = useState(
+    getPath() === "/schedule" ? "/" : "/schedule"
+  );
   /* eslint-enable no-unused-vars */
 
   return (
@@ -35,19 +39,15 @@ function App() {
               <Link to="/">Bobcat Search</Link>
             </li>
             <li className="icon">
-              {
-                toggle !== "/schedule" ?
-                (
-                  <NavLink to={toggle} onClick={() => setToggle("/schedule")}>
-                    <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
-                  </NavLink>
-                ) :
-                (
-                  <NavLink to="/schedule" onClick={() => setToggle(getPath)}>
-                    <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
-                  </NavLink>
-                )
-              }
+              {toggle !== "/schedule" ? (
+                <NavLink to={toggle} onClick={() => setToggle("/schedule")}>
+                  <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
+                </NavLink>
+              ) : (
+                <NavLink to="/schedule" onClick={() => setToggle(getPath)}>
+                  <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
+                </NavLink>
+              )}
             </li>
           </ul>
         </nav>

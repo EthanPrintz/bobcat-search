@@ -3,12 +3,12 @@ import { combineReducers } from "redux";
 import {
   WISHLIST_COURSE,
   CLEAR_WISHLIST,
-  TOGGLE_COURSE_SELECT
+  TOGGLE_COURSE_SELECT,
 } from "../actions";
 
 const initalState = {
   wishlist: {},
-  scheduled: {}
+  scheduled: {},
 };
 
 const wishlistReducer = (state = initalState.wishlist, action) => {
@@ -18,7 +18,7 @@ const wishlistReducer = (state = initalState.wishlist, action) => {
       if (
         state[action.payload.semester + action.payload.year] !== undefined &&
         state[action.payload.semester + action.payload.year].filter(
-          course =>
+          (course) =>
             course.registrationNumber ===
             action.payload.course.registrationNumber
         ).length !== 0
@@ -29,22 +29,23 @@ const wishlistReducer = (state = initalState.wishlist, action) => {
           [action.payload.semester + action.payload.year]: state[
             action.payload.semester + action.payload.year
           ].filter(
-            course =>
+            (course) =>
               course.registrationNumber !==
               action.payload.course.registrationNumber
-          )
+          ),
         };
       }
 
       // if we have an entry for the current semester in our waitlist get its state
+      // eslint-disable-next-line no-case-declarations
       const arrSpread =
-        state[action.payload.semester + action.payload.year] ?? [];
+        state[action.payload.semester + action.payload.year] || [];
       return {
         ...state,
         [action.payload.semester + action.payload.year]: [
           action.payload.course,
-          ...arrSpread
-        ]
+          ...arrSpread,
+        ],
       };
     case CLEAR_WISHLIST:
       if (
@@ -53,7 +54,7 @@ const wishlistReducer = (state = initalState.wishlist, action) => {
       ) {
         return {
           ...state,
-          [action.payload.semester + action.payload.year]: []
+          [action.payload.semester + action.payload.year]: [],
         };
       }
       return state;
@@ -69,7 +70,7 @@ const courseSelectReducer = (state = initalState.scheduled, action) => {
       if (
         state[action.payload.semester + action.payload.year] !== undefined &&
         state[action.payload.semester + action.payload.year].filter(
-          selection =>
+          (selection) =>
             selection.courseRegistrationNumber ===
             action.payload.courseRegistrationNumber
         ).length !== 0
@@ -79,15 +80,16 @@ const courseSelectReducer = (state = initalState.scheduled, action) => {
           [action.payload.semester + action.payload.year]: state[
             action.payload.semester + action.payload.year
           ].filter(
-            course =>
+            (course) =>
               course.courseRegistrationNumber !==
               action.payload.courseRegistrationNumber
-          )
+          ),
         };
       }
 
+      // eslint-disable-next-line no-case-declarations
       const arrSpread =
-        state[action.payload.semester + action.payload.year] ?? [];
+        state[action.payload.semester + action.payload.year] || [];
 
       return {
         ...state,
@@ -96,9 +98,9 @@ const courseSelectReducer = (state = initalState.scheduled, action) => {
           {
             courseRegistrationNumber: action.payload.courseRegistrationNumber,
             recitationRegistrationNumber:
-              action.payload.recitationRegistrationNumber
-          }
-        ]
+              action.payload.recitationRegistrationNumber,
+          },
+        ],
       };
     default:
       return state;
@@ -107,7 +109,7 @@ const courseSelectReducer = (state = initalState.scheduled, action) => {
 
 const schedulingApp = combineReducers({
   wishlist: wishlistReducer,
-  scheduled: courseSelectReducer
+  scheduled: courseSelectReducer,
 });
 
 export default schedulingApp;

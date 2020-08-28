@@ -1,6 +1,86 @@
-import React, { Component } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
-// import { Link } from 'react-router-dom';
+
+export default function SchedulePage({
+  year,
+  semester,
+  wishlist,
+  onClearWishlist,
+}) {
+  const _renderCourses = (dayNum, wishlist) =>
+    wishlist
+      .filter(
+        (course) =>
+          new Date(course.meetings[0].beginDate).getDay() === dayNum ||
+          new Date(course.meetings[1].beginDate).getDay() === dayNum
+      )
+      .map((course, i) => (
+        <div key={i} style={{ marginTop: "0.5em" }}>
+          <h3>{course.name}</h3>
+        </div>
+      ));
+
+  return (
+    <div style={{ padding: "2rem 10vw" }}>
+      <CourseCalendar>
+        <CalendarDay>
+          Monday
+          {_renderCourses(1, wishlist)}
+        </CalendarDay>
+        <CalendarDay>
+          Tuesday
+          {_renderCourses(2, wishlist)}
+        </CalendarDay>
+        <CalendarDay>
+          Wednesday
+          {_renderCourses(3, wishlist)}
+        </CalendarDay>
+        <CalendarDay>
+          Thursday
+          {_renderCourses(4, wishlist)}
+        </CalendarDay>
+        <CalendarDay>
+          Friday
+          {_renderCourses(5, wishlist)}
+        </CalendarDay>
+        <div>
+          <CalendarWeekend>
+            Saturday
+            {_renderCourses(6, wishlist)}
+          </CalendarWeekend>
+          <CalendarWeekend>
+            Sunday
+            {_renderCourses(0, wishlist)}
+          </CalendarWeekend>
+        </div>
+      </CourseCalendar>
+      {wishlist.length === 0 ? (
+        <span>No courses wishlisted yet!</span>
+      ) : (
+        <div>
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => onClearWishlist({ year, semester })}
+            onKeyPress={() => onClearWishlist({ year, semester })}
+            role="button"
+            tabIndex={0}
+          >
+            Clear Wishlist
+          </div>
+          {}
+        </div>
+      )}
+    </div>
+  );
+}
+
+SchedulePage.propTypes = {
+  year: PropTypes.number.isRequired,
+  semester: PropTypes.string.isRequired,
+  wishlist: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onClearWishlist: PropTypes.func.isRequired,
+};
 
 const CourseCalendar = styled.div`
   width: 100%;
@@ -31,75 +111,3 @@ const CalendarWeekend = styled.div`
     min-height: 75px;
   }
 `;
-
-export default class SchedulePage extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {};
-  }
-
-  _renderCourses = (dayNum, wishlist) =>
-    wishlist
-      .filter(
-        (course) =>
-          new Date(course.meetings[0].beginDate).getDay() === dayNum ||
-          new Date(course.meetings[1].beginDate).getDay() === dayNum
-      )
-      .map((course, i) => (
-        <div key={i} style={{marginTop: "0.5em"}}>
-          <h3>{course.name}</h3>
-        </div>
-      ));
-
-
-  render() {
-    const { year, semester } = this.props;
-    return (
-      <div style={{padding: "2rem 10vw"}}>
-        <CourseCalendar>
-          <CalendarDay>
-            Monday
-            {this._renderCourses(1, this.props.wishlist)}
-          </CalendarDay>
-          <CalendarDay>
-            Tuesday
-            {this._renderCourses(2, this.props.wishlist)}
-          </CalendarDay>
-          <CalendarDay>
-            Wednesday
-            {this._renderCourses(3, this.props.wishlist)}
-          </CalendarDay>
-          <CalendarDay>
-            Thursday
-            {this._renderCourses(4, this.props.wishlist)}
-          </CalendarDay>
-          <CalendarDay>
-            Friday
-            {this._renderCourses(5, this.props.wishlist)}
-          </CalendarDay>
-          <div>
-            <CalendarWeekend>
-              Saturday
-              {this._renderCourses(6, this.props.wishlist)}
-            </CalendarWeekend>
-            <CalendarWeekend>
-              Sunday
-              {this._renderCourses(0, this.props.wishlist)}
-            </CalendarWeekend>
-          </div>
-        </CourseCalendar>
-        {this.props.wishlist.length === 0 ? (
-          <span>No courses wishlisted yet!</span>
-        ) : (
-          <div>
-            <div style={{cursor: "pointer"}} onClick={() => this.props.onClearWishlist({ year, semester })}>
-              Clear Wishlist
-            </div>
-            {}
-          </div>
-        )}
-      </div>
-    );
-  }
-}
