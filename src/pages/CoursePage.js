@@ -94,11 +94,13 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
           <CourseSections>
             {courseData.sections.map((section, i) => {
               // Sort section meetings by day of week
-              let sortedSectionMeetings = section.meetings.sort(
-                (a, b) =>
-                  Moment(a.beginDate).format("d") -
-                  Moment(b.beginDate).format("d")
-              );
+              let sortedSectionMeetings = section.meetings
+                ? section.meetings.sort(
+                    (a, b) =>
+                      Moment(a.beginDate).format("d") -
+                      Moment(b.beginDate).format("d")
+                  )
+                : [];
               // Return
               return (
                 <SectionContainer
