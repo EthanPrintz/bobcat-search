@@ -11,8 +11,9 @@ function SchedulePage({ year, semester, wishlist, clearWishlist }) {
     wishlist
       .filter(
         (course) =>
-          new Date(course.meetings[0].beginDate).getDay() === dayNum ||
-          new Date(course.meetings[1].beginDate).getDay() === dayNum
+          course.meetings.filter(
+            (meeting) => new Date(meeting.beginDate).getDay() === dayNum
+          ).length > 0
       )
       .map((course, i) => (
         <div key={i} style={{ marginTop: "0.5em" }}>
