@@ -40,6 +40,8 @@
     ]
   },
   "devDependencies": {
+    "eslint": "^7.6.0",
+    "eslint-plugin-react": "^7.20.5",
     "redux-logger": "^3.0.6"
   }
 }

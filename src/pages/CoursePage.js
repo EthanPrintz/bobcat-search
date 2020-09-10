@@ -99,7 +99,6 @@ export default class CoursePage extends React.Component {
             <CourseSections>
               {courseData.sections.map((section, i) => {
                 // Sort section meetings by day of week
-                console.log(section.name === courseData.name);
                 let sortedSectionMeetings = section.meetings.sort(
                   (a, b) =>
                     Moment(a.beginDate).format("d") -
