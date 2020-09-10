@@ -1,174 +1,244 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import qs from "qs";
 import styled from "styled-components";
 import Moment from "moment";
 import { Link } from "react-router-dom";
-import { convertUnits, splitLocation, getStatusColor } from "./utils"; // eslint-disable-line no-unused-vars
+import { convertUnits, splitLocation, getStatusColor } from "../utils"; // eslint-disable-line no-unused-vars
 import { CalendarTodayTwoTone, AddBoxTwoTone } from "@material-ui/icons";
 import { green, red, grey } from "@material-ui/core/colors";
 // Import major progressions
 import { progressions } from "../majorProgressions"; // eslint-disable-line no-unused-vars
+import * as actions from "../redux/modules/wishlist";
 
-export default class CoursePage extends React.Component {
-  constructor(props) {
-    super(props);
+function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
+  const { school, subject, courseid } = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+  });
+  const [loading, setLoading] = useState(true);
+  const [courseData, setCourseData] = useState({});
 
-    this.state = {
-      params: qs.parse(this.props.location.search, { ignoreQueryPrefix: true }),
-      loading: true,
-      courseData: {},
-    };
-  }
-
-  componentDidMount() {
-    const { school, subject, courseid } = this.state.params;
-    const { year, semester } = this.props;
-    fetch(
-      `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}?full=true`
-    )
-      .then((response) => {
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await fetch(
+          `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}?full=true`
+        );
         if (!response.ok) {
           // handle invalid search parameters
           return;
         }
-        return response.json();
-      })
-      .then((data) => {
-        this.setState({
-          courseData: data.filter((val) => val.deptCourseId === courseid)[0],
-          loading: false,
-        });
-      })
-      .catch((error) => console.error(error));
-  }
+        const data = await response.json();
 
-  render() {
-    // eslint-disable-next-line no-unused-vars
-    const { loading, courseData, wishlist } = this.state;
-    return (
-      <div>
-        {loading && (
-          <>
-            <span>Loading...</span>
-            <ColorHeader>
-              <CourseHeader>
-                <Link to="/" style={{ textDecoration: "none" }}>
-                  <img src="./img/go-back.svg" alt="Go back" id="backButton" />
-                </Link>
-              </CourseHeader>
-            </ColorHeader>
-          </>
-        )}
-        {!loading && (
-          <>
-            <ColorHeader>
-              <CourseHeader>
-                <Link
-                  to={`/subject?school=${courseData.subjectCode.school}&subject=${courseData.subjectCode.code}`}
-                  style={{ textDecoration: "none" }}
-                >
-                  <img src="./img/go-back.svg" alt="Go back" id="backButton" />
-                </Link>
-                <div>
-                  <div id="titleDepartment">
-                    {courseData.subjectCode.code}-
-                    {courseData.subjectCode.school}
-                  </div>
-                  <div id="titleName">{courseData.name}</div>
+        setCourseData(
+          () => data.filter((course) => course.deptCourseId === courseid)[0]
+        );
+        setLoading(() => false);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [year, semester, courseid, school, subject]);
+
+  return (
+    <div>
+      {loading && (
+        <>
+          <span>Loading...</span>
+          <ColorHeader>
+            <CourseHeader>
+              <Link to="/" style={{ textDecoration: "none" }}>
+                <img src="./img/go-back.svg" alt="Go back" id="backButton" />
+              </Link>
+            </CourseHeader>
+          </ColorHeader>
+        </>
+      )}
+      {!loading && (
+        <>
+          <ColorHeader>
+            <CourseHeader>
+              <Link
+                to={`/subject?school=${school}&subject=${subject}`}
+                style={{ textDecoration: "none" }}
+              >
+                <img src="./img/go-back.svg" alt="Go back" id="backButton" />
+              </Link>
+              <div>
+                <div id="titleDepartment">
+                  {subject}-{school}
                 </div>
-              </CourseHeader>
-            </ColorHeader>
-            {/* Handle course description here if all sections have the same one */}
-            <SectionsDescription>
-              {courseData.description}
-              {courseData.sections.every(
-                (section) => section.notes === courseData.sections[0].notes
-              ) && (
-                <>
-                  <br />
-                  <br />
-                  {courseData.sections[0].notes}
-                </>
-              )}
-            </SectionsDescription>
-            {courseData.sections.length > 1 ? (
-              <SectionsHeader>Sections</SectionsHeader>
-            ) : (
-              ""
+                <div id="titleName">{courseData.name}</div>
+              </div>
+            </CourseHeader>
+          </ColorHeader>
+          {/* Handle course description here if all sections have the same one */}
+          <SectionsDescription>
+            {courseData.description}
+            {courseData.sections.every(
+              (section) => section.notes === courseData.sections[0].notes
+            ) && (
+              <>
+                <br />
+                <br />
+                {courseData.sections[0].notes}
+              </>
             )}
-            <CourseSections>
-              {courseData.sections.map((section, i) => {
-                // Sort section meetings by day of week
-                let sortedSectionMeetings = section.meetings.sort(
-                  (a, b) =>
-                    Moment(a.beginDate).format("d") -
-                    Moment(b.beginDate).format("d")
-                );
-                // Return
-                return (
-                  <SectionContainer
-                    key={i}
-                    waitlisted={
-                      this.props.wishlist.filter(
-                        (course) =>
-                          course.registrationNumber ===
-                          section.registrationNumber
-                      ).length > 0
-                    }
-                  >
-                    {courseData.name !== section.name ? (
-                      <h3 className="sectionName">{section.name}</h3>
-                    ) : (
-                      ""
+          </SectionsDescription>
+          {courseData.sections.length > 1 ? (
+            <SectionsHeader>Sections</SectionsHeader>
+          ) : (
+            ""
+          )}
+          <CourseSections>
+            {courseData.sections.map((section, i) => {
+              // Sort section meetings by day of week
+              let sortedSectionMeetings = section.meetings
+                ? section.meetings.sort(
+                    (a, b) =>
+                      Moment(a.beginDate).format("d") -
+                      Moment(b.beginDate).format("d")
+                  )
+                : [];
+              // Return
+              return (
+                <SectionContainer
+                  key={i}
+                  waitlisted={
+                    wishlist.filter(
+                      (course) =>
+                        course.registrationNumber === section.registrationNumber
+                    ).length > 0
+                  }
+                >
+                  {courseData.name !== section.name ? (
+                    <h3 className="sectionName">{section.name}</h3>
+                  ) : (
+                    ""
+                  )}
+                  {courseData.sections.length > 1 ? (
+                    <h4 className="sectionNum">{section.code}</h4>
+                  ) : (
+                    ""
+                  )}
+                  <div className="attributes">
+                    <AttributeContainer>
+                      <div className="attributeLabel">
+                        Instructor{section.instructors.length > 1 ? "s" : ""}
+                      </div>
+                      {section.instructors.join(", ")}
+                    </AttributeContainer>
+                    <AttributeContainer>
+                      <div className="attributeLabel">Building</div>
+                      {splitLocation(section.location).Building}
+                    </AttributeContainer>
+                    {splitLocation(section.location).Room && (
+                      <AttributeContainer>
+                        <div className="attributeLabel">Room</div>
+                        {splitLocation(section.location).Room}
+                      </AttributeContainer>
                     )}
-                    {courseData.sections.length > 1 ? (
-                      <h4 className="sectionNum">{section.code}</h4>
-                    ) : (
-                      ""
-                    )}
-                    <div className="attributes">
-                      <AttributeContainer>
-                        <div className="attributeLabel">
-                          Instructor{section.instructors.length > 1 ? "s" : ""}
-                        </div>
-                        {section.instructors.join(", ")}
-                      </AttributeContainer>
-                      <AttributeContainer>
-                        <div className="attributeLabel">Building</div>
-                        {splitLocation(section.location).Building}
-                      </AttributeContainer>
-                      {splitLocation(section.location).Room && (
-                        <AttributeContainer>
-                          <div className="attributeLabel">Room</div>
-                          {splitLocation(section.location).Room}
-                        </AttributeContainer>
-                      )}
-                      <AttributeContainer>
-                        <div className="attributeLabel">Units</div>
-                        {convertUnits(section.minUnits, section.maxUnits)}
-                      </AttributeContainer>
-                      <AttributeContainer>
-                        <div className="attributeLabel">Status</div>
-                        {section.status}
-                      </AttributeContainer>
-                      <AttributeContainer>
-                        <div className="attributeLabel">Type</div>
-                        {section.type}
-                      </AttributeContainer>
-                      <AttributeContainer>
-                        <div className="attributeLabel">Registration #</div>
-                        {section.registrationNumber}
-                      </AttributeContainer>
-                    </div>
-                    {!courseData.sections.every(
-                      (section) =>
-                        section.notes === courseData.sections[0].notes
-                    ) && (
-                      <SectionDescription>{section.notes}</SectionDescription>
-                    )}
+                    <AttributeContainer>
+                      <div className="attributeLabel">Units</div>
+                      {convertUnits(section.minUnits, section.maxUnits)}
+                    </AttributeContainer>
+                    <AttributeContainer>
+                      <div className="attributeLabel">Status</div>
+                      {section.status}
+                    </AttributeContainer>
+                    <AttributeContainer>
+                      <div className="attributeLabel">Type</div>
+                      {section.type}
+                    </AttributeContainer>
+                    <AttributeContainer>
+                      <div className="attributeLabel">Registration #</div>
+                      {section.registrationNumber}
+                    </AttributeContainer>
+                  </div>
+                  {!courseData.sections.every(
+                    (section) => section.notes === courseData.sections[0].notes
+                  ) && <SectionDescription>{section.notes}</SectionDescription>}
 
-                    {/* Sections with one meeting a week */}
-                    {sortedSectionMeetings.length === 1 && (
+                  {/* Sections with one meeting a week */}
+                  {sortedSectionMeetings.length === 1 && (
+                    <DateContainer>
+                      <BoldedDate>
+                        {Moment(sortedSectionMeetings[0].beginDate).format(
+                          "dddd"
+                        )}
+                        s{" "}
+                      </BoldedDate>
+                      from{" "}
+                      <BoldedDate>
+                        {Moment(sortedSectionMeetings[0].beginDate).format(
+                          "h:mm A"
+                        )}{" "}
+                      </BoldedDate>
+                      to{" "}
+                      <BoldedDate>
+                        {Moment(sortedSectionMeetings[0].beginDate)
+                          .add(
+                            sortedSectionMeetings[0].minutesDuration,
+                            "minutes"
+                          )
+                          .format("h:mm A")}
+                      </BoldedDate>
+                    </DateContainer>
+                  )}
+                  {/* Sections with two identical meetings a week */}
+                  {sortedSectionMeetings.length === 2 &&
+                    Moment(sortedSectionMeetings[0].beginDate).format(
+                      "h:mm"
+                    ) ===
+                      Moment(sortedSectionMeetings[1].beginDate).format(
+                        "h:mm"
+                      ) &&
+                    sortedSectionMeetings[0].minutesDuration ===
+                      sortedSectionMeetings[1].minutesDuration && (
+                      <DateContainer>
+                        <BoldedDate>
+                          {Moment(sortedSectionMeetings[0].beginDate).format(
+                            "dddd"
+                          )}
+                          s{" "}
+                        </BoldedDate>
+                        and{" "}
+                        <BoldedDate>
+                          {Moment(sortedSectionMeetings[1].beginDate).format(
+                            "dddd"
+                          )}
+                          s{" "}
+                        </BoldedDate>
+                        from{" "}
+                        <BoldedDate>
+                          {Moment(sortedSectionMeetings[0].beginDate).format(
+                            "h:mm A"
+                          )}{" "}
+                        </BoldedDate>
+                        to{" "}
+                        <BoldedDate>
+                          {Moment(sortedSectionMeetings[0].beginDate)
+                            .add(
+                              sortedSectionMeetings[0].minutesDuration,
+                              "minutes"
+                            )
+                            .format("h:mm A")}
+                        </BoldedDate>
+                      </DateContainer>
+                    )}
+                  {/* Section with two different meetings a week */}
+                  {sortedSectionMeetings.length === 2 &&
+                    !(
+                      Moment(sortedSectionMeetings[0].beginDate).format(
+                        "h:mm"
+                      ) ===
+                        Moment(sortedSectionMeetings[1].beginDate).format(
+                          "h:mm"
+                        ) &&
+                      sortedSectionMeetings[0].minutesDuration ===
+                        sortedSectionMeetings[1].minutesDuration
+                    ) && (
                       <DateContainer>
                         <BoldedDate>
                           {Moment(sortedSectionMeetings[0].beginDate).format(
@@ -191,199 +261,134 @@ export default class CoursePage extends React.Component {
                             )
                             .format("h:mm A")}
                         </BoldedDate>
+                        {" and "}
+                        <BoldedDate>
+                          {Moment(sortedSectionMeetings[1].beginDate).format(
+                            "dddd"
+                          )}
+                          s{" "}
+                        </BoldedDate>
+                        from{" "}
+                        <BoldedDate>
+                          {Moment(sortedSectionMeetings[1].beginDate).format(
+                            "h:mm A"
+                          )}{" "}
+                        </BoldedDate>
+                        to{" "}
+                        <BoldedDate>
+                          {Moment(sortedSectionMeetings[1].beginDate)
+                            .add(
+                              sortedSectionMeetings[1].minutesDuration,
+                              "minutes"
+                            )
+                            .format("h:mm A")}
+                        </BoldedDate>
                       </DateContainer>
                     )}
-                    {/* Sections with two identical meetings a week */}
-                    {sortedSectionMeetings.length === 2 &&
-                      Moment(sortedSectionMeetings[0].beginDate).format(
-                        "h:mm"
-                      ) ===
-                        Moment(sortedSectionMeetings[1].beginDate).format(
-                          "h:mm"
-                        ) &&
-                      sortedSectionMeetings[0].minutesDuration ===
-                        sortedSectionMeetings[1].minutesDuration && (
-                        <DateContainer>
+                  {/* Sections with more than two meetings a week */}
+                  {sortedSectionMeetings.length > 2 && (
+                    <DateContainer>
+                      {sortedSectionMeetings.map((meeting, i) => (
+                        <>
                           <BoldedDate>
-                            {Moment(sortedSectionMeetings[0].beginDate).format(
-                              "dddd"
-                            )}
-                            s{" "}
-                          </BoldedDate>
-                          and{" "}
-                          <BoldedDate>
-                            {Moment(sortedSectionMeetings[1].beginDate).format(
-                              "dddd"
-                            )}
-                            s{" "}
+                            {Moment(meeting.beginDate).format("dddd")}s{" "}
                           </BoldedDate>
                           from{" "}
                           <BoldedDate>
-                            {Moment(sortedSectionMeetings[0].beginDate).format(
-                              "h:mm A"
-                            )}{" "}
+                            {Moment(meeting.beginDate).format("h:mm A")}{" "}
                           </BoldedDate>
                           to{" "}
                           <BoldedDate>
-                            {Moment(sortedSectionMeetings[0].beginDate)
-                              .add(
-                                sortedSectionMeetings[0].minutesDuration,
-                                "minutes"
-                              )
+                            {Moment(meeting.beginDate)
+                              .add(meeting.minutesDuration, "minutes")
                               .format("h:mm A")}
                           </BoldedDate>
-                        </DateContainer>
-                      )}
-                    {/* Section with two different meetings a week */}
-                    {sortedSectionMeetings.length === 2 &&
-                      !(
-                        Moment(sortedSectionMeetings[0].beginDate).format(
-                          "h:mm"
-                        ) ===
-                          Moment(sortedSectionMeetings[1].beginDate).format(
-                            "h:mm"
-                          ) &&
-                        sortedSectionMeetings[0].minutesDuration ===
-                          sortedSectionMeetings[1].minutesDuration
-                      ) && (
-                        <DateContainer>
-                          <BoldedDate>
-                            {Moment(sortedSectionMeetings[0].beginDate).format(
-                              "dddd"
-                            )}
-                            s{" "}
-                          </BoldedDate>
-                          from{" "}
-                          <BoldedDate>
-                            {Moment(sortedSectionMeetings[0].beginDate).format(
-                              "h:mm A"
-                            )}{" "}
-                          </BoldedDate>
-                          to{" "}
-                          <BoldedDate>
-                            {Moment(sortedSectionMeetings[0].beginDate)
-                              .add(
-                                sortedSectionMeetings[0].minutesDuration,
-                                "minutes"
-                              )
-                              .format("h:mm A")}
-                          </BoldedDate>
-                          {" and "}
-                          <BoldedDate>
-                            {Moment(sortedSectionMeetings[1].beginDate).format(
-                              "dddd"
-                            )}
-                            s{" "}
-                          </BoldedDate>
-                          from{" "}
-                          <BoldedDate>
-                            {Moment(sortedSectionMeetings[1].beginDate).format(
-                              "h:mm A"
-                            )}{" "}
-                          </BoldedDate>
-                          to{" "}
-                          <BoldedDate>
-                            {Moment(sortedSectionMeetings[1].beginDate)
-                              .add(
-                                sortedSectionMeetings[1].minutesDuration,
-                                "minutes"
-                              )
-                              .format("h:mm A")}
-                          </BoldedDate>
-                        </DateContainer>
-                      )}
-                    {/* Sections with more than two meetings a week */}
-                    {sortedSectionMeetings.length > 2 && (
-                      <DateContainer>
-                        {sortedSectionMeetings.map((meeting, i) => (
-                          <>
-                            <BoldedDate>
-                              {Moment(meeting.beginDate).format("dddd")}s{" "}
-                            </BoldedDate>
-                            from{" "}
-                            <BoldedDate>
-                              {Moment(meeting.beginDate).format("h:mm A")}{" "}
-                            </BoldedDate>
-                            to{" "}
-                            <BoldedDate>
-                              {Moment(meeting.beginDate)
-                                .add(meeting.minutesDuration, "minutes")
-                                .format("h:mm A")}
-                            </BoldedDate>
-                            {i < sortedSectionMeetings.length - 1 && ", "}
-                            <br />
-                          </>
-                        ))}
-                      </DateContainer>
-                    )}
-                    <AddBar>
-                      <CalendarButton
-                        onClick={(e) =>
-                          this.props.onToggleCourse({
-                            year: this.props.year,
-                            semester: this.props.semester,
-                            course: section,
-                          })
-                        }
+                          {i < sortedSectionMeetings.length - 1 && ", "}
+                          <br />
+                        </>
+                      ))}
+                    </DateContainer>
+                  )}
+                  <AddBar>
+                    <CalendarButton
+                      onClick={() =>
+                        wishlistCourse({
+                          year,
+                          semester,
+                          course: section,
+                        })
+                      }
+                    >
+                      <CalendarTodayTwoTone
+                        style={{
+                          color:
+                            section.status === "Open" ? green[500] : red[500],
+                        }}
+                      />
+                      <span
+                        style={{
+                          color:
+                            section.status === "Open" ? green[500] : red[500],
+                        }}
                       >
-                        <CalendarTodayTwoTone
-                          style={{
-                            color:
-                              section.status === "Open" ? green[500] : red[500],
-                          }}
-                        />
-                        <span
-                          style={{
-                            color:
-                              section.status === "Open" ? green[500] : red[500],
-                          }}
-                        >
-                          {section.status === "Open"
-                            ? `Add to Calendar`
-                            : `Section Closed`}
-                        </span>
-                      </CalendarButton>
-                      <CalendarButton>
-                        <AddBoxTwoTone
-                          style={{
-                            color: grey[700],
-                          }}
-                        />
-                        <span
-                          style={{
-                            color: grey[700],
-                          }}
-                        >
-                          Add to Wishlist
-                        </span>
-                      </CalendarButton>
-                    </AddBar>
-                    {/* Handle Recitations */}
-                  </SectionContainer>
-                );
-              })}
-            </CourseSections>
-          </>
-        )}
-      </div>
-    );
-  }
+                        {section.status === "Open"
+                          ? "Add to Calendar"
+                          : "Section Closed"}
+                      </span>
+                    </CalendarButton>
+                    <CalendarButton>
+                      <AddBoxTwoTone
+                        style={{
+                          color: grey[700],
+                        }}
+                      />
+                      <span
+                        style={{
+                          color: grey[700],
+                        }}
+                      >
+                        Add to Wishlist
+                      </span>
+                    </CalendarButton>
+                  </AddBar>
+                  {/* Handle Recitations */}
+                </SectionContainer>
+              );
+            })}
+          </CourseSections>
+        </>
+      )}
+    </div>
+  );
 }
+
+CoursePage.propTypes = {
+  year: PropTypes.number.isRequired,
+  semester: PropTypes.string.isRequired,
+  location: PropTypes.shape({
+    search: PropTypes.string.isRequired,
+  }),
+  wishlist: PropTypes.arrayOf(PropTypes.object).isRequired,
+  wishlistCourse: PropTypes.func.isRequired,
+};
 
 const ColorHeader = styled.div`
   width: 100vw;
-  height: calc(14vmin + 5rem);
+  /* height: calc(14vmin + 8rem); */
+  padding-top: 6rem;
+  margin-top: -6rem;
   background: linear-gradient(
     167deg,
     var(--purpleMain) 21%,
     #712991 60%,
     rgba(135, 37, 144, 1) 82%
   );
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   display: flex;
   align-items: flex-end;
+  @media (max-width: 1000px) {
+    padding-top: 5rem;
+  }
 `;
 
 const CourseHeader = styled.div`
@@ -400,9 +405,9 @@ const CourseHeader = styled.div`
   & #backButton {
     position: absolute;
     z-index: 2;
-    top: 2vmin;
-    left: 2vmin;
-    height: 2.1rem;
+    top: 2.5vmin;
+    left: 5vw;
+    height: 2.5rem;
     opacity: 0.7;
     transition: 0.15s;
   }
@@ -423,7 +428,6 @@ const CourseHeader = styled.div`
 `;
 
 const SectionsDescription = styled.div`
-  margin-top: calc(12vmin + 6vh);
   padding: 1.8vmin 2.8vmin;
   font-size: 1.2rem;
   line-height: 1.65rem;
@@ -431,6 +435,9 @@ const SectionsDescription = styled.div`
   margin-left: 9%;
   color: var(--grey800);
   position: relative;
+  @media (max-width: 1000px) {
+    margin-top: calc(12vmin);
+  }
 `;
 
 const SectionsHeader = styled.div`
@@ -530,3 +537,10 @@ const AttributeContainer = styled.div`
     color: var(--grey700);
   }
 `;
+
+const mapStateToProps = (state, props) => ({
+  wishlist: state.wishlist[props.semester + props.year] || [],
+  scheduled: state.scheduled[props.semester + props.year] || [],
+});
+
+export default connect(mapStateToProps, actions)(CoursePage);

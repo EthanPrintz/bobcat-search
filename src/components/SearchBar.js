@@ -1,9 +1,90 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
+export default function SearchBar({ year, semester }) {
+  const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState({
+    loading: false,
+    results: [],
+  });
+
+  const _handleChange = async (event) => {
+    if (event.target.value.length >= 50) {
+      setSearchText(event.target.value.substring(0, 50));
+      return;
+    }
+    setSearchText(event.target.value);
+
+    // handle empty search text
+    if (event.target.value.replace(/\s/g, "").length === 0) {
+      setSearchResults({ loading: false, results: [] });
+      return;
+    }
+    setSearchResults({ loading: true, results: [] });
+    // fetch results
+    fetch(
+      `https://schedge.a1liu.com/${year}/${semester}/search?query=${event.target.value.replace(
+        /\s/g,
+        "+"
+      )}&limit=5`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          setSearchResults({ loading: false, results: [] });
+          return;
+        }
+        return response.json();
+      })
+      .then((results) => setSearchResults({ loading: false, results }))
+      .catch((error) => console.error(error));
+  };
+
+  return (
+    <>
+      <Loader
+        src="./loading.svg"
+        alt="loading symbol"
+        loading={+searchResults.loading}
+      />
+      <SearchBox
+        value={searchText}
+        placeholder="Search Courses"
+        onChange={_handleChange}
+      ></SearchBox>
+      <SearchResults>
+        {searchText.replace(/\s/g, "").length !== 0 &&
+          searchResults.results.map((course, i) => (
+            <Link
+              to={{
+                pathname: "/course",
+                search: `?&school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}`,
+              }}
+              key={i}
+              style={{ textDecoration: "none" }}
+            >
+              <Course>
+                <span className="courseSchoolCode">
+                  {course.subjectCode.school}-{course.subjectCode.code}
+                </span>
+                <span className="courseId">{course.deptCourseId}</span>
+                <span className="courseName">{course.name}</span>
+              </Course>
+            </Link>
+          ))}
+      </SearchResults>
+    </>
+  );
+}
+
+SearchBar.propTypes = {
+  year: PropTypes.number.isRequired,
+  semester: PropTypes.string.isRequired,
+};
+
 const Loader = styled.img`
-  opacity: ${props => (props.loading ? 0.3 : 0)};
+  opacity: ${(props) => (props.loading ? 0.3 : 0)};
   position: absolute;
   top: calc(7vmax + 1.6rem);
   left: calc(87vmin - 3.2rem);
@@ -69,77 +150,3 @@ const Course = styled.div`
     background-color: var(--grey200);
   }
 `;
-
-export default function SearchBar(props) {
-  const [searchText, setSearchText] = useState("");
-  const [searchResults, setSearchResults] = useState({
-    loading: false,
-    results: []
-  });
-
-  const _handleChange = async event => {
-    if (event.target.value.length >= 50) {
-      setSearchText(event.target.value.substring(0, 50));
-      return;
-    }
-    setSearchText(event.target.value);
-
-    // handle empty search text
-    if (event.target.value.replace(/\s/g, "").length === 0) {
-      setSearchResults({ loading: false, results: [] });
-      return;
-    }
-    setSearchResults({ loading: true, results: [] });
-    // fetch results
-    fetch(
-      `https://schedge.a1liu.com/${props.year}/${
-        props.semester
-      }/search?query=${event.target.value.replace(/\s/g, "+")}&limit=5`
-    )
-      .then(response => {
-        if (!response.ok) {
-          setSearchResults({ loading: false, results: [] });
-          return;
-        }
-        return response.json();
-      })
-      .then(results => setSearchResults({ loading: false, results }))
-      .catch(error => console.error(error));
-  };
-
-  return (
-    <>
-      <Loader
-        src="./loading.svg"
-        alt="loading symbol"
-        loading={+searchResults.loading}
-      />
-      <SearchBox
-        value={searchText}
-        placeholder="Search Courses"
-        onChange={_handleChange}
-      ></SearchBox>
-      <SearchResults>
-        {searchText.replace(/\s/g, "").length !== 0 &&
-          searchResults.results.map((course, i) => (
-            <Link
-              to={{
-                pathname: "/course",
-                search: `?&school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}`
-              }}
-              key={i}
-              style={{ textDecoration: "none" }}
-            >
-              <Course>
-                <span className="courseSchoolCode">
-                  {course.subjectCode.school}-{course.subjectCode.code}
-                </span>
-                <span className="courseId">{course.deptCourseId}</span>
-                <span className="courseName">{course.name}</span>
-              </Course>
-            </Link>
-          ))}
-      </SearchResults>
-    </>
-  );
-}
