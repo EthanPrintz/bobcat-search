@@ -21,7 +21,7 @@ export default function SchoolPage({ location }) {
         }
 
         const data = await response.json();
-        setSchoolData(() => data);
+        setSchoolData(() => data[school]);
         setLoading(() => false);
       } catch (error) {
         console.error(error);
