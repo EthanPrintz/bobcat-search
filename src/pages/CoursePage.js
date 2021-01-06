@@ -3,11 +3,19 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import qs from "qs";
 import styled from "styled-components";
-import Moment from "moment";
 import { Link } from "react-router-dom";
-import { convertUnits, splitLocation, getStatusColor } from "../utils"; // eslint-disable-line no-unused-vars
+import {
+  convertUnits,
+  splitLocation,
+  changeStatus,
+  styleStatus,
+  parseDate,
+  days,
+  addMinutes,
+  compareTime,
+} from "../utils"; // eslint-disable-line no-unused-vars
 import { CalendarTodayTwoTone, AddBoxTwoTone } from "@material-ui/icons";
-import { green, red, grey } from "@material-ui/core/colors";
+import { grey } from "@material-ui/core/colors";
 // Import major progressions
 import { progressions } from "../majorProgressions"; // eslint-disable-line no-unused-vars
 import * as actions from "../redux/modules/wishlist";
@@ -96,9 +104,7 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
               // Sort section meetings by day of week
               let sortedSectionMeetings = section.meetings
                 ? section.meetings.sort(
-                    (a, b) =>
-                      Moment(a.beginDate).format("d") -
-                      Moment(b.beginDate).format("d")
+                    (a, b) => parseDate(a.beginDate) - parseDate(b.beginDate)
                   )
                 : [];
               // Return
@@ -164,124 +170,156 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                   {sortedSectionMeetings.length === 1 && (
                     <DateContainer>
                       <BoldedDate>
-                        {Moment(sortedSectionMeetings[0].beginDate).format(
-                          "dddd"
-                        )}
+                        {
+                          days[
+                            parseDate(
+                              sortedSectionMeetings[0].beginDate
+                            ).getDay()
+                          ]
+                        }
                         s{" "}
                       </BoldedDate>
                       from{" "}
                       <BoldedDate>
-                        {Moment(sortedSectionMeetings[0].beginDate).format(
-                          "h:mm A"
-                        )}{" "}
+                        {parseDate(
+                          sortedSectionMeetings[0].beginDate
+                        ).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
                       </BoldedDate>
                       to{" "}
                       <BoldedDate>
-                        {Moment(sortedSectionMeetings[0].beginDate)
-                          .add(
-                            sortedSectionMeetings[0].minutesDuration,
-                            "minutes"
-                          )
-                          .format("h:mm A")}
+                        {addMinutes(
+                          parseDate(sortedSectionMeetings[0].beginDate),
+                          sortedSectionMeetings[0].minutesDuration
+                        ).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </BoldedDate>
                     </DateContainer>
                   )}
                   {/* Sections with two identical meetings a week */}
                   {sortedSectionMeetings.length === 2 &&
-                    Moment(sortedSectionMeetings[0].beginDate).format(
-                      "h:mm"
-                    ) ===
-                      Moment(sortedSectionMeetings[1].beginDate).format(
-                        "h:mm"
-                      ) &&
+                    compareTime(
+                      parseDate(sortedSectionMeetings[0].beginDate),
+                      parseDate(sortedSectionMeetings[1].beginDate)
+                    ) &&
                     sortedSectionMeetings[0].minutesDuration ===
                       sortedSectionMeetings[1].minutesDuration && (
                       <DateContainer>
                         <BoldedDate>
-                          {Moment(sortedSectionMeetings[0].beginDate).format(
-                            "dddd"
-                          )}
+                          {
+                            days[
+                              parseDate(
+                                sortedSectionMeetings[0].beginDate
+                              ).getDay()
+                            ]
+                          }
                           s{" "}
                         </BoldedDate>
                         and{" "}
                         <BoldedDate>
-                          {Moment(sortedSectionMeetings[1].beginDate).format(
-                            "dddd"
-                          )}
+                          {
+                            days[
+                              parseDate(
+                                sortedSectionMeetings[1].beginDate
+                              ).getDay()
+                            ]
+                          }
                           s{" "}
                         </BoldedDate>
                         from{" "}
                         <BoldedDate>
-                          {Moment(sortedSectionMeetings[0].beginDate).format(
-                            "h:mm A"
-                          )}{" "}
+                          {parseDate(
+                            sortedSectionMeetings[0].beginDate
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}{" "}
                         </BoldedDate>
                         to{" "}
                         <BoldedDate>
-                          {Moment(sortedSectionMeetings[0].beginDate)
-                            .add(
-                              sortedSectionMeetings[0].minutesDuration,
-                              "minutes"
-                            )
-                            .format("h:mm A")}
+                          {addMinutes(
+                            parseDate(sortedSectionMeetings[0].beginDate),
+                            sortedSectionMeetings[0].minutesDuration
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </BoldedDate>
                       </DateContainer>
                     )}
                   {/* Section with two different meetings a week */}
                   {sortedSectionMeetings.length === 2 &&
                     !(
-                      Moment(sortedSectionMeetings[0].beginDate).format(
-                        "h:mm"
-                      ) ===
-                        Moment(sortedSectionMeetings[1].beginDate).format(
-                          "h:mm"
-                        ) &&
+                      compareTime(
+                        parseDate(sortedSectionMeetings[0].beginDate),
+                        parseDate(sortedSectionMeetings[1].beginDate)
+                      ) &&
                       sortedSectionMeetings[0].minutesDuration ===
                         sortedSectionMeetings[1].minutesDuration
                     ) && (
                       <DateContainer>
                         <BoldedDate>
-                          {Moment(sortedSectionMeetings[0].beginDate).format(
-                            "dddd"
-                          )}
+                          {
+                            days[
+                              parseDate(
+                                sortedSectionMeetings[0].beginDate
+                              ).getDay()
+                            ]
+                          }
                           s{" "}
                         </BoldedDate>
                         from{" "}
                         <BoldedDate>
-                          {Moment(sortedSectionMeetings[0].beginDate).format(
-                            "h:mm A"
-                          )}{" "}
+                          {parseDate(
+                            sortedSectionMeetings[0].beginDate
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}{" "}
                         </BoldedDate>
                         to{" "}
                         <BoldedDate>
-                          {Moment(sortedSectionMeetings[0].beginDate)
-                            .add(
-                              sortedSectionMeetings[0].minutesDuration,
-                              "minutes"
-                            )
-                            .format("h:mm A")}
+                          {addMinutes(
+                            parseDate(sortedSectionMeetings[0].beginDate),
+                            sortedSectionMeetings[0].minutesDuration
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </BoldedDate>
                         {" and "}
                         <BoldedDate>
-                          {Moment(sortedSectionMeetings[1].beginDate).format(
-                            "dddd"
-                          )}
+                          {
+                            days[
+                              parseDate(
+                                sortedSectionMeetings[0].beginDate
+                              ).getDay()
+                            ]
+                          }
                           s{" "}
                         </BoldedDate>
                         from{" "}
                         <BoldedDate>
-                          {Moment(sortedSectionMeetings[1].beginDate).format(
-                            "h:mm A"
-                          )}{" "}
+                          {parseDate(
+                            sortedSectionMeetings[1].beginDate
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}{" "}
                         </BoldedDate>
                         to{" "}
                         <BoldedDate>
-                          {Moment(sortedSectionMeetings[1].beginDate)
-                            .add(
-                              sortedSectionMeetings[1].minutesDuration,
-                              "minutes"
-                            )
-                            .format("h:mm A")}
+                          {addMinutes(
+                            parseDate(sortedSectionMeetings[1].beginDate),
+                            sortedSectionMeetings[1].minutesDuration
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </BoldedDate>
                       </DateContainer>
                     )}
@@ -291,17 +329,27 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                       {sortedSectionMeetings.map((meeting, i) => (
                         <>
                           <BoldedDate>
-                            {Moment(meeting.beginDate).format("dddd")}s{" "}
+                            {days[parseDate(meeting.beginDate).getDay()]}s{" "}
                           </BoldedDate>
                           from{" "}
                           <BoldedDate>
-                            {Moment(meeting.beginDate).format("h:mm A")}{" "}
+                            {parseDate(meeting.beginDate).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
                           </BoldedDate>
                           to{" "}
                           <BoldedDate>
-                            {Moment(meeting.beginDate)
-                              .add(meeting.minutesDuration, "minutes")
-                              .format("h:mm A")}
+                            {addMinutes(
+                              parseDate(meeting.beginDate),
+                              meeting.minutesDuration
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </BoldedDate>
                           {i < sortedSectionMeetings.length - 1 && ", "}
                           <br />
@@ -321,19 +369,11 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                     >
                       <CalendarTodayTwoTone
                         style={{
-                          color:
-                            section.status === "Open" ? green[500] : red[500],
+                          color: styleStatus(section.status),
                         }}
                       />
-                      <span
-                        style={{
-                          color:
-                            section.status === "Open" ? green[500] : red[500],
-                        }}
-                      >
-                        {section.status === "Open"
-                          ? "Add to Calendar"
-                          : "Section Closed"}
+                      <span style={{ color: styleStatus(section.status) }}>
+                        {changeStatus(section)}
                       </span>
                     </CalendarButton>
                     <CalendarButton>
