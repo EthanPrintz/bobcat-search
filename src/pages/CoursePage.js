@@ -339,7 +339,7 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                                 hour: "2-digit",
                                 minute: "2-digit",
                               }
-                            )}
+                            )}{" "}
                           </BoldedDate>
                           to{" "}
                           <BoldedDate>

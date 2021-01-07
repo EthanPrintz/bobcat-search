@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled, { keyframes } from "styled-components";
+import { findSchool } from "../utils";
 import { Link } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 
@@ -47,7 +48,7 @@ export default function SearchPage({ year, semester }) {
         <SearchBar year={year} semester={semester} />
       </SearchContainer>
       <DepartmentContainer>
-        <div id="departmentTitle">Majors</div>
+        <div id="departmentTitle">Schools</div>
         {!schools.loading && !departments.loading && (
           <Departments>
             {Object.keys(departments.data)
@@ -64,6 +65,11 @@ export default function SearchPage({ year, semester }) {
                     to={{
                       pathname: "/school",
                       search: `?school=${schoolCode}`,
+                      state: {
+                        schoolName: schools.data[schoolCode]
+                          ? schools.data[schoolCode].name
+                          : findSchool(schoolCode),
+                      },
                     }}
                     style={{ textDecoration: "none" }}
                   >
@@ -72,35 +78,10 @@ export default function SearchPage({ year, semester }) {
                       <span className="schoolName">
                         {schools.data[schoolCode]
                           ? schools.data[schoolCode].name
-                          : ""}
+                          : findSchool(schoolCode)}
                       </span>
                     </div>
                   </Link>
-                  {Object.keys(departments.data[schoolCode])
-                    .sort((a, b) => a.localeCompare(b))
-                    .map((departmentCode, i) => (
-                      <Link
-                        key={i}
-                        to={{
-                          pathname: "/subject",
-                          search: `?school=${schoolCode}&subject=${departmentCode}`,
-                        }}
-                        style={{ textDecoration: "none", color: "inherit" }}
-                      >
-                        <Department>
-                          <span className="departmentCode">
-                            {departmentCode}
-                          </span>
-                          <span className="departmentName">
-                            &nbsp;
-                            {departments.data[schoolCode][departmentCode] &&
-                              departments.data[schoolCode][
-                                departmentCode
-                              ].name.replace(/,/g, "")}
-                          </span>
-                        </Department>
-                      </Link>
-                    ))}
                 </School>
               ))}
           </Departments>
@@ -161,8 +142,8 @@ const DepartmentContainer = styled.div`
 const Departments = styled.div`
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
-  grid-gap: 1rem;
+  grid-template-columns: repeat(2, minmax(22rem, 1fr));
+  grid-gap: 0.5rem;
   padding: 6rem 2rem 2rem 2rem;
   animation: ${deptFadeIn} 0.8s ease forwards;
   @media (max-width: 1000px) {
@@ -171,18 +152,18 @@ const Departments = styled.div`
 `;
 
 const School = styled.div`
-  padding: 1rem;
+  padding: 0.25rem 0;
   cursor: pointer;
 
   & > .schoolLink > .schoolTitle {
     font-size: 1.2rem;
     font-family: var(--condensedFont);
-    text-align: center;
-    margin: 1rem 0;
+    text-align: left;
+    margin: 0.2rem 0;
     position: sticky;
 
     & > .schoolCode {
-      padding: 0.3rem;
+      padding: 0.5rem;
       color: var(--grey600);
       font-weight: 800;
     }
@@ -190,15 +171,5 @@ const School = styled.div`
     & > .schoolName {
       color: var(--grey900);
     }
-  }
-`;
-
-const Department = styled.div`
-  margin: 0.3rem 0;
-
-  & > .departmentCode {
-    color: var(--grey600);
-    font-family: var(--condensedFont);
-    font-weight: 700;
   }
 `;

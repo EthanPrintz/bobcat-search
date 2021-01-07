@@ -54,6 +54,7 @@ export function addMinutes(date, minutes) {
 }
 
 export function compareTime(timeA, timeB) {
+  console.log(timeA, timeB);
   return (
     timeA.getHours() === timeB.getHours() &&
     timeA.getMinutes() === timeB.getMinutes() &&
@@ -70,3 +71,17 @@ export const days = {
   5: "Friday",
   6: "Saturday",
 };
+
+export const missingPrograms = {
+  NT: "Non-Credit Tisch School of the Arts",
+  GH: "NYU Abu Dhabi - Graduate",
+  CD: "College of Dentistry Continuing Education",
+  DN: "College of Dentistry - Graduate",
+};
+
+export function findSchool(school) {
+  if (missingPrograms[school]) {
+    return missingPrograms[school];
+  }
+  return "";
+}
