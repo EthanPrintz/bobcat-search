@@ -15,6 +15,24 @@ import SubjectPage from "./pages/SubjectPage";
 import CoursePage from "./pages/CoursePage";
 import SchedulePage from "./pages/SchedulePage";
 import { Select, MenuItem } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
+import InputBase from "@material-ui/core/InputBase";
+
+const BootstrapInput = withStyles((theme) => ({
+  input: {
+    borderRadius: 4,
+    border: "1px solid #9e9e9e",
+    fontSize: "1rem",
+    padding: "10px 26px 10px 12px",
+    fontWeight: "bold",
+    color: "var(--grey800)",
+    fontFamily: "var(--primaryFont)",
+    transition: theme.transitions.create(["border-color", "box-shadow"]),
+    "&:focus": {
+      borderRadius: 4,
+    },
+  },
+}))(InputBase);
 
 function App() {
   const getPath = () => window.location.pathname + window.location.search;
@@ -69,6 +87,7 @@ function App() {
                 onChange={handleOnChange}
                 defaultValue={`${semester}-${year}`}
                 value={`${semester}-${year}`}
+                input={<BootstrapInput />}
               >
                 {options.map((item) => {
                   return (

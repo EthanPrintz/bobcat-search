@@ -54,7 +54,6 @@ export function addMinutes(date, minutes) {
 }
 
 export function compareTime(timeA, timeB) {
-  console.log(timeA, timeB);
   return (
     timeA.getHours() === timeB.getHours() &&
     timeA.getMinutes() === timeB.getMinutes() &&

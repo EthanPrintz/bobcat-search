@@ -4,15 +4,17 @@ import { connect } from "react-redux";
 import qs from "qs";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import Attributes from "../components/Attributes";
+import DateSection from "../components/DateSection";
+import Recitations from "../components/Recitations";
+import { AddBar } from "../components/AddBar";
+import { CalendarButton } from "../components/CalendarButton";
 import {
   convertUnits,
   splitLocation,
   changeStatus,
   styleStatus,
   parseDate,
-  days,
-  addMinutes,
-  compareTime,
 } from "../utils"; // eslint-disable-line no-unused-vars
 import { CalendarTodayTwoTone, AddBoxTwoTone } from "@material-ui/icons";
 import { grey } from "@material-ui/core/colors";
@@ -101,13 +103,13 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
           )}
           <CourseSections>
             {courseData.sections.map((section, i) => {
-              // Sort section meetings by day of week
               let sortedSectionMeetings = section.meetings
                 ? section.meetings.sort(
-                    (a, b) => parseDate(a.beginDate) - parseDate(b.beginDate)
+                    (a, b) =>
+                      parseDate(a.beginDate).getDay() -
+                      parseDate(b.beginDate).getDay()
                   )
                 : [];
-              // Return
               return (
                 <SectionContainer
                   key={i}
@@ -128,235 +130,19 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                   ) : (
                     ""
                   )}
-                  <div className="attributes">
-                    <AttributeContainer>
-                      <div className="attributeLabel">
-                        Instructor{section.instructors.length > 1 ? "s" : ""}
-                      </div>
-                      {section.instructors.join(", ")}
-                    </AttributeContainer>
-                    <AttributeContainer>
-                      <div className="attributeLabel">Building</div>
-                      {splitLocation(section.location).Building}
-                    </AttributeContainer>
-                    {splitLocation(section.location).Room && (
-                      <AttributeContainer>
-                        <div className="attributeLabel">Room</div>
-                        {splitLocation(section.location).Room}
-                      </AttributeContainer>
-                    )}
-                    <AttributeContainer>
-                      <div className="attributeLabel">Units</div>
-                      {convertUnits(section.minUnits, section.maxUnits)}
-                    </AttributeContainer>
-                    <AttributeContainer>
-                      <div className="attributeLabel">Status</div>
-                      {section.status}
-                    </AttributeContainer>
-                    <AttributeContainer>
-                      <div className="attributeLabel">Type</div>
-                      {section.type}
-                    </AttributeContainer>
-                    <AttributeContainer>
-                      <div className="attributeLabel">Registration #</div>
-                      {section.registrationNumber}
-                    </AttributeContainer>
-                  </div>
+                  <Attributes
+                    instructors={section.instructors}
+                    building={splitLocation(section.location).Building}
+                    units={convertUnits(section.minUnits, section.maxUnits)}
+                    status={section.status}
+                    type={section.type}
+                    registrationNumber={section.registrationNumber}
+                  />
                   {!courseData.sections.every(
                     (section) => section.notes === courseData.sections[0].notes
                   ) && <SectionDescription>{section.notes}</SectionDescription>}
 
-                  {/* Sections with one meeting a week */}
-                  {sortedSectionMeetings.length === 1 && (
-                    <DateContainer>
-                      <BoldedDate>
-                        {
-                          days[
-                            parseDate(
-                              sortedSectionMeetings[0].beginDate
-                            ).getDay()
-                          ]
-                        }
-                        s{" "}
-                      </BoldedDate>
-                      from{" "}
-                      <BoldedDate>
-                        {parseDate(
-                          sortedSectionMeetings[0].beginDate
-                        ).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}{" "}
-                      </BoldedDate>
-                      to{" "}
-                      <BoldedDate>
-                        {addMinutes(
-                          parseDate(sortedSectionMeetings[0].beginDate),
-                          sortedSectionMeetings[0].minutesDuration
-                        ).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </BoldedDate>
-                    </DateContainer>
-                  )}
-                  {/* Sections with two identical meetings a week */}
-                  {sortedSectionMeetings.length === 2 &&
-                    compareTime(
-                      parseDate(sortedSectionMeetings[0].beginDate),
-                      parseDate(sortedSectionMeetings[1].beginDate)
-                    ) &&
-                    sortedSectionMeetings[0].minutesDuration ===
-                      sortedSectionMeetings[1].minutesDuration && (
-                      <DateContainer>
-                        <BoldedDate>
-                          {
-                            days[
-                              parseDate(
-                                sortedSectionMeetings[0].beginDate
-                              ).getDay()
-                            ]
-                          }
-                          s{" "}
-                        </BoldedDate>
-                        and{" "}
-                        <BoldedDate>
-                          {
-                            days[
-                              parseDate(
-                                sortedSectionMeetings[1].beginDate
-                              ).getDay()
-                            ]
-                          }
-                          s{" "}
-                        </BoldedDate>
-                        from{" "}
-                        <BoldedDate>
-                          {parseDate(
-                            sortedSectionMeetings[0].beginDate
-                          ).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}{" "}
-                        </BoldedDate>
-                        to{" "}
-                        <BoldedDate>
-                          {addMinutes(
-                            parseDate(sortedSectionMeetings[0].beginDate),
-                            sortedSectionMeetings[0].minutesDuration
-                          ).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </BoldedDate>
-                      </DateContainer>
-                    )}
-                  {/* Section with two different meetings a week */}
-                  {sortedSectionMeetings.length === 2 &&
-                    !(
-                      compareTime(
-                        parseDate(sortedSectionMeetings[0].beginDate),
-                        parseDate(sortedSectionMeetings[1].beginDate)
-                      ) &&
-                      sortedSectionMeetings[0].minutesDuration ===
-                        sortedSectionMeetings[1].minutesDuration
-                    ) && (
-                      <DateContainer>
-                        <BoldedDate>
-                          {
-                            days[
-                              parseDate(
-                                sortedSectionMeetings[0].beginDate
-                              ).getDay()
-                            ]
-                          }
-                          s{" "}
-                        </BoldedDate>
-                        from{" "}
-                        <BoldedDate>
-                          {parseDate(
-                            sortedSectionMeetings[0].beginDate
-                          ).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}{" "}
-                        </BoldedDate>
-                        to{" "}
-                        <BoldedDate>
-                          {addMinutes(
-                            parseDate(sortedSectionMeetings[0].beginDate),
-                            sortedSectionMeetings[0].minutesDuration
-                          ).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </BoldedDate>
-                        {" and "}
-                        <BoldedDate>
-                          {
-                            days[
-                              parseDate(
-                                sortedSectionMeetings[0].beginDate
-                              ).getDay()
-                            ]
-                          }
-                          s{" "}
-                        </BoldedDate>
-                        from{" "}
-                        <BoldedDate>
-                          {parseDate(
-                            sortedSectionMeetings[1].beginDate
-                          ).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}{" "}
-                        </BoldedDate>
-                        to{" "}
-                        <BoldedDate>
-                          {addMinutes(
-                            parseDate(sortedSectionMeetings[1].beginDate),
-                            sortedSectionMeetings[1].minutesDuration
-                          ).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </BoldedDate>
-                      </DateContainer>
-                    )}
-                  {/* Sections with more than two meetings a week */}
-                  {sortedSectionMeetings.length > 2 && (
-                    <DateContainer>
-                      {sortedSectionMeetings.map((meeting, i) => (
-                        <>
-                          <BoldedDate>
-                            {days[parseDate(meeting.beginDate).getDay()]}s{" "}
-                          </BoldedDate>
-                          from{" "}
-                          <BoldedDate>
-                            {parseDate(meeting.beginDate).toLocaleTimeString(
-                              [],
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}{" "}
-                          </BoldedDate>
-                          to{" "}
-                          <BoldedDate>
-                            {addMinutes(
-                              parseDate(meeting.beginDate),
-                              meeting.minutesDuration
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </BoldedDate>
-                          {i < sortedSectionMeetings.length - 1 && ", "}
-                          <br />
-                        </>
-                      ))}
-                    </DateContainer>
-                  )}
+                  <DateSection sortedSectionMeetings={sortedSectionMeetings} />
                   <AddBar>
                     <CalendarButton
                       onClick={() =>
@@ -392,6 +178,16 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                     </CalendarButton>
                   </AddBar>
                   {/* Handle Recitations */}
+                  {section.recitations ? (
+                    <Recitations
+                      recitations={section.recitations}
+                      withlistCourse={wishlistCourse}
+                      year={year}
+                      semester={semester}
+                    />
+                  ) : (
+                    <> </>
+                  )}
                 </SectionContainer>
               );
             })}
@@ -489,47 +285,6 @@ const SectionsHeader = styled.div`
   margin-top: calc(2vmin + 1rem);
 `;
 
-const AddBar = styled.div`
-  padding: 0.5rem;
-  height: 6vh;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-`;
-
-const CalendarButton = styled.div`
-  font-size: 1.1rem;
-  height: 100%;
-  width: 12rem;
-  border-radius: 0.6rem;
-  padding: 0.8rem 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background-color: ${grey[200]};
-  margin-right: 2rem;
-  transition: 0.1s;
-
-  :hover {
-    background-color: ${grey[300]};
-  }
-
-  & > svg {
-    margin-right: 0.65rem;
-  }
-`;
-
-const DateContainer = styled.div`
-  color: ${grey[800]};
-  margin: -0.2rem 0 1rem 1rem;
-  font-size: 1.25rem;
-`;
-
-const BoldedDate = styled.span`
-  font-weight: bold;
-`;
-
 const SectionContainer = styled.div`
   padding: 1.8vmin 2.8vmin;
   background-color: var(--grey100);
@@ -563,19 +318,6 @@ const SectionDescription = styled.div`
   padding: 0 1.5rem 1.5rem 0.5rem;
   max-width: 68%;
   color: var(--grey700);
-`;
-
-const AttributeContainer = styled.div`
-  padding: calc(0.8vmin + 0.8rem);
-  font-size: 1.5rem;
-  color: var(--grey800);
-  font-weight: bold;
-
-  & > .attributeLabel {
-    font-size: 1rem;
-    font-family: var(--condensedFont);
-    color: var(--grey700);
-  }
 `;
 
 const mapStateToProps = (state, props) => ({

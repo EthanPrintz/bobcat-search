@@ -4,15 +4,13 @@ import styled, { keyframes } from "styled-components";
 import { findSchool } from "../utils";
 import { Link } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
+import { purple } from "@material-ui/core/colors";
 
 export default function SearchPage({ year, semester }) {
-  // Set state
   const [departments, setDepartments] = useState({ loading: true, data: {} });
   const [schools, setSchools] = useState({ loading: true, data: {} });
 
-  // Query departments on component mount
   useEffect(() => {
-    // Get Schedge data and load it asyncronously
     (async () => {
       try {
         const response = await fetch("https://schedge.a1liu.com/subjects");
@@ -47,10 +45,10 @@ export default function SearchPage({ year, semester }) {
       <SearchContainer>
         <SearchBar year={year} semester={semester} />
       </SearchContainer>
-      <DepartmentContainer>
+      <SchoolsContainer>
         <div id="departmentTitle">Schools</div>
         {!schools.loading && !departments.loading && (
-          <Departments>
+          <Schools>
             {Object.keys(departments.data)
               .sort((a, b) => {
                 return (
@@ -84,9 +82,9 @@ export default function SearchPage({ year, semester }) {
                   </Link>
                 </School>
               ))}
-          </Departments>
+          </Schools>
         )}
-      </DepartmentContainer>
+      </SchoolsContainer>
     </div>
   );
 }
@@ -120,7 +118,7 @@ const SearchContainer = styled.div`
   min-height: 60vh;
 `;
 
-const DepartmentContainer = styled.div`
+const SchoolsContainer = styled.div`
   width: 100%;
   min-height: 50vh;
   border-top: 1rem solid var(--grey200);
@@ -139,7 +137,7 @@ const DepartmentContainer = styled.div`
   }
 `;
 
-const Departments = styled.div`
+const Schools = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(22rem, 1fr));
@@ -171,5 +169,9 @@ const School = styled.div`
     & > .schoolName {
       color: var(--grey900);
     }
+  }
+
+  &:hover {
+    background-color: ${purple[100]};
   }
 `;
