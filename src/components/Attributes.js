@@ -50,9 +50,9 @@ export default function Attributes({
 }
 
 Attributes.propTypes = {
-  instructors: PropTypes.string.isRequired,
+  instructors: PropTypes.array.isRequired,
   building: PropTypes.string.isRequired,
-  room: PropTypes.string.isRequired,
+  room: PropTypes.string,
   units: PropTypes.number.isRequired,
   status: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,

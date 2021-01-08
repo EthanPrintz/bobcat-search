@@ -1,59 +1,193 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import styled from "styled-components";
+import SnackBar from "@material-ui/core/Snackbar";
+import { parseDate, addMinutes } from "../utils";
 
 import * as actions from "../redux/modules/wishlist";
 
-function SchedulePage({ year, semester, wishlist, clearWishlist }) {
-  const _renderCourses = (dayNum, wishlist) =>
-    wishlist
-      .filter(
-        (course) =>
-          course.meetings.filter(
-            (meeting) => new Date(meeting.beginDate).getDay() === dayNum
-          ).length > 0
-      )
-      .map((course, i) => (
-        <div key={i} style={{ marginTop: "0.5em" }}>
-          <h3>{course.name}</h3>
+function SchedulePage({
+  year,
+  semester,
+  wishlist,
+  clearWishlist,
+  wishlistCourse,
+}) {
+  const times = [
+    "",
+    "8:00",
+    "9:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+    "18:00",
+    "19:00",
+    "20:00",
+  ];
+
+  const dayToStr = {
+    0: "su",
+    1: "mo",
+    2: "tu",
+    3: "we",
+    4: "th",
+    5: "fr",
+    6: "sa",
+  };
+
+  const [schedule, setSchedule] = useState({});
+  const [Toast, setToast] = useState({
+    open: false,
+    message: "",
+    horizontal: "center",
+    vertical: "top",
+  });
+  const { open, message, horizontal, vertical } = Toast;
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const registrationNumbers = [];
+        wishlist.forEach((course) => {
+          registrationNumbers.push(course.registrationNumber);
+        });
+        if (registrationNumbers.length === 0) {
+          setSchedule({});
+          return;
+        }
+        const response = await fetch(
+          `https://schedge.a1liu.com/${year}/${semester}/generateSchedule?registrationNumbers=${registrationNumbers.join(
+            ","
+          )}`
+        );
+        if (!response.ok) {
+          return;
+        }
+        const data = await response.json();
+        if (!data.valid) {
+          setToast({
+            open: true,
+            message: `${data.conflictA.sectionName} & ${data.conflictB.sectionName} conflicts with one another!`,
+            horizontal: "center",
+            vertical: "top",
+          });
+        } else {
+          setToast({
+            open: false,
+            message: "",
+            horizontal: "center",
+            vertical: "top",
+          });
+        }
+        //handle layout data from schedge
+        setSchedule(data);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [year, semester, wishlist]);
+
+  const handleOnClose = () => {
+    setToast({
+      open: false,
+      message: "",
+      horizontal: "center",
+      vertical: "top",
+    });
+  };
+
+  const removeCourse = (course) => {
+    wishlistCourse({
+      year,
+      semester,
+      course,
+    });
+  };
+
+  const _renderCourses = (dayNum) =>
+    schedule[dayToStr[dayNum]] !== undefined &&
+    Object.values(schedule[dayToStr[dayNum]]).map((course, i) => (
+      <CourseBlock key={i}>
+        <TextContainer>
+          <div className="courseCode">
+            {`${course.subject.code}-${course.subject.school} ${course.deptCourseId}-${course.sectionCode}`}
+          </div>
+          <div
+            role="button"
+            className="closeButton"
+            onClick={() => removeCourse(course)}
+            onKeyDown={() => removeCourse(course)}
+            tabIndex={0}
+          >
+            x
+          </div>
+        </TextContainer>
+        <div className="time">
+          {`${parseDate(course.beginDate).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+              - ${addMinutes(
+                parseDate(course.beginDate),
+                course.minutesDuration
+              ).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}`}
         </div>
-      ));
+      </CourseBlock>
+    ));
 
   return (
     <div style={{ padding: "2rem 10vw" }}>
-      <CourseCalendar>
-        <CalendarDay>
-          Monday
-          {_renderCourses(1, wishlist)}
-        </CalendarDay>
-        <CalendarDay>
-          Tuesday
-          {_renderCourses(2, wishlist)}
-        </CalendarDay>
-        <CalendarDay>
-          Wednesday
-          {_renderCourses(3, wishlist)}
-        </CalendarDay>
-        <CalendarDay>
-          Thursday
-          {_renderCourses(4, wishlist)}
-        </CalendarDay>
-        <CalendarDay>
-          Friday
-          {_renderCourses(5, wishlist)}
-        </CalendarDay>
-        <div>
-          <CalendarWeekend>
-            Saturday
-            {_renderCourses(6, wishlist)}
-          </CalendarWeekend>
-          <CalendarWeekend>
-            Sunday
-            {_renderCourses(0, wishlist)}
-          </CalendarWeekend>
-        </div>
-      </CourseCalendar>
+      <SnackBar
+        anchorOrigin={{ vertical, horizontal }}
+        open={open}
+        message={message}
+        onClose={handleOnClose}
+        key={"top center"}
+      />
+      <Calendar>
+        <TimeGrid>
+          {times.map((time, i) => {
+            return <Time key={i}> {time} </Time>;
+          })}
+        </TimeGrid>
+        <CourseCalendar>
+          <CalendarDay>
+            Monday
+            {_renderCourses(1)}
+          </CalendarDay>
+          <CalendarDay>
+            Tuesday
+            {_renderCourses(2)}
+          </CalendarDay>
+          <CalendarDay>
+            Wednesday
+            {_renderCourses(3)}
+          </CalendarDay>
+          <CalendarDay>
+            Thursday
+            {_renderCourses(4)}
+          </CalendarDay>
+          <CalendarDay>
+            Friday
+            {_renderCourses(5)}
+          </CalendarDay>
+          {Array(60)
+            .fill(1)
+            .map((item, i) => {
+              return <CalendarDay key={i} />;
+            })}
+        </CourseCalendar>
+      </Calendar>
+
       {wishlist.length === 0 ? (
         <span>No courses wishlisted yet!</span>
       ) : (
@@ -79,13 +213,20 @@ SchedulePage.propTypes = {
   semester: PropTypes.string.isRequired,
   wishlist: PropTypes.arrayOf(PropTypes.object).isRequired,
   clearWishlist: PropTypes.func.isRequired,
+  wishlistCourse: PropTypes.func.isRequired,
 };
+
+const Calendar = styled.div`
+  width: 100%;
+  margin: 4vmin auto;
+  display: flex;
+`;
 
 const CourseCalendar = styled.div`
   width: 100%;
-  margin: 4vmin auto;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: 20% 20% 20% 20% 20%;
+  grid-template-rows: 48px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px;
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;
   }
@@ -93,23 +234,71 @@ const CourseCalendar = styled.div`
 
 const CalendarDay = styled.div`
   width: 100%;
-  min-height: 40vh;
-  border: 1px solid var(--grey300);
+  min-height: 2vh;
+  border-bottom: 1px solid var(--grey300);
+  text-align: center;
   padding: 15px;
   @media (max-width: 1000px) {
     min-height: 150px;
   }
 `;
 
-const CalendarWeekend = styled.div`
+const TimeGrid = styled.div`
+  width: 5%;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: 40px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px;
+`;
+
+const Time = styled.div`
+  text-align: right;
+  font-size: 1rem;
+  padding: 0 5px 0 0;
+`;
+
+const CourseBlock = styled.div`
+  margin-top: 0.1rem;
+  background-color: gray;
+  height: 85px;
   width: 100%;
-  min-height: 20vh;
-  border: 1px solid var(--grey300);
-  padding: 15px;
-  @media (max-width: 1000px) {
-    min-height: 75px;
+  padding: 0 1vmin;
+  position: relative;
+  padding: 5px 5px 5px 10px;
+  border-radius: 10px;
+
+  & > .time {
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 0 2px;
+    width: 100%;
   }
 `;
+
+const TextContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  & > .courseCode {
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0 2px;
+    width: 100%;
+  }
+
+  & > .closeButton {
+    cursor: pointer;
+  }
+`;
+
+// const CalendarWeekend = styled.div`
+//   width: 100%;
+//   min-height: 20vh;
+//   border: 1px solid var(--grey300);
+//   padding: 15px;
+//   @media (max-width: 1000px) {
+//     min-height: 75px;
+//   }
+// `;
 
 const mapStateToProps = (state, props) => ({
   wishlist: state.wishlist[props.semester + props.year] || [],

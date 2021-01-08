@@ -169,7 +169,7 @@ export default function DateSection({ sortedSectionMeetings }) {
 }
 
 DateSection.propTypes = {
-  sortedSectionMeetings: PropTypes.object.isRequired,
+  sortedSectionMeetings: PropTypes.array.isRequired,
 };
 
 const DateContainer = styled.div`

@@ -181,7 +181,7 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                   {section.recitations ? (
                     <Recitations
                       recitations={section.recitations}
-                      withlistCourse={wishlistCourse}
+                      wishlistCourse={wishlistCourse}
                       year={year}
                       semester={semester}
                     />
