@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import styled from "styled-components";
 import SnackBar from "@material-ui/core/Snackbar";
 import { parseDate, addMinutes } from "../utils";
+import { grey } from "@material-ui/core/colors";
 
 import * as actions from "../redux/modules/wishlist";
 
@@ -29,6 +30,7 @@ function SchedulePage({
     "18:00",
     "19:00",
     "20:00",
+    "21:00",
   ];
 
   const dayToStr = {
@@ -141,11 +143,18 @@ function SchedulePage({
                 minute: "2-digit",
               })}`}
         </div>
+        <div className="location">{course.location}</div>
       </CourseBlock>
     ));
 
   return (
-    <div style={{ padding: "2rem 10vw" }}>
+    <div
+      style={{
+        padding: "2rem 10vw",
+        backgroundColor: grey[200],
+        minHeight: "100vh",
+      }}
+    >
       <SnackBar
         anchorOrigin={{ vertical, horizontal }}
         open={open}
@@ -180,7 +189,7 @@ function SchedulePage({
             Friday
             {_renderCourses(5)}
           </CalendarDay>
-          {Array(60)
+          {Array(65)
             .fill(1)
             .map((item, i) => {
               return <CalendarDay key={i} />;
@@ -226,7 +235,7 @@ const CourseCalendar = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 20% 20% 20% 20% 20%;
-  grid-template-rows: 48px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px;
+  grid-template-rows: 48px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px;
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;
   }
@@ -235,7 +244,7 @@ const CourseCalendar = styled.div`
 const CalendarDay = styled.div`
   width: 100%;
   min-height: 2vh;
-  border-bottom: 1px solid var(--grey300);
+  border-bottom: 1px dashed var(--grey400);
   text-align: center;
   padding: 15px;
   @media (max-width: 1000px) {
@@ -247,7 +256,7 @@ const TimeGrid = styled.div`
   width: 5%;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 40px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px;
+  grid-template-rows: 40px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px;
 `;
 
 const Time = styled.div`
@@ -257,16 +266,24 @@ const Time = styled.div`
 `;
 
 const CourseBlock = styled.div`
-  margin-top: 0.1rem;
-  background-color: gray;
-  height: 85px;
+  margin-top: 1rem;
+  background-color: var(--grey400);
+  height: 90px;
   width: 100%;
   padding: 0 1vmin;
   position: relative;
   padding: 5px 5px 5px 10px;
   border-radius: 10px;
+  cursor: pointer;
 
   & > .time {
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 0 2px;
+    width: 100%;
+  }
+
+  & > .location {
     font-size: 0.8rem;
     text-align: center;
     padding: 0 2px;
@@ -287,6 +304,9 @@ const TextContainer = styled.div`
 
   & > .closeButton {
     cursor: pointer;
+    &:hover {
+      color: var(--grey100);
+    }
   }
 `;
 

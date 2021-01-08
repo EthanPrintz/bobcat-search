@@ -9,7 +9,7 @@ export default function SchoolPage({ location }) {
   const { school } = qs.parse(location.search, {
     ignoreQueryPrefix: true,
   });
-  const { schoolName } = location.state;
+  const { schoolName } = location.state ? location.state : "";
   const [loading, setLoading] = useState(true);
   const [schoolData, setSchoolData] = useState({});
 
@@ -69,7 +69,7 @@ export default function SchoolPage({ location }) {
 SchoolPage.propTypes = {
   location: PropTypes.shape({
     search: PropTypes.string.isRequired,
-    state: PropTypes.object.isRequired,
+    state: PropTypes.object,
   }),
 };
 
