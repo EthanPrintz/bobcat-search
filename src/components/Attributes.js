@@ -7,7 +7,7 @@ export default function Attributes({
   building,
   room,
   units,
-  status,
+  status, // eslint-disable-line no-unused-vars
   type,
   registrationNumber,
 }) {
@@ -33,10 +33,11 @@ export default function Attributes({
         <div className="attributeLabel">Units</div>
         {units}
       </AttributeContainer>
-      <AttributeContainer>
+      {/* seem unnecessary if we have the calendar button to demonstrate whether a section is open or not */}
+      {/* <AttributeContainer>
         <div className="attributeLabel">Status</div>
         {status}
-      </AttributeContainer>
+      </AttributeContainer> */}
       <AttributeContainer>
         <div className="attributeLabel">Type</div>
         {type}

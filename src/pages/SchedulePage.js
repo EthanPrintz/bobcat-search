@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { parseDate, addMinutes } from "../utils";
+import { times, dayToStr } from "../constants";
+
 import styled from "styled-components";
 import SnackBar from "@material-ui/core/Snackbar";
-import { parseDate, addMinutes } from "../utils";
-import { grey } from "@material-ui/core/colors";
+import CheckBox from "@material-ui/core/Checkbox";
+import { grey, red } from "@material-ui/core/colors";
 
 import * as actions from "../redux/modules/wishlist";
 
@@ -12,38 +15,12 @@ function SchedulePage({
   year,
   semester,
   wishlist,
-  clearWishlist,
+  clearWishlist, // eslint-disable-line no-unused-vars
   wishlistCourse,
 }) {
-  const times = [
-    "",
-    "8:00",
-    "9:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00",
-    "21:00",
-  ];
-
-  const dayToStr = {
-    0: "su",
-    1: "mo",
-    2: "tu",
-    3: "we",
-    4: "th",
-    5: "fr",
-    6: "sa",
-  };
-
   const [schedule, setSchedule] = useState({});
+  const [scheduledRegNumbers, setScheduledRegNumbers] = useState([]);
+  const [checkboxes, setCheckboxes] = useState({});
   const [Toast, setToast] = useState({
     open: false,
     message: "",
@@ -55,16 +32,12 @@ function SchedulePage({
   useEffect(() => {
     (async () => {
       try {
-        const registrationNumbers = [];
-        wishlist.forEach((course) => {
-          registrationNumbers.push(course.registrationNumber);
-        });
-        if (registrationNumbers.length === 0) {
+        if (scheduledRegNumbers.length === 0) {
           setSchedule({});
           return;
         }
         const response = await fetch(
-          `https://schedge.a1liu.com/${year}/${semester}/generateSchedule?registrationNumbers=${registrationNumbers.join(
+          `https://schedge.a1liu.com/${year}/${semester}/generateSchedule?registrationNumbers=${scheduledRegNumbers.join(
             ","
           )}`
         );
@@ -75,7 +48,7 @@ function SchedulePage({
         if (!data.valid) {
           setToast({
             open: true,
-            message: `${data.conflictA.sectionName} & ${data.conflictB.sectionName} conflicts with one another!`,
+            message: `${data.conflictA.sectionName} & ${data.conflictB.sectionName} conflicts with one another!`, //make message more meaningful
             horizontal: "center",
             vertical: "top",
           });
@@ -86,14 +59,14 @@ function SchedulePage({
             horizontal: "center",
             vertical: "top",
           });
+          setSchedule(data);
         }
         //handle layout data from schedge
-        setSchedule(data);
       } catch (error) {
         console.error(error);
       }
     })();
-  }, [year, semester, wishlist]);
+  }, [scheduledRegNumbers]);
 
   const handleOnClose = () => {
     setToast({
@@ -110,12 +83,28 @@ function SchedulePage({
       semester,
       course,
     });
+    scheduledRegNumbers.filter(
+      (regNumber) => regNumber !== course.registrationNumber
+    );
+  };
+
+  const computeMargin = (startTime) => {
+    const parsedDate = parseDate(startTime);
+    return (
+      (parsedDate.getHours() - 8) * 4 + (parsedDate.getMinutes() / 60) * 4 + 1
+    );
   };
 
   const _renderCourses = (dayNum) =>
     schedule[dayToStr[dayNum]] !== undefined &&
     Object.values(schedule[dayToStr[dayNum]]).map((course, i) => (
-      <CourseBlock key={i}>
+      <CourseBlock
+        key={i}
+        style={{
+          height: `${(course.minutesDuration / 60) * 4}rem`,
+          marginTop: `${computeMargin(course.beginDate)}rem`,
+        }}
+      >
         <TextContainer>
           <div className="courseCode">
             {`${course.subject.code}-${course.subject.school} ${course.deptCourseId}-${course.sectionCode}`}
@@ -147,14 +136,66 @@ function SchedulePage({
       </CourseBlock>
     ));
 
+  const handleOnChange = (event, course, checkbox) => {
+    if (event.target.checked) {
+      if (!scheduledRegNumbers.includes(course.registrationNumber)) {
+        setScheduledRegNumbers([
+          ...scheduledRegNumbers,
+          course.registrationNumber,
+        ]);
+      }
+    } else {
+      const newScheduledRegNumbers = scheduledRegNumbers.filter(
+        (regNumber) => regNumber !== course.registrationNumber
+      );
+      setScheduledRegNumbers(newScheduledRegNumbers);
+    }
+    let newCheckboxes = { ...checkboxes };
+    newCheckboxes[checkbox] = event.target.checked;
+    setCheckboxes(newCheckboxes);
+  };
+
   return (
-    <div
-      style={{
-        padding: "2rem 10vw",
-        backgroundColor: grey[200],
-        minHeight: "100vh",
-      }}
-    >
+    <Container>
+      <CoursesList>
+        {wishlist.map((course, i) => {
+          return (
+            <WishlistCourse key={i}>
+              <WishlistTextBox>
+                <div>{course.name}</div>
+                {/* <div>{`Section: ${course.code}`}</div>
+                <div>{`Registration Number: ${course.registrationNumber}`}</div>
+                <div>{`Type: ${course.type}`}</div>
+                <div>{`Instructors: ${course.instructors.join(",")}`}</div> */}
+                <CheckBox
+                  checked={checkboxes[`checkbox-${course.registrationNumber}`]}
+                  onChange={(e) =>
+                    handleOnChange(
+                      e,
+                      course,
+                      `checkbox-${course.registrationNumber}`
+                    )
+                  }
+                >
+                  {" "}
+                </CheckBox>
+                <div
+                  role="button"
+                  style={{
+                    cursor: "pointer",
+                    color: red[700],
+                  }}
+                  onClick={() => removeCourse(course)}
+                  onKeyDown={() => removeCourse(course)}
+                  tabIndex={0}
+                >
+                  Remove
+                </div>
+              </WishlistTextBox>
+            </WishlistCourse>
+          );
+        })}
+      </CoursesList>
       <SnackBar
         anchorOrigin={{ vertical, horizontal }}
         open={open}
@@ -196,8 +237,7 @@ function SchedulePage({
             })}
         </CourseCalendar>
       </Calendar>
-
-      {wishlist.length === 0 ? (
+      {/* {wishlist.length === 0 ? (
         <span>No courses wishlisted yet!</span>
       ) : (
         <div>
@@ -212,8 +252,8 @@ function SchedulePage({
           </div>
           {}
         </div>
-      )}
-    </div>
+      )} */}
+    </Container>
   );
 }
 
@@ -225,7 +265,36 @@ SchedulePage.propTypes = {
   wishlistCourse: PropTypes.func.isRequired,
 };
 
+const Container = styled.div`
+  min-height: 100vh;
+  display: flex;
+  background-color: ${grey[200]};
+`;
+
+const CoursesList = styled.div`
+  height: 100%;
+  width: 30%;
+  background-color: var(--grey100);
+  overflow: scroll;
+`;
+
+const WishlistCourse = styled.div`
+  height: 15rem;
+  width: 100%;
+  background-color: var(--grey300);
+  border-bottom: 1px solid var(--grey200);
+  border-top: 1px solid var(--grey200);
+`;
+
+const WishlistTextBox = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+`;
+
 const Calendar = styled.div`
+  min-height: 100vh;
+  padding: 2rem 2vw;
   width: 100%;
   margin: 4vmin auto;
   display: flex;
@@ -235,7 +304,7 @@ const CourseCalendar = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 20% 20% 20% 20% 20%;
-  grid-template-rows: 48px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px;
+  grid-template-rows: 48px repeat(13, 4rem);
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;
   }
@@ -256,7 +325,7 @@ const TimeGrid = styled.div`
   width: 5%;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 40px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px;
+  grid-template-rows: 40px repeat(13, 4rem);
 `;
 
 const Time = styled.div`
@@ -266,14 +335,12 @@ const Time = styled.div`
 `;
 
 const CourseBlock = styled.div`
-  margin-top: 1rem;
   background-color: var(--grey400);
-  height: 90px;
-  width: 100%;
-  padding: 0 1vmin;
-  position: relative;
+  width: 12rem;
+  min-height: 4rem;
   padding: 5px 5px 5px 10px;
   border-radius: 10px;
+  position: absolute;
   cursor: pointer;
 
   & > .time {

@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { parseDate, days, addMinutes, compareTime } from "../utils"; // eslint-disable-line no-unused-vars
+import { parseDate, addMinutes, compareTime } from "../utils";
+import { days } from "../constants";
 import { grey } from "@material-ui/core/colors";
 
 export default function DateSection({ sortedSectionMeetings }) {

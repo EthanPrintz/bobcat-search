@@ -1,5 +1,5 @@
 import { green, red, yellow } from "@material-ui/core/colors";
-
+import { missingPrograms } from "./constants";
 export function convertUnits(minUnit, maxUnit) {
   if (minUnit === 0) {
     return maxUnit;
@@ -37,7 +37,7 @@ export function styleStatus(status) {
   } else if (status === "Closed") {
     return red[500];
   } else {
-    return yellow[700];
+    return yellow[800];
   }
 }
 
@@ -60,23 +60,6 @@ export function compareTime(timeA, timeB) {
     timeA.getSeconds() === timeB.getSeconds()
   );
 }
-
-export const days = {
-  0: "Sunday",
-  1: "Monday",
-  2: "Tuesday",
-  3: "Wednesday",
-  4: "Thursday",
-  5: "Friday",
-  6: "Saturday",
-};
-
-export const missingPrograms = {
-  NT: "Non-Credit Tisch School of the Arts",
-  GH: "NYU Abu Dhabi - Graduate",
-  CD: "College of Dentistry Continuing Education",
-  DN: "College of Dentistry - Graduate",
-};
 
 export function findSchool(school) {
   if (missingPrograms[school]) {
