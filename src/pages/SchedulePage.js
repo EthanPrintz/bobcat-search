@@ -3,13 +3,13 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { parseDate, addMinutes } from "../utils";
 import { times, dayToStr } from "../constants";
-
+import { CustomCheckbox } from "../components/CustomCheckbox";
 import styled from "styled-components";
 import SnackBar from "@material-ui/core/Snackbar";
-import CheckBox from "@material-ui/core/Checkbox";
-import { grey, red } from "@material-ui/core/colors";
+import { grey } from "@material-ui/core/colors";
 
 import * as actions from "../redux/modules/wishlist";
+import { FormControlLabel } from "@material-ui/core";
 
 function SchedulePage({
   year,
@@ -83,9 +83,10 @@ function SchedulePage({
       semester,
       course,
     });
-    scheduledRegNumbers.filter(
+    let newScheduledRegNumbers = scheduledRegNumbers.filter(
       (regNumber) => regNumber !== course.registrationNumber
     );
+    setScheduledRegNumbers(newScheduledRegNumbers);
   };
 
   const computeMargin = (startTime) => {
@@ -94,47 +95,6 @@ function SchedulePage({
       (parsedDate.getHours() - 8) * 4 + (parsedDate.getMinutes() / 60) * 4 + 1
     );
   };
-
-  const _renderCourses = (dayNum) =>
-    schedule[dayToStr[dayNum]] !== undefined &&
-    Object.values(schedule[dayToStr[dayNum]]).map((course, i) => (
-      <CourseBlock
-        key={i}
-        style={{
-          height: `${(course.minutesDuration / 60) * 4}rem`,
-          marginTop: `${computeMargin(course.beginDate)}rem`,
-        }}
-      >
-        <TextContainer>
-          <div className="courseCode">
-            {`${course.subject.code}-${course.subject.school} ${course.deptCourseId}-${course.sectionCode}`}
-          </div>
-          <div
-            role="button"
-            className="closeButton"
-            onClick={() => removeCourse(course)}
-            onKeyDown={() => removeCourse(course)}
-            tabIndex={0}
-          >
-            x
-          </div>
-        </TextContainer>
-        <div className="time">
-          {`${parseDate(course.beginDate).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-              - ${addMinutes(
-                parseDate(course.beginDate),
-                course.minutesDuration
-              ).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}`}
-        </div>
-        <div className="location">{course.location}</div>
-      </CourseBlock>
-    ));
 
   const handleOnChange = (event, course, checkbox) => {
     if (event.target.checked) {
@@ -155,54 +115,40 @@ function SchedulePage({
     setCheckboxes(newCheckboxes);
   };
 
+  const _renderCourses = (dayNum) =>
+    schedule[dayToStr[dayNum]] !== undefined &&
+    Object.values(schedule[dayToStr[dayNum]]).map((course, i) => (
+      <CourseBlock
+        key={i}
+        style={{
+          height: `${(course.minutesDuration / 60) * 4}rem`,
+          marginTop: `${computeMargin(course.beginDate)}rem`,
+        }}
+      >
+        <TextContainer>
+          <div className="courseCode">
+            {`${course.subject.code}-${course.subject.school} ${course.deptCourseId}-${course.sectionCode}`}
+          </div>
+        </TextContainer>
+        <div className="time">
+          {`${parseDate(course.beginDate).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+              - ${addMinutes(
+                parseDate(course.beginDate),
+                course.minutesDuration
+              ).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}`}
+        </div>
+        <div className="location">{course.location}</div>
+      </CourseBlock>
+    ));
+
   return (
     <Container>
-      <CoursesList>
-        {wishlist.map((course, i) => {
-          return (
-            <WishlistCourse key={i}>
-              <WishlistTextBox>
-                <div>{course.name}</div>
-                {/* <div>{`Section: ${course.code}`}</div>
-                <div>{`Registration Number: ${course.registrationNumber}`}</div>
-                <div>{`Type: ${course.type}`}</div>
-                <div>{`Instructors: ${course.instructors.join(",")}`}</div> */}
-                <CheckBox
-                  checked={checkboxes[`checkbox-${course.registrationNumber}`]}
-                  onChange={(e) =>
-                    handleOnChange(
-                      e,
-                      course,
-                      `checkbox-${course.registrationNumber}`
-                    )
-                  }
-                >
-                  {" "}
-                </CheckBox>
-                <div
-                  role="button"
-                  style={{
-                    cursor: "pointer",
-                    color: red[700],
-                  }}
-                  onClick={() => removeCourse(course)}
-                  onKeyDown={() => removeCourse(course)}
-                  tabIndex={0}
-                >
-                  Remove
-                </div>
-              </WishlistTextBox>
-            </WishlistCourse>
-          );
-        })}
-      </CoursesList>
-      <SnackBar
-        anchorOrigin={{ vertical, horizontal }}
-        open={open}
-        message={message}
-        onClose={handleOnClose}
-        key={"top center"}
-      />
       <Calendar>
         <TimeGrid>
           {times.map((time, i) => {
@@ -237,6 +183,100 @@ function SchedulePage({
             })}
         </CourseCalendar>
       </Calendar>
+      <div
+        style={{
+          marginTop: "2rem",
+        }}
+      >
+        <Header>
+          <h2 className="wishlist">{`Wishlist (${wishlist.length})`}</h2>
+        </Header>
+        <CoursesList>
+          {wishlist.length === 0 ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "10px",
+              }}
+            >
+              Wishlist displayed here
+            </div>
+          ) : (
+            wishlist.map((course, i) => {
+              return (
+                <WishlistCourse key={i}>
+                  <WishlistTextBox>
+                    <div>{course.name}</div>
+                    <div>
+                      Section: <span>{course.code}</span>
+                    </div>
+                    <div>
+                      Registration No: <span>{course.registrationNumber}</span>
+                    </div>
+                    <div>
+                      Type: <span>{course.type}</span>
+                    </div>
+                    <div>
+                      Instructors: <span>{course.instructors.join(", ")}</span>
+                    </div>
+                    <WishlistUtilBox>
+                      <FormControlLabel
+                        value="add"
+                        control={
+                          <CustomCheckbox
+                            checked={
+                              checkboxes[course.registrationNumber] ===
+                              undefined
+                                ? false
+                                : checkboxes[course.registrationNumber]
+                            }
+                            onChange={(e) =>
+                              handleOnChange(
+                                e,
+                                course,
+                                course.registrationNumber
+                              )
+                            }
+                          >
+                            {" "}
+                          </CustomCheckbox>
+                        }
+                        label="Schedule"
+                        labelPlacement="start"
+                        style={{
+                          margin: "0",
+                          color: "white",
+                          backgroundColor: "var(--grey500)",
+                          borderRadius: "5px",
+                          padding: "0 6px",
+                        }}
+                      />
+                      <div
+                        role="button"
+                        className="removeButton"
+                        onClick={() => removeCourse(course)}
+                        onKeyDown={() => removeCourse(course)}
+                        tabIndex={0}
+                      >
+                        Remove
+                      </div>
+                    </WishlistUtilBox>
+                  </WishlistTextBox>
+                </WishlistCourse>
+              );
+            })
+          )}
+        </CoursesList>
+      </div>
+      <SnackBar
+        anchorOrigin={{ vertical, horizontal }}
+        open={open}
+        message={message}
+        onClose={handleOnClose}
+        key={"top center"}
+      />
       {/* {wishlist.length === 0 ? (
         <span>No courses wishlisted yet!</span>
       ) : (
@@ -266,44 +306,67 @@ SchedulePage.propTypes = {
 };
 
 const Container = styled.div`
-  min-height: 100vh;
+  padding: 2rem 5vw;
   display: flex;
+  justify-content: center;
   background-color: ${grey[200]};
 `;
 
+const Header = styled.div`
+  display: flex;
+  width: 100%;
+  height: 3rem;
+  background-color: ${grey[600]};
+  align-items: center;
+  justify-content: center;
+
+  & > .wishlist {
+    font-size: 1rem;
+  }
+`;
+
 const CoursesList = styled.div`
-  height: 100%;
-  width: 30%;
+  height: 100vh;
+  width: 20rem;
   background-color: var(--grey100);
   overflow: scroll;
 `;
 
 const WishlistCourse = styled.div`
-  height: 15rem;
-  width: 100%;
+  min-height: 15rem;
   background-color: var(--grey300);
   border-bottom: 1px solid var(--grey200);
   border-top: 1px solid var(--grey200);
 `;
 
 const WishlistTextBox = styled.div`
-  width: 100%;
-  height: 100%;
   padding: 1rem;
+`;
+
+const WishlistUtilBox = styled.div`
+  display: flex;
+  height: 4rem;
+  margin-top: 3rem;
+  align-items: center;
+
+  & > .removeButton {
+    cursor: pointer;
+    color: #bd2f2f;
+    font-size: 0.9rem;
+    margin-left: 1rem;
+  }
 `;
 
 const Calendar = styled.div`
   min-height: 100vh;
-  padding: 2rem 2vw;
-  width: 100%;
-  margin: 4vmin auto;
+  padding: 1rem;
   display: flex;
 `;
 
 const CourseCalendar = styled.div`
   width: 100%;
   display: grid;
-  grid-template-columns: 20% 20% 20% 20% 20%;
+  grid-template-columns: repeat(5, 12rem);
   grid-template-rows: 48px repeat(13, 4rem);
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;
@@ -313,9 +376,11 @@ const CourseCalendar = styled.div`
 const CalendarDay = styled.div`
   width: 100%;
   min-height: 2vh;
+  padding: 15px;
   border-bottom: 1px dashed var(--grey400);
   text-align: center;
-  padding: 15px;
+  align-items: center;
+
   @media (max-width: 1000px) {
     min-height: 150px;
   }
@@ -336,12 +401,11 @@ const Time = styled.div`
 
 const CourseBlock = styled.div`
   background-color: var(--grey400);
-  width: 12rem;
+  width: 10rem;
   min-height: 4rem;
   padding: 5px 5px 5px 10px;
   border-radius: 10px;
   position: absolute;
-  cursor: pointer;
 
   & > .time {
     font-size: 0.8rem;
