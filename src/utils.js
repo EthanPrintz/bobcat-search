@@ -81,26 +81,52 @@ export function generateScheduleTime(meetings) {
       minute: "2-digit",
     });
     return `${day} ${startTime}-${endTime}`;
-  } else if (
-    meetings.length === 2 &&
-    compareTime(parsedDates[0], parsedDates[1])
-  ) {
-    let firstDay = dayToStr[parsedDates[0].getDay()].toUpperCase();
-    let secondDay = dayToStr[parsedDates[1].getDay()].toUpperCase();
-    let startTime = parsedDates[0].toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    let endTime = addMinutes(
-      parsedDates[0],
-      meetings[0].minutesDuration
-    ).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    return `${firstDay},${secondDay} ${startTime}-${endTime}`;
+  } else if (meetings.length === 2) {
+    if (compareTime(parsedDates[0], parsedDates[1])) {
+      let firstDay = dayToStr[parsedDates[0].getDay()].toUpperCase();
+      let secondDay = dayToStr[parsedDates[1].getDay()].toUpperCase();
+      let startTime = parsedDates[0].toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      let endTime = addMinutes(
+        parsedDates[0],
+        meetings[0].minutesDuration
+      ).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      return `${firstDay},${secondDay} ${startTime}-${endTime}`;
+    } else {
+      let firstDay = dayToStr[parsedDates[0].getDay()].toUpperCase();
+      let secondDay = dayToStr[parsedDates[1].getDay()].toUpperCase();
+      let firstStartTime = parsedDates[0].toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      let firstEndTime = addMinutes(
+        parsedDates[0],
+        meetings[0].minutesDuration
+      ).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      let secondStartTime = parsedDates[1].toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      let secondEndTime = addMinutes(
+        parsedDates[1],
+        meetings[1].minutesDuration
+      ).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      return `${firstDay} ${firstStartTime}-${firstEndTime}. ${secondDay} ${secondStartTime}-${secondEndTime}`;
+    }
   }
-  return ""; //for now
+  //TODO: Handle if there are more than 2 different meeting time
+  return "";
 }
 
 export function findSchool(school) {

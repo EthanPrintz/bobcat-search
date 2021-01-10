@@ -9,6 +9,7 @@ import SnackBar from "@material-ui/core/Snackbar";
 import { grey } from "@material-ui/core/colors";
 
 import * as actions from "../redux/modules/wishlist";
+import * as courseActions from "../redux/modules/courseSelect";
 import { FormControlLabel } from "@material-ui/core";
 
 function SchedulePage({
@@ -17,10 +18,13 @@ function SchedulePage({
   wishlist,
   clearWishlist, // eslint-disable-line no-unused-vars
   wishlistCourse,
+  scheduled,
+  toggleCourseSelect,
 }) {
   const [schedule, setSchedule] = useState({});
-  const [scheduledRegNumbers, setScheduledRegNumbers] = useState([]);
-  const [checkboxes, setCheckboxes] = useState({});
+  const [checkboxes, setCheckboxes] = useState(
+    JSON.parse(localStorage.getItem(`${year}-${semester}-checkbox-state`)) || {}
+  );
   const [Toast, setToast] = useState({
     open: false,
     message: "",
@@ -36,20 +40,19 @@ function SchedulePage({
           setSchedule({});
           return;
         }
-        if (scheduledRegNumbers.length === 0) {
+        if (scheduled.length === 0) {
           setSchedule({});
           return;
         }
         const response = await fetch(
-          `https://schedge.a1liu.com/${year}/${semester}/generateSchedule?registrationNumbers=${scheduledRegNumbers.join(
-            ","
-          )}`
+          `https://schedge.a1liu.com/${year}/${semester}/generateSchedule?registrationNumbers=${scheduled
+            .map((course) => course.courseRegistrationNumber)
+            .join(",")}`
         );
         if (!response.ok) {
           return;
         }
         const data = await response.json();
-        console.log(scheduledRegNumbers);
         if (!data.valid) {
           setToast({
             open: true,
@@ -62,19 +65,20 @@ function SchedulePage({
           newCheckboxes[data.conflictA.registrationNumber] = false;
           newCheckboxes[data.conflictB.registrationNumber] = false;
           setCheckboxes(newCheckboxes);
-          let newScheduledRegNumbers = scheduledRegNumbers.filter(function (
-            regNo
-          ) {
-            if (regNo === data.conflictA.registrationNumber) {
-              return false;
-            }
-            if (regNo === data.conflictB.registrationNumber) {
-              return false;
-            }
-            return true;
+          localStorage.setItem(
+            `${year}-${semester}-checkbox-state`,
+            JSON.stringify(newCheckboxes)
+          );
+          toggleCourseSelect({
+            year,
+            semester,
+            courseRegistrationNumber: data.conflictA.registrationNumber,
           });
-
-          setScheduledRegNumbers(newScheduledRegNumbers);
+          toggleCourseSelect({
+            year,
+            semester,
+            courseRegistrationNumber: data.conflictB.registrationNumber,
+          });
         } else {
           setSchedule(data);
         }
@@ -83,7 +87,7 @@ function SchedulePage({
         console.error(error);
       }
     })();
-  }, [year, semester, scheduledRegNumbers]);
+  }, [year, semester, scheduled]);
 
   const handleOnClose = () => {
     setToast({
@@ -100,10 +104,18 @@ function SchedulePage({
       semester,
       course,
     });
-    let newScheduledRegNumbers = scheduledRegNumbers.filter(
-      (regNumber) => regNumber !== course.registrationNumber
+    toggleCourseSelect({
+      year,
+      semester,
+      courseRegistrationNumber: course.registrationNumber,
+    });
+    let newCheckboxes = { ...checkboxes };
+    newCheckboxes[course.registrationNumber] = false;
+    setCheckboxes(newCheckboxes);
+    localStorage.setItem(
+      `${year}-${semester}-checkbox-state`,
+      JSON.stringify(newCheckboxes)
     );
-    setScheduledRegNumbers(newScheduledRegNumbers);
   };
 
   const computeMargin = (startTime) => {
@@ -115,24 +127,30 @@ function SchedulePage({
 
   const handleOnChange = (event, course, checkbox) => {
     if (event.target.checked) {
-      if (!scheduledRegNumbers.includes(course.registrationNumber)) {
-        setScheduledRegNumbers([
-          ...scheduledRegNumbers,
-          course.registrationNumber,
-        ]);
+      if (!scheduled.includes(course.registrationNumber)) {
+        toggleCourseSelect({
+          year,
+          semester,
+          courseRegistrationNumber: course.registrationNumber,
+        });
       }
     } else {
-      const newScheduledRegNumbers = scheduledRegNumbers.filter(
-        (regNumber) => regNumber !== course.registrationNumber
-      );
-      setScheduledRegNumbers(newScheduledRegNumbers);
+      toggleCourseSelect({
+        year,
+        semester,
+        courseRegistrationNumber: course.registrationNumber,
+      });
     }
     let newCheckboxes = { ...checkboxes };
     newCheckboxes[checkbox] = event.target.checked;
     setCheckboxes(newCheckboxes);
+    localStorage.setItem(
+      `${year}-${semester}-checkbox-state`,
+      JSON.stringify(newCheckboxes)
+    );
   };
 
-  const _renderCourses = (dayNum) =>
+  const _renderCourses = (dayNum, schedule) =>
     schedule[dayToStr[dayNum]] !== undefined &&
     Object.values(schedule[dayToStr[dayNum]]).map((course, i) => (
       <CourseBlock
@@ -175,23 +193,23 @@ function SchedulePage({
         <CourseCalendar>
           <CalendarDay>
             Monday
-            {_renderCourses(1)}
+            {_renderCourses(1, schedule)}
           </CalendarDay>
           <CalendarDay>
             Tuesday
-            {_renderCourses(2)}
+            {_renderCourses(2, schedule)}
           </CalendarDay>
           <CalendarDay>
             Wednesday
-            {_renderCourses(3)}
+            {_renderCourses(3, schedule)}
           </CalendarDay>
           <CalendarDay>
             Thursday
-            {_renderCourses(4)}
+            {_renderCourses(4, schedule)}
           </CalendarDay>
           <CalendarDay>
             Friday
-            {_renderCourses(5)}
+            {_renderCourses(5, schedule)}
           </CalendarDay>
           {Array(65)
             .fill(1)
@@ -276,7 +294,7 @@ function SchedulePage({
                         style={{
                           margin: "0",
                           color: "black",
-                          backgroundColor: "var(--grey500)",
+                          backgroundColor: "var(--grey400)",
                           borderRadius: "5px",
                           padding: "0 8px",
                           fontWeight: "bold",
@@ -333,6 +351,8 @@ SchedulePage.propTypes = {
   wishlist: PropTypes.arrayOf(PropTypes.object).isRequired,
   clearWishlist: PropTypes.func.isRequired,
   wishlistCourse: PropTypes.func.isRequired,
+  scheduled: PropTypes.arrayOf(PropTypes.object).isRequired,
+  toggleCourseSelect: PropTypes.func.isRequired,
 };
 
 const Container = styled.div`
@@ -487,4 +507,9 @@ const mapStateToProps = (state, props) => ({
   scheduled: state.scheduled[props.semester + props.year] || [],
 });
 
-export default connect(mapStateToProps, actions)(SchedulePage);
+const allActions = {
+  ...actions,
+  ...courseActions,
+};
+
+export default connect(mapStateToProps, allActions)(SchedulePage);

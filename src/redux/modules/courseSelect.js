@@ -29,7 +29,6 @@ export default function reducer(state = initialState, action = {}) {
       // eslint-disable-next-line no-case-declarations
       const arrSpread =
         state[action.payload.semester + action.payload.year] || [];
-
       return {
         ...state,
         [action.payload.semester + action.payload.year]: [
@@ -46,7 +45,7 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export const toggleCourseSelect = (course) => ({
+export const toggleCourseSelect = (courseRegistrationNumber) => ({
   type: TOGGLE_COURSE_SELECT,
-  payload: course, // { year, semester, courseRegistrationNumber, recitationRegistrationNumber }
+  payload: courseRegistrationNumber, // { year, semester, courseRegistrationNumber, recitationRegistrationNumber }
 });
