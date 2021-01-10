@@ -225,7 +225,6 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                     </CalendarButton>
                   </UtilBar>
                   {/* Handle Recitations */}
-
                   <Collapse
                     in={
                       expandedList[section.registrationNumber] === undefined
