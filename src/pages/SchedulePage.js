@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { parseDate, addMinutes } from "../utils";
+import { parseDate, addMinutes, generateScheduleTime } from "../utils";
 import { times, dayToStr } from "../constants";
 import { CustomCheckbox } from "../components/CustomCheckbox";
 import styled from "styled-components";
@@ -32,6 +32,10 @@ function SchedulePage({
   useEffect(() => {
     (async () => {
       try {
+        if (wishlist.length === 0) {
+          setSchedule({});
+          return;
+        }
         if (scheduledRegNumbers.length === 0) {
           setSchedule({});
           return;
@@ -45,6 +49,7 @@ function SchedulePage({
           return;
         }
         const data = await response.json();
+        console.log(scheduledRegNumbers);
         if (!data.valid) {
           setToast({
             open: true,
@@ -52,13 +57,25 @@ function SchedulePage({
             horizontal: "center",
             vertical: "top",
           });
-        } else {
-          setToast({
-            open: false,
-            message: "",
-            horizontal: "center",
-            vertical: "top",
+          //Remove both conflicted course
+          let newCheckboxes = { ...checkboxes };
+          newCheckboxes[data.conflictA.registrationNumber] = false;
+          newCheckboxes[data.conflictB.registrationNumber] = false;
+          setCheckboxes(newCheckboxes);
+          let newScheduledRegNumbers = scheduledRegNumbers.filter(function (
+            regNo
+          ) {
+            if (regNo === data.conflictA.registrationNumber) {
+              return false;
+            }
+            if (regNo === data.conflictB.registrationNumber) {
+              return false;
+            }
+            return true;
           });
+
+          setScheduledRegNumbers(newScheduledRegNumbers);
+        } else {
           setSchedule(data);
         }
         //handle layout data from schedge
@@ -66,7 +83,7 @@ function SchedulePage({
         console.error(error);
       }
     })();
-  }, [scheduledRegNumbers]);
+  }, [year, semester, scheduledRegNumbers]);
 
   const handleOnClose = () => {
     setToast({
@@ -191,7 +208,7 @@ function SchedulePage({
         <Header>
           <h2 className="wishlist">{`Wishlist (${wishlist.length})`}</h2>
         </Header>
-        <CoursesList>
+        <WishlistCoursesList>
           {wishlist.length === 0 ? (
             <div
               style={{
@@ -215,11 +232,22 @@ function SchedulePage({
                     <div>
                       Registration No: <span>{course.registrationNumber}</span>
                     </div>
-                    <div>
-                      Type: <span>{course.type}</span>
-                    </div>
-                    <div>
-                      Instructors: <span>{course.instructors.join(", ")}</span>
+                    <div
+                      style={{
+                        marginTop: "1rem",
+                      }}
+                    >
+                      <div>
+                        Type: <span>{course.type}</span>
+                      </div>
+                      <div>
+                        Instructors:{" "}
+                        <span>{course.instructors.join(", ")}</span>
+                      </div>
+                      <div>
+                        Meetings:{" "}
+                        <span>{generateScheduleTime(course.meetings)}</span>
+                      </div>
                     </div>
                     <WishlistUtilBox>
                       <FormControlLabel
@@ -247,10 +275,11 @@ function SchedulePage({
                         labelPlacement="start"
                         style={{
                           margin: "0",
-                          color: "white",
+                          color: "black",
                           backgroundColor: "var(--grey500)",
                           borderRadius: "5px",
-                          padding: "0 6px",
+                          padding: "0 8px",
+                          fontWeight: "bold",
                         }}
                       />
                       <div
@@ -268,12 +297,13 @@ function SchedulePage({
               );
             })
           )}
-        </CoursesList>
+        </WishlistCoursesList>
       </div>
       <SnackBar
         anchorOrigin={{ vertical, horizontal }}
         open={open}
         message={message}
+        autoHideDuration={2000}
         onClose={handleOnClose}
         key={"top center"}
       />
@@ -316,19 +346,20 @@ const Header = styled.div`
   display: flex;
   width: 100%;
   height: 3rem;
-  background-color: ${grey[600]};
+  background-color: var(--purpleMain);
   align-items: center;
   justify-content: center;
 
   & > .wishlist {
     font-size: 1rem;
+    color: var(--grey200);
   }
 `;
 
-const CoursesList = styled.div`
+const WishlistCoursesList = styled.div`
   height: 100vh;
   width: 20rem;
-  background-color: var(--grey100);
+  background-color: var(--grey200);
   overflow: scroll;
 `;
 
@@ -346,7 +377,7 @@ const WishlistTextBox = styled.div`
 const WishlistUtilBox = styled.div`
   display: flex;
   height: 4rem;
-  margin-top: 3rem;
+  margin-top: 1.5rem;
   align-items: center;
 
   & > .removeButton {

@@ -1,5 +1,5 @@
 import { green, red, yellow } from "@material-ui/core/colors";
-import { missingPrograms } from "./constants";
+import { missingPrograms, dayToStr } from "./constants";
 export function convertUnits(minUnit, maxUnit) {
   if (minUnit === 0) {
     return maxUnit;
@@ -59,6 +59,48 @@ export function compareTime(timeA, timeB) {
     timeA.getMinutes() === timeB.getMinutes() &&
     timeA.getSeconds() === timeB.getSeconds()
   );
+}
+
+export function generateScheduleTime(meetings) {
+  const parsedDates = [];
+  meetings.forEach((meeting) => {
+    parsedDates.push(parseDate(meeting.beginDate));
+  });
+  parsedDates.sort((a, b) => a - b);
+  if (meetings.length === 1) {
+    let day = dayToStr[parsedDates[0].getDay()].toUpperCase();
+    let startTime = parsedDates[0].toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    let endTime = addMinutes(
+      parsedDates[0],
+      meetings[0].minutesDuration
+    ).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return `${day} ${startTime}-${endTime}`;
+  } else if (
+    meetings.length === 2 &&
+    compareTime(parsedDates[0], parsedDates[1])
+  ) {
+    let firstDay = dayToStr[parsedDates[0].getDay()].toUpperCase();
+    let secondDay = dayToStr[parsedDates[1].getDay()].toUpperCase();
+    let startTime = parsedDates[0].toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    let endTime = addMinutes(
+      parsedDates[0],
+      meetings[0].minutesDuration
+    ).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return `${firstDay},${secondDay} ${startTime}-${endTime}`;
+  }
+  return ""; //for now
 }
 
 export function findSchool(school) {

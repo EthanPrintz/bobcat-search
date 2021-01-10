@@ -5,7 +5,7 @@ import { withStyles } from "@material-ui/core/styles";
 
 export const CustomCheckbox = withStyles({
   root: {
-    color: purple[600],
+    color: purple[700],
     "&$checked": {
       color: purple[900],
     },
