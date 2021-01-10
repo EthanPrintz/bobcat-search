@@ -6,8 +6,6 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import Attributes from "../components/Attributes";
 import DateSection from "../components/DateSection";
-import Recitations from "../components/Recitations"; // eslint-disable-line no-unused-vars
-import { AddBar } from "../components/AddBar";
 import { CalendarButton } from "../components/CalendarButton";
 import {
   convertUnits,
@@ -16,11 +14,16 @@ import {
   styleStatus,
   parseDate,
 } from "../utils"; // eslint-disable-line no-unused-vars
-import { CalendarTodayTwoTone, AddBoxTwoTone } from "@material-ui/icons";
+import {
+  CalendarTodayTwoTone,
+  AddBoxTwoTone,
+  ExpandMoreOutlined,
+} from "@material-ui/icons";
 import { grey } from "@material-ui/core/colors";
 // Import major progressions
 import { progressions } from "../majorProgressions"; // eslint-disable-line no-unused-vars
 import * as actions from "../redux/modules/wishlist";
+import { Collapse } from "@material-ui/core";
 
 function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
   const { school, subject, courseid } = qs.parse(location.search, {
@@ -28,6 +31,7 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
   });
   const [loading, setLoading] = useState(true);
   const [courseData, setCourseData] = useState({});
+  const [expandedList, setExpandedList] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -50,6 +54,17 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
       }
     })();
   }, [year, semester, courseid, school, subject]);
+
+  const handleExpandList = (event, registrationNumber) => {
+    event.preventDefault();
+    let newLs = { ...expandedList };
+    if (registrationNumber in expandedList) {
+      newLs[registrationNumber] = !expandedList[registrationNumber];
+    } else {
+      newLs[registrationNumber] = true;
+    }
+    setExpandedList(newLs);
+  };
 
   return (
     <div>
@@ -143,7 +158,39 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                   ) && <SectionDescription>{section.notes}</SectionDescription>}
 
                   <DateSection sortedSectionMeetings={sortedSectionMeetings} />
-                  <AddBar>
+                  <UtilBar>
+                    {section.recitations === undefined ||
+                    section.recitations.length === 0 ? (
+                      <></>
+                    ) : (
+                      <ExpandButton
+                        style={{ cursor: "pointer" }}
+                        onClick={(e) =>
+                          handleExpandList(e, section.registrationNumber)
+                        }
+                        onKeyPress={(e) =>
+                          handleExpandList(e, section.registrationNumber)
+                        }
+                        role="button"
+                        tabIndex={0}
+                      >
+                        <ExpandMoreOutlined
+                          style={{
+                            transform: expandedList[section.registrationNumber]
+                              ? "rotate(180deg)"
+                              : "rotate(0deg)",
+                            transition: "0.5s",
+                          }}
+                        ></ExpandMoreOutlined>
+                        <span
+                          style={{
+                            color: grey[700],
+                          }}
+                        >
+                          Show Recitations
+                        </span>
+                      </ExpandButton>
+                    )}
                     <CalendarButton
                       onClick={() =>
                         wishlistCourse({
@@ -176,18 +223,104 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                         Add to Wishlist
                       </span>
                     </CalendarButton>
-                  </AddBar>
+                  </UtilBar>
                   {/* Handle Recitations */}
-                  {/* {section.recitations ? (
-                    <Recitations
-                      recitations={section.recitations}
-                      wishlistCourse={wishlistCourse}
-                      year={year}
-                      semester={semester}
-                    />
-                  ) : (
-                    <> </>
-                  )} */}
+
+                  <Collapse
+                    in={
+                      expandedList[section.registrationNumber] === undefined
+                        ? false
+                        : expandedList[section.registrationNumber]
+                    }
+                    timeout="auto"
+                    unmountOnExit
+                  >
+                    {section.recitations ? (
+                      section.recitations.map((recitation, i) => {
+                        let sortedRecitationsMeetings = recitation.meetings
+                          ? recitation.meetings.sort(
+                              (a, b) =>
+                                parseDate(a.beginDate).getDay() -
+                                parseDate(b.beginDate).getDay()
+                            )
+                          : [];
+                        return (
+                          <SectionContainer recitation={true} key={i}>
+                            {courseData.name !== recitation.name ? (
+                              <h3 className="sectionName">{recitation.name}</h3>
+                            ) : (
+                              ""
+                            )}
+                            {section.recitations.length >= 1 ? (
+                              <h4 className="sectionNum">{recitation.code}</h4>
+                            ) : (
+                              ""
+                            )}
+                            <Attributes
+                              instructors={recitation.instructors}
+                              building={
+                                splitLocation(recitation.location).Building
+                              }
+                              units={convertUnits(
+                                recitation.minUnits,
+                                recitation.maxUnits
+                              )}
+                              status={recitation.status}
+                              type={recitation.type}
+                              registrationNumber={recitation.registrationNumber}
+                            />
+                            <RecitationDescription>
+                              {recitation.notes}
+                            </RecitationDescription>
+
+                            <DateSection
+                              sortedSectionMeetings={sortedRecitationsMeetings}
+                            />
+                            <UtilBar>
+                              <CalendarButton
+                                onClick={() =>
+                                  wishlistCourse({
+                                    year,
+                                    semester,
+                                    course: recitation,
+                                  })
+                                }
+                              >
+                                <CalendarTodayTwoTone
+                                  style={{
+                                    color: styleStatus(recitation.status),
+                                  }}
+                                />
+                                <span
+                                  style={{
+                                    color: styleStatus(recitation.status),
+                                  }}
+                                >
+                                  {changeStatus(recitation)}
+                                </span>
+                              </CalendarButton>
+                              <CalendarButton>
+                                <AddBoxTwoTone
+                                  style={{
+                                    color: grey[700],
+                                  }}
+                                />
+                                <span
+                                  style={{
+                                    color: grey[700],
+                                  }}
+                                >
+                                  Add to Wishlist
+                                </span>
+                              </CalendarButton>
+                            </UtilBar>
+                          </SectionContainer>
+                        );
+                      })
+                    ) : (
+                      <> </>
+                    )}
+                  </Collapse>
                 </SectionContainer>
               );
             })}
@@ -288,8 +421,8 @@ const SectionsHeader = styled.div`
 const SectionContainer = styled.div`
   padding: 1.8vmin 2.8vmin;
   background-color: var(--grey100);
-  width: 84%;
-  margin-left: 8%;
+  width: ${(props) => (props.recitation ? "100%" : "84%")};
+  margin-left: ${(props) => (props.recitation ? "1%" : "8%")};
   position: relative;
 
   & > .sectionName {
@@ -312,12 +445,50 @@ const SectionContainer = styled.div`
   }
 `;
 
+const ExpandButton = styled.div`
+  font-size: 1.1rem;
+  height: 100%;
+  width: 12rem;
+  border-radius: 0.6rem;
+  padding: 0.8rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: ${grey[200]};
+  margin-right: 2rem;
+  transition: 0.1s;
+
+  :hover {
+    background-color: ${grey[300]};
+  }
+
+  & > svg {
+    margin-right: 0.65rem;
+  }
+`;
+
 const CourseSections = styled.div``;
 
 const SectionDescription = styled.div`
   padding: 0 1.5rem 1.5rem 0.5rem;
   max-width: 68%;
   color: var(--grey700);
+`;
+
+const RecitationDescription = styled.div`
+  padding: 0 1.5rem 1.5rem 0.5rem;
+  max-width: 68%;
+  color: var(--grey700);
+`;
+
+const UtilBar = styled.div`
+  padding: 0.5rem;
+  height: 6vh;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom: 1px solid;
 `;
 
 const mapStateToProps = (state, props) => ({
