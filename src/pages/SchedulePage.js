@@ -20,6 +20,7 @@ function SchedulePage({
   wishlistCourse,
   scheduled,
   toggleCourseSelect,
+  clearSchedule,
 }) {
   const [schedule, setSchedule] = useState({});
   const [checkboxes, setCheckboxes] = useState(
@@ -104,24 +105,22 @@ function SchedulePage({
       semester,
       course,
     });
-    toggleCourseSelect({
-      year,
-      semester,
-      courseRegistrationNumber: course.registrationNumber,
-    });
+    if (
+      checkboxes[course.registrationNumber] !== undefined &&
+      checkboxes[course.registrationNumber]
+    ) {
+      toggleCourseSelect({
+        year,
+        semester,
+        courseRegistrationNumber: course.registrationNumber,
+      });
+    }
     let newCheckboxes = { ...checkboxes };
     newCheckboxes[course.registrationNumber] = false;
     setCheckboxes(newCheckboxes);
     localStorage.setItem(
       `${year}-${semester}-checkbox-state`,
       JSON.stringify(newCheckboxes)
-    );
-  };
-
-  const computeMargin = (startTime) => {
-    const parsedDate = parseDate(startTime);
-    return (
-      (parsedDate.getHours() - 8) * 4 + (parsedDate.getMinutes() / 60) * 4 + 1
     );
   };
 
@@ -150,13 +149,20 @@ function SchedulePage({
     );
   };
 
+  const computeMargin = (startTime) => {
+    const parsedDate = parseDate(startTime);
+    return (
+      (parsedDate.getHours() - 8) * 4 + (parsedDate.getMinutes() / 60) * 4 + 1
+    );
+  };
+
   const _renderCourses = (dayNum, schedule) =>
     schedule[dayToStr[dayNum]] !== undefined &&
     Object.values(schedule[dayToStr[dayNum]]).map((course, i) => (
       <CourseBlock
         key={i}
         style={{
-          height: `${(course.minutesDuration / 60) * 4}rem`,
+          minHeight: `${(course.minutesDuration / 60) * 4}rem`,
           marginTop: `${computeMargin(course.beginDate)}rem`,
         }}
       >
@@ -316,6 +322,25 @@ function SchedulePage({
             })
           )}
         </WishlistCoursesList>
+        <div>
+          <div
+            style={{ cursor: "pointer", marginTop: "1rem", color: "#bd2f2f" }}
+            onClick={() => {
+              clearSchedule({ year, semester });
+              setCheckboxes({});
+              localStorage.setItem(
+                `${year}-${semester}-checkbox-state`,
+                JSON.stringify({})
+              );
+            }}
+            onKeyPress={() => clearSchedule({ year, semester })}
+            role="button"
+            tabIndex={0}
+          >
+            Clear Schedule
+          </div>
+          {}
+        </div>
       </div>
       <SnackBar
         anchorOrigin={{ vertical, horizontal }}
@@ -325,22 +350,6 @@ function SchedulePage({
         onClose={handleOnClose}
         key={"top center"}
       />
-      {/* {wishlist.length === 0 ? (
-        <span>No courses wishlisted yet!</span>
-      ) : (
-        <div>
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => clearWishlist({ year, semester })}
-            onKeyPress={() => clearWishlist({ year, semester })}
-            role="button"
-            tabIndex={0}
-          >
-            Clear Wishlist
-          </div>
-          {}
-        </div>
-      )} */}
     </Container>
   );
 }
@@ -353,6 +362,7 @@ SchedulePage.propTypes = {
   wishlistCourse: PropTypes.func.isRequired,
   scheduled: PropTypes.arrayOf(PropTypes.object).isRequired,
   toggleCourseSelect: PropTypes.func.isRequired,
+  clearSchedule: PropTypes.func.isRequired,
 };
 
 const Container = styled.div`

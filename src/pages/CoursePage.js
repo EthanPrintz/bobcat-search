@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import Attributes from "../components/Attributes";
 import DateSection from "../components/DateSection";
-import Recitations from "../components/Recitations";
+import Recitations from "../components/Recitations"; // eslint-disable-line no-unused-vars
 import { AddBar } from "../components/AddBar";
 import { CalendarButton } from "../components/CalendarButton";
 import {
@@ -178,7 +178,7 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                     </CalendarButton>
                   </AddBar>
                   {/* Handle Recitations */}
-                  {section.recitations ? (
+                  {/* {section.recitations ? (
                     <Recitations
                       recitations={section.recitations}
                       wishlistCourse={wishlistCourse}
@@ -187,7 +187,7 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                     />
                   ) : (
                     <> </>
-                  )}
+                  )} */}
                 </SectionContainer>
               );
             })}

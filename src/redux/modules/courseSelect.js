@@ -1,5 +1,5 @@
 const TOGGLE_COURSE_SELECT = "bobcat-search/courseselect/TOGGLE_COURSE_SELECT";
-
+const CLEAR_SCHEDULE = "bobcat-search/courseselect/CLEAR_SCHEDULE";
 const initialState = {};
 
 export default function reducer(state = initialState, action = {}) {
@@ -40,6 +40,17 @@ export default function reducer(state = initialState, action = {}) {
           },
         ],
       };
+    case CLEAR_SCHEDULE:
+      if (
+        state[action.payload.semester + action.payload.year] !== undefined &&
+        state[action.payload.semester + action.payload.year].length > 0
+      ) {
+        return {
+          ...state,
+          [action.payload.semester + action.payload.year]: [],
+        };
+      }
+      return state;
     default:
       return state;
   }
@@ -48,4 +59,9 @@ export default function reducer(state = initialState, action = {}) {
 export const toggleCourseSelect = (courseRegistrationNumber) => ({
   type: TOGGLE_COURSE_SELECT,
   payload: courseRegistrationNumber, // { year, semester, courseRegistrationNumber, recitationRegistrationNumber }
+});
+
+export const clearSchedule = ({ year, semester }) => ({
+  type: CLEAR_SCHEDULE,
+  payload: { year, semester },
 });
