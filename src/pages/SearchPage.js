@@ -4,7 +4,7 @@ import styled, { keyframes } from "styled-components";
 import { findSchool } from "../utils";
 import { Link } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
-import { purple } from "@material-ui/core/colors";
+import { grey } from "@material-ui/core/colors";
 
 export default function SearchPage({ year, semester }) {
   const [departments, setDepartments] = useState({ loading: true, data: {} });
@@ -172,6 +172,6 @@ const School = styled.div`
   }
 
   &:hover {
-    background-color: ${purple[100]};
+    background-color: ${grey[400]};
   }
 `;

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import qs from "qs";
 import styled, { keyframes } from "styled-components";
 import { Link } from "react-router-dom";
-import { grey, purple } from "@material-ui/core/colors";
+import { grey } from "@material-ui/core/colors";
 
 export default function SchoolPage({ location }) {
   const { school } = qs.parse(location.search, {
@@ -120,6 +120,6 @@ const Department = styled.div`
   }
 
   &:hover {
-    background-color: ${purple[100]};
+    background-color: ${grey[300]};
   }
 `;
