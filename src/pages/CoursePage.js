@@ -2,36 +2,20 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import qs from "qs";
-import styled from "styled-components";
 import { Link } from "react-router-dom";
-import Attributes from "../components/Attributes";
-import DateSection from "../components/DateSection";
-import { CalendarButton } from "../components/CalendarButton";
-import {
-  convertUnits,
-  splitLocation,
-  changeStatus,
-  styleStatus,
-  parseDate,
-} from "../utils"; // eslint-disable-line no-unused-vars
-import {
-  CalendarTodayTwoTone,
-  AddBoxTwoTone,
-  ExpandMoreOutlined,
-} from "@material-ui/icons";
-import { grey } from "@material-ui/core/colors";
+import Section from "../components/Section";
+import { parseDate } from "../utils"; // eslint-disable-line no-unused-vars
+import styled from "styled-components";
 // Import major progressions
 import { progressions } from "../majorProgressions"; // eslint-disable-line no-unused-vars
 import * as actions from "../redux/modules/wishlist";
-import { Collapse } from "@material-ui/core";
 
-function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
+function CoursePage({ year, semester, location }) {
   const { school, subject, courseid } = qs.parse(location.search, {
     ignoreQueryPrefix: true,
   });
   const [loading, setLoading] = useState(true);
   const [courseData, setCourseData] = useState({});
-  const [expandedList, setExpandedList] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -54,17 +38,6 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
       }
     })();
   }, [year, semester, courseid, school, subject]);
-
-  const handleExpandList = (event, registrationNumber) => {
-    event.preventDefault();
-    let newLs = { ...expandedList };
-    if (registrationNumber in expandedList) {
-      newLs[registrationNumber] = !expandedList[registrationNumber];
-    } else {
-      newLs[registrationNumber] = true;
-    }
-    setExpandedList(newLs);
-  };
 
   return (
     <div>
@@ -126,209 +99,14 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                   )
                 : [];
               return (
-                <SectionContainer
+                <Section
                   key={i}
-                  waitlisted={
-                    wishlist.filter(
-                      (course) =>
-                        course.registrationNumber === section.registrationNumber
-                    ).length > 0
-                  }
-                >
-                  {courseData.name !== section.name ? (
-                    <h3 className="sectionName">{section.name}</h3>
-                  ) : (
-                    ""
-                  )}
-                  {courseData.sections.length > 1 ? (
-                    <h4 className="sectionNum">{section.code}</h4>
-                  ) : (
-                    ""
-                  )}
-                  <Attributes
-                    instructors={section.instructors}
-                    building={splitLocation(section.location).Building}
-                    units={convertUnits(section.minUnits, section.maxUnits)}
-                    status={section.status}
-                    type={section.type}
-                    registrationNumber={section.registrationNumber}
-                  />
-                  {!courseData.sections.every(
-                    (section) => section.notes === courseData.sections[0].notes
-                  ) && <SectionDescription>{section.notes}</SectionDescription>}
-
-                  <DateSection sortedSectionMeetings={sortedSectionMeetings} />
-                  <UtilBar>
-                    {section.recitations === undefined ||
-                    section.recitations.length === 0 ? (
-                      <></>
-                    ) : (
-                      <ExpandButton
-                        style={{ cursor: "pointer" }}
-                        onClick={(e) =>
-                          handleExpandList(e, section.registrationNumber)
-                        }
-                        onKeyPress={(e) =>
-                          handleExpandList(e, section.registrationNumber)
-                        }
-                        role="button"
-                        tabIndex={0}
-                      >
-                        <ExpandMoreOutlined
-                          style={{
-                            transform: expandedList[section.registrationNumber]
-                              ? "rotate(180deg)"
-                              : "rotate(0deg)",
-                            transition: "0.5s",
-                          }}
-                        ></ExpandMoreOutlined>
-                        <span
-                          style={{
-                            color: grey[700],
-                          }}
-                        >
-                          Show Recitations
-                        </span>
-                      </ExpandButton>
-                    )}
-                    <CalendarButton
-                      onClick={() =>
-                        wishlistCourse({
-                          year,
-                          semester,
-                          course: section,
-                        })
-                      }
-                    >
-                      <CalendarTodayTwoTone
-                        style={{
-                          color: styleStatus(section.status),
-                        }}
-                      />
-                      <span style={{ color: styleStatus(section.status) }}>
-                        {changeStatus(section)}
-                      </span>
-                    </CalendarButton>
-                    <CalendarButton
-                      onClick={() =>
-                        wishlistCourse({
-                          year,
-                          semester,
-                          course: section,
-                        })
-                      }
-                    >
-                      <AddBoxTwoTone
-                        style={{
-                          color: grey[700],
-                        }}
-                      />
-                      <span
-                        style={{
-                          color: grey[700],
-                        }}
-                      >
-                        Add to Wishlist
-                      </span>
-                    </CalendarButton>
-                  </UtilBar>
-                  {/* Handle Recitations */}
-                  <Collapse
-                    in={
-                      expandedList[section.registrationNumber] === undefined
-                        ? false
-                        : expandedList[section.registrationNumber]
-                    }
-                    timeout="auto"
-                    unmountOnExit
-                  >
-                    {section.recitations ? (
-                      section.recitations.map((recitation, i) => {
-                        let sortedRecitationsMeetings = recitation.meetings
-                          ? recitation.meetings.sort(
-                              (a, b) =>
-                                parseDate(a.beginDate).getDay() -
-                                parseDate(b.beginDate).getDay()
-                            )
-                          : [];
-                        return (
-                          <SectionContainer recitation={true} key={i}>
-                            {courseData.name !== recitation.name ? (
-                              <h3 className="sectionName">{recitation.name}</h3>
-                            ) : (
-                              ""
-                            )}
-                            {section.recitations.length >= 1 ? (
-                              <h4 className="sectionNum">{recitation.code}</h4>
-                            ) : (
-                              ""
-                            )}
-                            <Attributes
-                              instructors={recitation.instructors}
-                              building={
-                                splitLocation(recitation.location).Building
-                              }
-                              units={convertUnits(
-                                recitation.minUnits,
-                                recitation.maxUnits
-                              )}
-                              status={recitation.status}
-                              type={recitation.type}
-                              registrationNumber={recitation.registrationNumber}
-                            />
-                            <RecitationDescription>
-                              {recitation.notes}
-                            </RecitationDescription>
-
-                            <DateSection
-                              sortedSectionMeetings={sortedRecitationsMeetings}
-                            />
-                            <UtilBar>
-                              <CalendarButton
-                                onClick={() =>
-                                  wishlistCourse({
-                                    year,
-                                    semester,
-                                    course: recitation,
-                                  })
-                                }
-                              >
-                                <CalendarTodayTwoTone
-                                  style={{
-                                    color: styleStatus(recitation.status),
-                                  }}
-                                />
-                                <span
-                                  style={{
-                                    color: styleStatus(recitation.status),
-                                  }}
-                                >
-                                  {changeStatus(recitation)}
-                                </span>
-                              </CalendarButton>
-                              <CalendarButton>
-                                <AddBoxTwoTone
-                                  style={{
-                                    color: grey[700],
-                                  }}
-                                />
-                                <span
-                                  style={{
-                                    color: grey[700],
-                                  }}
-                                >
-                                  Add to Wishlist
-                                </span>
-                              </CalendarButton>
-                            </UtilBar>
-                          </SectionContainer>
-                        );
-                      })
-                    ) : (
-                      <> </>
-                    )}
-                  </Collapse>
-                </SectionContainer>
+                  section={section}
+                  sortedSectionMeetings={sortedSectionMeetings}
+                  courseData={courseData}
+                  year={year}
+                  semester={semester}
+                />
               );
             })}
           </CourseSections>
@@ -425,78 +203,7 @@ const SectionsHeader = styled.div`
   margin-top: calc(2vmin + 1rem);
 `;
 
-const SectionContainer = styled.div`
-  padding: 1.8vmin 2.8vmin;
-  background-color: var(--grey100);
-  width: ${(props) => (props.recitation ? "100%" : "84%")};
-  margin-left: ${(props) => (props.recitation ? "1%" : "8%")};
-  position: relative;
-
-  & > .sectionName {
-    font-size: 1.8rem;
-    font-family: var(--condensedFont);
-    color: var(--grey800);
-    margin-bottom: 0.25rem;
-  }
-
-  & > .sectionNum {
-    font-size: 1.6rem;
-    font-family: var(--condensedFont);
-    color: var(--grey700);
-    margin: 0 0 -1rem 1rem;
-  }
-
-  & > .attributes {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
-
-const ExpandButton = styled.div`
-  font-size: 1.1rem;
-  height: 100%;
-  width: 12rem;
-  border-radius: 0.6rem;
-  padding: 0.8rem 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background-color: ${grey[200]};
-  margin-right: 2rem;
-  transition: 0.1s;
-
-  :hover {
-    background-color: ${grey[300]};
-  }
-
-  & > svg {
-    margin-right: 0.65rem;
-  }
-`;
-
 const CourseSections = styled.div``;
-
-const SectionDescription = styled.div`
-  padding: 0 1.5rem 1.5rem 0.5rem;
-  max-width: 68%;
-  color: var(--grey700);
-`;
-
-const RecitationDescription = styled.div`
-  padding: 0 1.5rem 1.5rem 0.5rem;
-  max-width: 68%;
-  color: var(--grey700);
-`;
-
-const UtilBar = styled.div`
-  padding: 0.5rem;
-  height: 6vh;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  border-bottom: 1px solid;
-`;
 
 const mapStateToProps = (state, props) => ({
   wishlist: state.wishlist[props.semester + props.year] || [],

@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { parseDate, addMinutes, generateScheduleTime } from "../utils";
 import { times, dayToStr } from "../constants";
 import { CustomCheckbox } from "../components/CustomCheckbox";
+
 import styled from "styled-components";
 import SnackBar from "@material-ui/core/Snackbar";
 import { grey } from "@material-ui/core/colors";
-
-import * as actions from "../redux/modules/wishlist";
-import * as courseActions from "../redux/modules/courseSelect";
 import { FormControlLabel } from "@material-ui/core";
+
+import * as wishlistActions from "../redux/modules/wishlist";
+import * as courseActions from "../redux/modules/courseSelect";
 
 function SchedulePage({
   year,
@@ -208,9 +209,9 @@ function SchedulePage({
           {days.map((day, i) => {
             //ignoring Saturday and Sunday for now
             return day === "Sunday" || day === "Saturday" ? (
-              <> </>
+              <Fragment key={day} />
             ) : (
-              <CalendarDay>
+              <CalendarDay key={day}>
                 {day}
                 {_renderCourses(i, schedule)}
               </CalendarDay>
@@ -507,7 +508,7 @@ const mapStateToProps = (state, props) => ({
 });
 
 const allActions = {
-  ...actions,
+  ...wishlistActions,
   ...courseActions,
 };
 

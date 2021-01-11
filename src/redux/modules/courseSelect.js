@@ -5,6 +5,7 @@ const initialState = {};
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case TOGGLE_COURSE_SELECT:
+      //handle conflicting course
       if (action.payload.conflicts !== undefined) {
         return {
           ...state,

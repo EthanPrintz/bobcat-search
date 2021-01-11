@@ -94,7 +94,6 @@ SearchPage.propTypes = {
   semester: PropTypes.string.isRequired,
 };
 
-// Keyframe Animations
 const fadeIn = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
@@ -112,7 +111,6 @@ const deptFadeIn = keyframes`
   }
 `;
 
-// Styled Components
 const SearchContainer = styled.div`
   position: relative;
   min-height: 60vh;

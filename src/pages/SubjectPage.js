@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import qs from "qs";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { grey } from "@material-ui/core/colors";
 import { findSchool } from "../utils";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
+import { grey } from "@material-ui/core/colors";
 
 export default function SubjectPage({ year, semester, location }) {
   const { school, subject } = qs.parse(location.search, {
