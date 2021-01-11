@@ -209,7 +209,15 @@ function CoursePage({ year, semester, location, wishlist, wishlistCourse }) {
                         {changeStatus(section)}
                       </span>
                     </CalendarButton>
-                    <CalendarButton>
+                    <CalendarButton
+                      onClick={() =>
+                        wishlistCourse({
+                          year,
+                          semester,
+                          course: section,
+                        })
+                      }
+                    >
                       <AddBoxTwoTone
                         style={{
                           color: grey[700],

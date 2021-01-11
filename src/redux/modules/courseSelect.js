@@ -5,6 +5,28 @@ const initialState = {};
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case TOGGLE_COURSE_SELECT:
+      if (action.payload.conflicts !== undefined) {
+        return {
+          ...state,
+          [action.payload.semester + action.payload.year]: state[
+            action.payload.semester + action.payload.year
+          ].filter(function (course) {
+            if (
+              course.courseRegistrationNumber ===
+              action.payload.conflicts[0].courseRegistrationNumber
+            ) {
+              return false;
+            }
+            if (
+              course.courseRegistrationNumber ===
+              action.payload.conflicts[1].courseRegistrationNumber
+            ) {
+              return false;
+            }
+            return true;
+          }),
+        };
+      }
       // let { year, semester,  courseRegistrationNumber, recitationRegistrationNumber } = action.payload;
       if (
         state[action.payload.semester + action.payload.year] !== undefined &&

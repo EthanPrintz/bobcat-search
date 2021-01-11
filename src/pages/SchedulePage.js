@@ -73,12 +73,10 @@ function SchedulePage({
           toggleCourseSelect({
             year,
             semester,
-            courseRegistrationNumber: data.conflictA.registrationNumber,
-          });
-          toggleCourseSelect({
-            year,
-            semester,
-            courseRegistrationNumber: data.conflictB.registrationNumber,
+            conflicts: [
+              { courseRegistrationNumber: data.conflictA.registrationNumber },
+              { courseRegistrationNumber: data.conflictB.registrationNumber },
+            ],
           });
         } else {
           setSchedule(data);
@@ -188,6 +186,16 @@ function SchedulePage({
       </CourseBlock>
     ));
 
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
   return (
     <Container>
       <Calendar>
@@ -197,26 +205,17 @@ function SchedulePage({
           })}
         </TimeGrid>
         <CourseCalendar>
-          <CalendarDay>
-            Monday
-            {_renderCourses(1, schedule)}
-          </CalendarDay>
-          <CalendarDay>
-            Tuesday
-            {_renderCourses(2, schedule)}
-          </CalendarDay>
-          <CalendarDay>
-            Wednesday
-            {_renderCourses(3, schedule)}
-          </CalendarDay>
-          <CalendarDay>
-            Thursday
-            {_renderCourses(4, schedule)}
-          </CalendarDay>
-          <CalendarDay>
-            Friday
-            {_renderCourses(5, schedule)}
-          </CalendarDay>
+          {days.map((day, i) => {
+            //ignoring Saturday and Sunday for now
+            return day === "Sunday" || day === "Saturday" ? (
+              <> </>
+            ) : (
+              <CalendarDay>
+                {day}
+                {_renderCourses(i, schedule)}
+              </CalendarDay>
+            );
+          })}
           {Array(65)
             .fill(1)
             .map((item, i) => {
@@ -501,16 +500,6 @@ const TextContainer = styled.div`
     }
   }
 `;
-
-// const CalendarWeekend = styled.div`
-//   width: 100%;
-//   min-height: 20vh;
-//   border: 1px solid var(--grey300);
-//   padding: 15px;
-//   @media (max-width: 1000px) {
-//     min-height: 75px;
-//   }
-// `;
 
 const mapStateToProps = (state, props) => ({
   wishlist: state.wishlist[props.semester + props.year] || [],
