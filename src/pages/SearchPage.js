@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-
 import PropTypes from "prop-types";
 import styled, { keyframes } from "styled-components";
-import { grey } from "@material-ui/core/colors";
 
 import SearchBar from "../components/SearchBar";
-
-import { findSchool } from "../utils";
+import School from "../components/School";
 
 export default function SearchPage({ year, semester }) {
   const [departments, setDepartments] = useState({ loading: true, data: {} });
-  const [schools, setSchools] = useState({ loading: true, data: {} });
+  const [schools, setSchools] = useState({
+    loading: true,
+    data: {
+      undergraduate: {},
+      graduate: {},
+      others: {},
+    },
+  });
 
   useEffect(() => {
     (async () => {
@@ -36,7 +39,25 @@ export default function SearchPage({ year, semester }) {
           return;
         }
         const data = await response.json();
-        setSchools(() => ({ loading: false, data }));
+        const undergraduate = {},
+          graduate = {},
+          others = {};
+        Object.keys(data).forEach((schoolCode) => {
+          if (schoolCode.startsWith("G")) {
+            graduate[schoolCode] = data[schoolCode];
+          } else if (
+            schoolCode.startsWith("U") ||
+            data[schoolCode].name !== ""
+          ) {
+            undergraduate[schoolCode] = data[schoolCode];
+          } else {
+            others[schoolCode] = data[schoolCode];
+          }
+        });
+        setSchools(() => ({
+          loading: false,
+          data: { undergraduate, graduate, others },
+        }));
       } catch (error) {
         console.error(error);
       }
@@ -52,39 +73,33 @@ export default function SearchPage({ year, semester }) {
         <div id="departmentTitle">Schools</div>
         {!schools.loading && !departments.loading && (
           <Schools>
-            {Object.keys(departments.data)
-              .sort((a, b) => {
-                return (
-                  Object.keys(departments.data[b]).length -
-                  Object.keys(departments.data[a]).length
-                );
-              })
-              .map((schoolCode, i) => (
-                <School key={i}>
-                  <Link
-                    className="schoolLink"
-                    to={{
-                      pathname: "/school",
-                      search: `?school=${schoolCode}`,
-                      state: {
-                        schoolName: schools.data[schoolCode]
-                          ? schools.data[schoolCode].name
-                          : findSchool(schoolCode),
-                      },
-                    }}
-                    style={{ textDecoration: "none" }}
-                  >
-                    <div className="schoolTitle">
-                      <span className="schoolCode">{schoolCode}</span>
-                      <span className="schoolName">
-                        {schools.data[schoolCode]
-                          ? schools.data[schoolCode].name
-                          : findSchool(schoolCode)}
-                      </span>
-                    </div>
-                  </Link>
-                </School>
+            <div>
+              <SchoolType>Undergraduate</SchoolType>
+              {Object.keys(schools.data.undergraduate).map((schoolCode, i) => (
+                <School
+                  key={i}
+                  schoolCode={schoolCode}
+                  schoolName={schools.data.undergraduate[schoolCode].name}
+                />
               ))}
+              {Object.keys(schools.data.others).map((schoolCode, i) => (
+                <School
+                  key={i}
+                  schoolCode={schoolCode}
+                  schoolName={schools.data.others[schoolCode].name}
+                />
+              ))}
+            </div>
+            <div>
+              <SchoolType>Graduate</SchoolType>
+              {Object.keys(schools.data.graduate).map((schoolCode, i) => (
+                <School
+                  key={i}
+                  schoolCode={schoolCode}
+                  schoolName={schools.data.graduate[schoolCode].name}
+                />
+              ))}
+            </div>
           </Schools>
         )}
       </SchoolsContainer>
@@ -150,29 +165,11 @@ const Schools = styled.div`
   }
 `;
 
-const School = styled.div`
-  padding: 0.25rem 0;
-  cursor: pointer;
-
-  & > .schoolLink > .schoolTitle {
-    font-size: 1.2rem;
-    font-family: var(--condensedFont);
-    text-align: left;
-    margin: 0.2rem 0;
-    position: sticky;
-
-    & > .schoolCode {
-      padding: 0.5rem;
-      color: var(--grey600);
-      font-weight: 800;
-    }
-
-    & > .schoolName {
-      color: var(--grey900);
-    }
-  }
-
-  &:hover {
-    background-color: ${grey[400]};
-  }
+const SchoolType = styled.div`
+  font-size: 1.5rem;
+  padding: 1rem 0.5rem;
+  font-weight: bold;
+  color: var(--grey700);
+  top: 0.3rem;
+  animation: ${fadeIn} 1.2s ease forwards;
 `;
