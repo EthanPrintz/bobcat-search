@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import PropTypes from "prop-types";
 import qs from "qs";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
 import { grey } from "@material-ui/core/colors";
+
+import { findSchool } from "../utils";
 
 export default function SubjectPage({ year, semester, location }) {
   const { school, subject } = qs.parse(location.search, {
@@ -75,11 +78,25 @@ export default function SubjectPage({ year, semester, location }) {
       ) && (
         <div>
           <DepartmentHeader>
-            <SchoolName>
-              {schoolList.data[school].name
-                ? schoolList.data[school].name
-                : school}
-            </SchoolName>
+            <Link
+              to={{
+                pathname: "/school",
+                search: `?school=${school}`,
+                state: {
+                  schoolName: schoolList.data[school]
+                    ? schoolList.data[school].name
+                    : findSchool(school),
+                },
+              }}
+              style={{ textDecoration: "none" }}
+            >
+              <SchoolName>
+                {schoolList.data[school]
+                  ? schoolList.data[school].name
+                  : school}
+              </SchoolName>
+            </Link>
+
             <DepartmentName>
               {departmentList.data[school][subject].name
                 ? departmentList.data[school][subject].name
@@ -121,8 +138,6 @@ SubjectPage.propTypes = {
   }),
 };
 
-// Styled components
-
 const PageContainer = styled.div`
   background-color: ${grey[200]};
   width: 100vw;
@@ -163,7 +178,7 @@ const CourseContainer = styled.div`
 const Course = styled.div`
   padding: 0.75vmax 3vmin;
   word-break: break-word;
-  width: 30vmin;
+  width: 60vmin;
   min-height: 5vmax;
   background-color: ${grey[100]};
   margin: 1vmax;

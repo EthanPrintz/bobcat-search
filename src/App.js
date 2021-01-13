@@ -8,19 +8,56 @@ import {
   NavLink,
 } from "react-router-dom";
 
-// Page Imports
+import styled from "styled-components";
+import { Select, MenuItem } from "@material-ui/core";
+import InputBase from "@material-ui/core/InputBase";
+
 import SearchPage from "./pages/SearchPage";
 import SchoolPage from "./pages/SchoolPage";
 import SubjectPage from "./pages/SubjectPage";
 import CoursePage from "./pages/CoursePage";
 import SchedulePage from "./pages/SchedulePage";
 
+const BootstrapInput = styled(InputBase)`
+  border-radius: 4px;
+  border: 1px solid #9e9e9e;
+  font-size: 1rem;
+  padding: 10px 26px 10px 12px;
+  font-weight: bold;
+  color: var(--grey800);
+  font-family: var(--primaryFont);
+  transition: border-color 300ms, box-shadow 300ms;
+
+  &:focus {
+    border-radius: 4px;
+  }
+`;
+
 function App() {
   const getPath = () => window.location.pathname + window.location.search;
 
+  const options = [
+    {
+      name: "Fall 2020",
+      code: "fa-2020",
+    },
+    {
+      name: "January 2021",
+      code: "ja-2021",
+    },
+    {
+      name: "Spring 2021",
+      code: "sp-2021",
+    },
+    {
+      name: "Summer 2021",
+      code: "su-2021",
+    },
+  ];
+
   /* eslint-disable no-unused-vars */
-  const [year, setYear] = useState(2020);
-  const [semester, setSemester] = useState("fa");
+  const [year, setYear] = useState(2021);
+  const [semester, setSemester] = useState("sp");
   // if we start on schedule page, the first toggle brings us to home
   // otherwise, the first toggle brings us to schedule page
   const [toggle, setToggle] = useState(
@@ -28,14 +65,38 @@ function App() {
   );
   /* eslint-enable no-unused-vars */
 
+  const handleOnChange = (event) => {
+    const code = event.target.value;
+    const [sem, currYear] = code.split("-");
+    setSemester(sem);
+    setYear(parseInt(currYear));
+  };
+
   return (
     <Router>
       <div className="App">
         <nav>
           <ul>
-            <li id="title">
-              <Link to="/">Bobcat Search</Link>
-            </li>
+            <ul>
+              <li id="title">
+                <Link to="/">Bobcat Search</Link>
+              </li>
+              <Select
+                displayEmpty
+                onChange={handleOnChange}
+                defaultValue={`${semester}-${year}`}
+                value={`${semester}-${year}`}
+                input={<BootstrapInput />}
+              >
+                {options.map((item) => {
+                  return (
+                    <MenuItem key={item.name} value={item.code}>
+                      {item.name}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </ul>
             <li className="icon">
               {toggle !== "/schedule" ? (
                 <NavLink to={toggle} onClick={() => setToggle("/schedule")}>

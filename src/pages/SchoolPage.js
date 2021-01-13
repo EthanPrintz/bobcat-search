@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import qs from "qs";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
+import styled, { keyframes } from "styled-components";
+import { grey } from "@material-ui/core/colors";
 
 export default function SchoolPage({ location }) {
   const { school } = qs.parse(location.search, {
     ignoreQueryPrefix: true,
   });
+  const { schoolName } = location.state ?? { schoolName: school };
   const [loading, setLoading] = useState(true);
   const [schoolData, setSchoolData] = useState({});
 
@@ -27,16 +29,16 @@ export default function SchoolPage({ location }) {
         console.error(error);
       }
     })();
-  }, [setSchoolData]);
+  }, [school, setSchoolData]);
 
   return (
-    <div>
+    <PageContainer>
       <DepartmentHeader>
-        <div id="departmentTitle">{school}</div>
+        <div id="departmentTitle">{schoolName}</div>
       </DepartmentHeader>
       {loading && <span>Loading...</span>}
       {!loading && (
-        <div>
+        <Departments>
           {Object.keys(schoolData).map((subjectid, i) => {
             const subject = schoolData[subjectid];
             return (
@@ -48,30 +50,76 @@ export default function SchoolPage({ location }) {
                 key={i}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <div
-                  style={{
-                    padding: 15,
-                  }}
-                >
-                  <span>{subjectid}</span>-<span>{subject.name}</span>
-                </div>
+                <Department>
+                  <span className="departmentCode">{subjectid}</span>
+                  <span className="departmentName">
+                    &nbsp;
+                    {subject.name}
+                  </span>
+                </Department>
               </Link>
             );
           })}
-        </div>
+        </Departments>
       )}
-    </div>
+    </PageContainer>
   );
 }
 
 SchoolPage.propTypes = {
   location: PropTypes.shape({
     search: PropTypes.string.isRequired,
+    state: PropTypes.object,
   }),
 };
 
+const deptFadeIn = keyframes`
+  from {
+    opacity: 0;
+    padding-top: 6rem;
+  }
+
+  to {
+    opacity: 1;
+    padding-top: 4rem;
+  }
+`;
+
+const PageContainer = styled.div`
+  background-color: ${grey[200]};
+  width: 100vw;
+  min-height: 100vh;
+`;
+
 const DepartmentHeader = styled.div`
   width: 100vw;
-  padding: 3vmin;
-  font-size: cacl(1vmin + 1rem);
+  padding: 2vmin 2vmin 0vmin 4vmin;
+  font-size: 2rem;
+  color: ${grey[900]};
+`;
+
+const Departments = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(22rem, 1fr));
+  grid-gap: 0.5rem;
+  padding: 0 2rem;
+  animation: ${deptFadeIn} 0.8s ease forwards;
+  @media (max-width: 1000px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Department = styled.div`
+  padding: 0.3rem 0;
+
+  & > .departmentCode {
+    color: var(--grey600);
+    font-family: var(--condensedFont);
+    font-weight: 700;
+  }
+
+  &:hover {
+    background-color: ${grey[300]};
+  }
 `;

@@ -15,5 +15,9 @@ export default function createStore(data) {
     _createStore
   );
 
-  return finalCreateStore(reducer, data);
+  return finalCreateStore(
+    reducer,
+    data,
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  );
 }

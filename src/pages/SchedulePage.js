@@ -1,76 +1,242 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+
+import PropTypes from "prop-types";
 import styled from "styled-components";
+import SnackBar from "@material-ui/core/Snackbar";
+import { grey } from "@material-ui/core/colors";
 
-import * as actions from "../redux/modules/wishlist";
+import WishlistCourse from "../components/WishlistCourse";
+import Calendar from "../components/Calendar";
+import ScheduleCourse from "../components/ScheduleCourse";
 
-function SchedulePage({ year, semester, wishlist, clearWishlist }) {
-  const _renderCourses = (dayNum, wishlist) =>
-    wishlist
-      .filter(
-        (course) =>
-          course.meetings.filter(
-            (meeting) => new Date(meeting.beginDate).getDay() === dayNum
-          ).length > 0
-      )
-      .map((course, i) => (
-        <div key={i} style={{ marginTop: "0.5em" }}>
-          <h3>{course.name}</h3>
-        </div>
-      ));
+import { dayToStr } from "../constants";
+
+import * as wishlistActions from "../redux/modules/wishlist";
+import * as courseActions from "../redux/modules/courseSelect";
+
+function SchedulePage({
+  year,
+  semester,
+  wishlist,
+  wishlistCourse,
+  scheduled,
+  toggleCourseSelect,
+  clearSchedule,
+}) {
+  const [schedule, setSchedule] = useState({});
+  const [checkboxes, setCheckboxes] = useState(
+    JSON.parse(localStorage.getItem(`${year}-${semester}-checkbox-state`)) || {}
+  );
+  const [Toast, setToast] = useState({
+    open: false,
+    message: "",
+    horizontal: "center",
+    vertical: "top",
+  });
+  const { open, message, horizontal, vertical } = Toast;
+
+  useEffect(() => {
+    (async () => {
+      try {
+        //Empty wishlist and schedule so clear schedule state
+        if (wishlist.length === 0) {
+          setSchedule({});
+          return;
+        }
+        if (scheduled.length === 0) {
+          setSchedule({});
+          return;
+        }
+        //Make request to API to check schedule validity
+        const response = await fetch(
+          `https://schedge.a1liu.com/${year}/${semester}/generateSchedule?registrationNumbers=${scheduled
+            .map((course) => course.courseRegistrationNumber)
+            .join(",")}`
+        );
+
+        //handle invalid data
+        if (!response.ok) {
+          return;
+        }
+        const data = await response.json();
+        //if not valid, make toast visible and clear checkboxes
+        if (!data.valid) {
+          setToast({
+            open: true,
+            message: `${data.conflictA.sectionName} & ${data.conflictB.sectionName} conflicts with one another!`, //make message more meaningful
+            horizontal: "center",
+            vertical: "top",
+          });
+          //Remove both conflicted course
+          let newCheckboxes = { ...checkboxes };
+          newCheckboxes[data.conflictA.registrationNumber] = false;
+          newCheckboxes[data.conflictB.registrationNumber] = false;
+          setCheckboxes(newCheckboxes);
+          localStorage.setItem(
+            `${year}-${semester}-checkbox-state`,
+            JSON.stringify(newCheckboxes)
+          );
+          toggleCourseSelect({
+            year,
+            semester,
+            conflicts: [
+              { courseRegistrationNumber: data.conflictA.registrationNumber },
+              { courseRegistrationNumber: data.conflictB.registrationNumber },
+            ],
+          });
+        } else {
+          setSchedule(data);
+        }
+        //handle layout data from schedge
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [
+    year,
+    semester,
+    scheduled,
+    checkboxes,
+    toggleCourseSelect,
+    wishlist.length,
+  ]);
+
+  const handleClearSchedule = () => {
+    clearSchedule({ year, semester });
+    setCheckboxes({});
+    localStorage.setItem(
+      `${year}-${semester}-checkbox-state`,
+      JSON.stringify({})
+    );
+  };
+
+  const handleOnClose = () => {
+    setToast({
+      open: false,
+      message: "",
+      horizontal: "center",
+      vertical: "top",
+    });
+  };
+
+  const removeCourse = (course) => {
+    wishlistCourse({
+      year,
+      semester,
+      course,
+    });
+    if (
+      checkboxes[course.registrationNumber] !== undefined &&
+      checkboxes[course.registrationNumber]
+    ) {
+      toggleCourseSelect({
+        year,
+        semester,
+        courseRegistrationNumber: course.registrationNumber,
+      });
+    }
+    let newCheckboxes = { ...checkboxes };
+    newCheckboxes[course.registrationNumber] = false;
+    setCheckboxes(newCheckboxes);
+    localStorage.setItem(
+      `${year}-${semester}-checkbox-state`,
+      JSON.stringify(newCheckboxes)
+    );
+  };
+
+  const handleOnChange = (event, course, checkbox) => {
+    if (event.target.checked) {
+      if (!scheduled.includes(course.registrationNumber)) {
+        toggleCourseSelect({
+          year,
+          semester,
+          courseRegistrationNumber: course.registrationNumber,
+        });
+      }
+    } else {
+      toggleCourseSelect({
+        year,
+        semester,
+        courseRegistrationNumber: course.registrationNumber,
+      });
+    }
+    let newCheckboxes = { ...checkboxes };
+    newCheckboxes[checkbox] = event.target.checked;
+    setCheckboxes(newCheckboxes);
+    localStorage.setItem(
+      `${year}-${semester}-checkbox-state`,
+      JSON.stringify(newCheckboxes)
+    );
+  };
+
+  const _renderCourses = (dayNum) =>
+    schedule[dayToStr[dayNum]] !== undefined &&
+    Object.values(schedule[dayToStr[dayNum]]).map((course, i) => {
+      return <ScheduleCourse course={course} key={i} />;
+    });
 
   return (
-    <div style={{ padding: "2rem 10vw" }}>
-      <CourseCalendar>
-        <CalendarDay>
-          Monday
-          {_renderCourses(1, wishlist)}
-        </CalendarDay>
-        <CalendarDay>
-          Tuesday
-          {_renderCourses(2, wishlist)}
-        </CalendarDay>
-        <CalendarDay>
-          Wednesday
-          {_renderCourses(3, wishlist)}
-        </CalendarDay>
-        <CalendarDay>
-          Thursday
-          {_renderCourses(4, wishlist)}
-        </CalendarDay>
-        <CalendarDay>
-          Friday
-          {_renderCourses(5, wishlist)}
-        </CalendarDay>
-        <div>
-          <CalendarWeekend>
-            Saturday
-            {_renderCourses(6, wishlist)}
-          </CalendarWeekend>
-          <CalendarWeekend>
-            Sunday
-            {_renderCourses(0, wishlist)}
-          </CalendarWeekend>
-        </div>
-      </CourseCalendar>
-      {wishlist.length === 0 ? (
-        <span>No courses wishlisted yet!</span>
-      ) : (
-        <div>
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => clearWishlist({ year, semester })}
-            onKeyPress={() => clearWishlist({ year, semester })}
-            role="button"
-            tabIndex={0}
-          >
-            Clear Wishlist
-          </div>
-          {}
-        </div>
-      )}
-    </div>
+    <Container>
+      <Calendar renderCourses={_renderCourses} />
+      <div
+        style={{
+          marginTop: "2rem",
+        }}
+      >
+        <Header>
+          <h2 className="wishlist">{`Wishlist (${wishlist.length})`}</h2>
+        </Header>
+        <WishlistCoursesList>
+          {wishlist.length === 0 ? (
+            <EmptyWishlistContainer>
+              Your wishlist appears empty!
+              <Link
+                to={{
+                  pathname: "/",
+                }}
+                style={{ textDecoration: "none", color: "purpleLight" }}
+              >
+                {" "}
+                Search{" "}
+              </Link>
+              for courses to add to your wishlist
+            </EmptyWishlistContainer>
+          ) : (
+            wishlist.map((course, i) => {
+              return (
+                <WishlistCourse
+                  key={i}
+                  year={year}
+                  semester={semester}
+                  course={course}
+                  checkboxes={checkboxes}
+                  removeCourse={removeCourse}
+                  handleOnChange={handleOnChange}
+                />
+              );
+            })
+          )}
+        </WishlistCoursesList>
+        <ClearScheduleButton
+          onClick={handleClearSchedule}
+          onKeyPress={() => clearSchedule({ year, semester })}
+          role="button"
+          tabIndex={0}
+        >
+          Clear Schedule
+        </ClearScheduleButton>
+      </div>
+      <SnackBar
+        anchorOrigin={{ vertical, horizontal }}
+        open={open}
+        message={message}
+        autoHideDuration={2000}
+        onClose={handleOnClose}
+        key={"top center"}
+      />
+    </Container>
   );
 }
 
@@ -78,37 +244,54 @@ SchedulePage.propTypes = {
   year: PropTypes.number.isRequired,
   semester: PropTypes.string.isRequired,
   wishlist: PropTypes.arrayOf(PropTypes.object).isRequired,
-  clearWishlist: PropTypes.func.isRequired,
+  wishlistCourse: PropTypes.func.isRequired,
+  scheduled: PropTypes.arrayOf(PropTypes.object).isRequired,
+  toggleCourseSelect: PropTypes.func.isRequired,
+  clearSchedule: PropTypes.func.isRequired,
 };
 
-const CourseCalendar = styled.div`
+const Container = styled.div`
+  padding: 2rem 5vw;
+  display: flex;
+  justify-content: center;
+  background-color: ${grey[200]};
+`;
+
+const Header = styled.div`
+  display: flex;
   width: 100%;
-  margin: 4vmin auto;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  @media (max-width: 1000px) {
-    grid-template-columns: 1fr;
+  height: 3rem;
+  background-color: var(--purpleMain);
+  align-items: center;
+  justify-content: center;
+
+  & > .wishlist {
+    font-size: 1rem;
+    color: var(--grey200);
   }
 `;
 
-const CalendarDay = styled.div`
-  width: 100%;
-  min-height: 40vh;
-  border: 1px solid var(--grey300);
-  padding: 15px;
-  @media (max-width: 1000px) {
-    min-height: 150px;
-  }
+const WishlistCoursesList = styled.div`
+  height: 100vh;
+  width: 20rem;
+  background-color: var(--grey200);
+  overflow: scroll;
 `;
 
-const CalendarWeekend = styled.div`
-  width: 100%;
-  min-height: 20vh;
-  border: 1px solid var(--grey300);
-  padding: 15px;
-  @media (max-width: 1000px) {
-    min-height: 75px;
-  }
+const ClearScheduleButton = styled.div`
+  width: 50%;
+  cursor: pointer;
+  margin-top: 1rem;
+  color: #bd2f2f;
+  border-radius: 6px;
+  border: 2px solid #bd2f2f;
+  text-align: center;
+  padding: 0 5px;
+`;
+
+const EmptyWishlistContainer = styled.div`
+  color: var(--grey800);
+  padding: 10px;
 `;
 
 const mapStateToProps = (state, props) => ({
@@ -116,4 +299,9 @@ const mapStateToProps = (state, props) => ({
   scheduled: state.scheduled[props.semester + props.year] || [],
 });
 
-export default connect(mapStateToProps, actions)(SchedulePage);
+const allActions = {
+  ...wishlistActions,
+  ...courseActions,
+};
+
+export default connect(mapStateToProps, allActions)(SchedulePage);
