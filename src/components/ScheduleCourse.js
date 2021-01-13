@@ -6,6 +6,9 @@ import { parseDate, addMinutes } from "../utils";
 export default function ScheduleCourse({ course }) {
   const computeMargin = (startTime) => {
     const parsedDate = parseDate(startTime);
+    // The start time is 8:00. The size of each grid block is 4rem. We need a margin
+    // top of: (currenthours - 8:00) * 4rem + (currentMinutes/60) * 4rem.
+    // We add 1rem extra to ensure no collision between block during rendering
     return (
       (parsedDate.getHours() - 8) * 4 + (parsedDate.getMinutes() / 60) * 4 + 1
     );

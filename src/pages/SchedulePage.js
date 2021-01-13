@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -14,7 +15,6 @@ import { dayToStr } from "../constants";
 
 import * as wishlistActions from "../redux/modules/wishlist";
 import * as courseActions from "../redux/modules/courseSelect";
-import { Link } from "react-router-dom";
 
 function SchedulePage({
   year,

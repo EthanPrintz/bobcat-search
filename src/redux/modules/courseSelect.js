@@ -11,20 +11,14 @@ export default function reducer(state = initialState, action = {}) {
           ...state,
           [action.payload.semester + action.payload.year]: state[
             action.payload.semester + action.payload.year
-          ].filter(function (course) {
-            if (
+          ].filter((course) => {
+            const isFirstConflict =
               course.courseRegistrationNumber ===
-              action.payload.conflicts[0].courseRegistrationNumber
-            ) {
-              return false;
-            }
-            if (
+              action.payload.conflicts[0].courseRegistrationNumber;
+            const isSecondConflict =
               course.courseRegistrationNumber ===
-              action.payload.conflicts[1].courseRegistrationNumber
-            ) {
-              return false;
-            }
-            return true;
+              action.payload.conflicts[1].courseRegistrationNumber;
+            return !isFirstConflict && !isSecondConflict;
           }),
         };
       }

@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import qs from "qs";
 import styled from "styled-components";
 import Section from "../components/Section";
-import { parseDate } from "../utils"; // eslint-disable-line no-unused-vars
+import { parseDate } from "../utils";
 
 import * as actions from "../redux/modules/wishlist";
 // Import major progressions

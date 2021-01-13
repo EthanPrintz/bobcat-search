@@ -1,6 +1,15 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import styled from "styled-components";
+import {
+  CalendarTodayTwoTone,
+  AddBoxTwoTone,
+  ExpandMoreOutlined,
+} from "@material-ui/icons";
+import { grey } from "@material-ui/core/colors";
+import { Collapse } from "@material-ui/core";
+
 import Attributes from "./Attributes";
 import DateSection from "./DateSection";
 import Recitation from "../components/Recitation";
@@ -10,15 +19,8 @@ import {
   changeStatus,
   styleStatus,
   parseDate,
-} from "../utils"; // eslint-disable-line no-unused-vars
-import styled from "styled-components";
-import {
-  CalendarTodayTwoTone,
-  AddBoxTwoTone,
-  ExpandMoreOutlined,
-} from "@material-ui/icons";
-import { grey } from "@material-ui/core/colors";
-import { Collapse } from "@material-ui/core";
+} from "../utils";
+
 // Import major progressions
 import * as actions from "../redux/modules/wishlist";
 
@@ -143,11 +145,7 @@ function Section({
         </CalendarButton>
       </UtilBar>
       <Collapse
-        in={
-          expandedList[section.registrationNumber] === undefined
-            ? false
-            : expandedList[section.registrationNumber]
-        }
+        in={expandedList[section.registrationNumber] ?? false}
         timeout="auto"
         unmountOnExit
       >
