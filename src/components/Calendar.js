@@ -7,13 +7,12 @@ export default function Calendar({ renderCourses }) {
   return (
     <CalendarContainer>
       <TimeGrid>
-        {times.map((time, i) => {
-          return <Time key={i}> {time} </Time>;
-        })}
+        {times.map((time, i) => (
+          <Time key={i}> {time} </Time>
+        ))}
       </TimeGrid>
       <CourseCalendar>
         {Object.keys(days).map((dayNumber, i) => {
-          // eslint-disable-line no-unused-vars
           //ignoring Saturday and Sunday for now
           return days[dayNumber] === "Sunday" ||
             days[dayNumber] === "Saturday" ? (

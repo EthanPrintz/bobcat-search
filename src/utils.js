@@ -53,7 +53,7 @@ export function addMinutes(date, minutes) {
   return new Date(date.getTime() + minutes * 60000);
 }
 
-export function compareTime(timeA, timeB) {
+export function isEqualTime(timeA, timeB) {
   return (
     timeA.getHours() === timeB.getHours() &&
     timeA.getMinutes() === timeB.getMinutes() &&
@@ -61,68 +61,48 @@ export function compareTime(timeA, timeB) {
   );
 }
 
-export function generateScheduleTime(meetings) {
-  const parsedDates = [];
-  meetings.forEach((meeting) => {
-    parsedDates.push(parseDate(meeting.beginDate));
+export function convertToLocaleTimeStr(parsedDate) {
+  return parsedDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
   });
-  parsedDates.sort((a, b) => a - b);
+}
+
+export function generateScheduleTime(meetings) {
+  //parse meeting time and sort based on day
+  const parsedMeetings = meetings
+    .map((meeting) => {
+      const parsedDate = parseDate(meeting.beginDate);
+      const endTime = addMinutes(parsedDate, meeting.minutesDuration);
+      return {
+        startTime: parsedDate,
+        startTimeStr: convertToLocaleTimeStr(parsedDate),
+        day: parsedDate.getDay(),
+        endTime: endTime,
+        endTimeStr: convertToLocaleTimeStr(endTime),
+      };
+    })
+    .sort((a, b) => a.day - b.day);
+
   if (meetings.length === 1) {
-    let day = dayToStr[parsedDates[0].getDay()].toUpperCase();
-    let startTime = parsedDates[0].toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    let endTime = addMinutes(
-      parsedDates[0],
-      meetings[0].minutesDuration
-    ).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    return `${day} ${startTime}-${endTime}`;
+    //meeting only once per week
+    const day = dayToStr[parsedMeetings[0].day].toUpperCase();
+    return `${day} ${parsedMeetings[0].startTimeStr}-${parsedMeetings[1].endTimeStr}`;
   } else if (meetings.length === 2) {
-    if (compareTime(parsedDates[0], parsedDates[1])) {
-      let firstDay = dayToStr[parsedDates[0].getDay()].toUpperCase();
-      let secondDay = dayToStr[parsedDates[1].getDay()].toUpperCase();
-      let startTime = parsedDates[0].toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      let endTime = addMinutes(
-        parsedDates[0],
-        meetings[0].minutesDuration
-      ).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      return `${firstDay},${secondDay} ${startTime}-${endTime}`;
+    if (isEqualTime(parsedMeetings[0].startTime, parsedMeetings[1].startTime)) {
+      //2 meetings a week are identical
+      const firstDay = dayToStr[parsedMeetings[0].day].toUpperCase();
+      const secondDay = dayToStr[parsedMeetings[1].day].toUpperCase();
+      return `${firstDay},${secondDay} ${parsedMeetings[0].startTimeStr}-${parsedMeetings[0].endTimeStr}`;
     } else {
-      let firstDay = dayToStr[parsedDates[0].getDay()].toUpperCase();
-      let secondDay = dayToStr[parsedDates[1].getDay()].toUpperCase();
-      let firstStartTime = parsedDates[0].toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
+      //handle if 2 meetings a week aren't identical
+      let res = "";
+      parsedMeetings.forEach((parsedMeeting, i) => {
+        const day = dayToStr[parsedMeeting.day].toUpperCase();
+        res += `${day} ${parsedMeeting.startTimeStr}-${parsedMeeting.endTimeStr}`;
+        if (i !== parsedMeetings.length - 1) res += ". ";
       });
-      let firstEndTime = addMinutes(
-        parsedDates[0],
-        meetings[0].minutesDuration
-      ).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      let secondStartTime = parsedDates[1].toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      let secondEndTime = addMinutes(
-        parsedDates[1],
-        meetings[1].minutesDuration
-      ).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      return `${firstDay} ${firstStartTime}-${firstEndTime}. ${secondDay} ${secondStartTime}-${secondEndTime}`;
+      return res;
     }
   }
   //TODO: Handle if there are more than 2 different meeting time
@@ -130,8 +110,5 @@ export function generateScheduleTime(meetings) {
 }
 
 export function findSchool(school) {
-  if (missingPrograms[school]) {
-    return missingPrograms[school];
-  }
-  return "";
+  return missingPrograms[school] ?? "";
 }

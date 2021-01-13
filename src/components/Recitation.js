@@ -1,6 +1,11 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
+
+import styled from "styled-components";
+import { CalendarTodayTwoTone, AddBoxTwoTone } from "@material-ui/icons";
+import { grey } from "@material-ui/core/colors";
+
 import Attributes from "./Attributes";
 import DateSection from "./DateSection";
 import {
@@ -9,9 +14,7 @@ import {
   changeStatus,
   styleStatus,
 } from "../utils"; // eslint-disable-line no-unused-vars
-import styled from "styled-components";
-import { CalendarTodayTwoTone, AddBoxTwoTone } from "@material-ui/icons";
-import { grey } from "@material-ui/core/colors";
+
 import * as actions from "../redux/modules/wishlist";
 
 function Recitation({
@@ -21,13 +24,13 @@ function Recitation({
   recitation,
   sortedRecitationsMeetings,
   courseName,
+  lastRecitation,
 }) {
+  console.log(lastRecitation);
   return (
-    <RecitationContainer>
-      {courseName !== recitation.name ? (
+    <RecitationContainer lastRecitation={lastRecitation}>
+      {courseName !== recitation.name && (
         <h3 className="sectionName">{recitation.name}</h3>
-      ) : (
-        ""
       )}
       <h4 className="sectionNum">{recitation.code}</h4>
       <Attributes
@@ -40,7 +43,9 @@ function Recitation({
       />
       <RecitationDescription>{recitation.notes}</RecitationDescription>
 
-      <DateSection sortedSectionMeetings={sortedRecitationsMeetings} />
+      {sortedRecitationsMeetings && (
+        <DateSection sortedSectionMeetings={sortedRecitationsMeetings} />
+      )}
       <UtilBar>
         <CalendarButton
           onClick={() =>
@@ -90,6 +95,7 @@ Recitation.propTypes = {
   recitation: PropTypes.object.isRequired,
   sortedRecitationsMeetings: PropTypes.array.isRequired,
   courseName: PropTypes.string.isRequired,
+  lastRecitation: PropTypes.bool.isRequired,
 };
 
 const RecitationContainer = styled.div`
@@ -98,6 +104,7 @@ const RecitationContainer = styled.div`
   width: 100%;
   margin-left: 1%;
   position: relative;
+  border-bottom: ${(props) => (props.lastRecitation ? "" : "1px solid")};
 
   & > .sectionName {
     font-size: 1.8rem;
@@ -131,7 +138,6 @@ const UtilBar = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  border-bottom: 1px solid;
 `;
 
 const CalendarButton = styled.div`

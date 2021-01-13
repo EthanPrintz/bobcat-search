@@ -1,10 +1,11 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { generateScheduleTime } from "../utils";
-import { CustomCheckbox } from "../components/CustomCheckbox";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FormControlLabel } from "@material-ui/core";
+import Checkbox from "@material-ui/core/Checkbox";
+import { generateScheduleTime } from "../utils";
+
 import * as wishlistActions from "../redux/modules/wishlist";
 import * as courseActions from "../redux/modules/courseSelect";
 
@@ -35,7 +36,7 @@ function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
           </div>
         </div>
         <WishlistUtilBox>
-          <FormControlLabel
+          <CustomFormControlLabel
             value="add"
             control={
               <CustomCheckbox
@@ -47,20 +48,10 @@ function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
                 onChange={(e) =>
                   handleOnChange(e, course, course.registrationNumber)
                 }
-              >
-                {" "}
-              </CustomCheckbox>
+              />
             }
             label="Schedule"
             labelPlacement="start"
-            style={{
-              margin: "0",
-              color: "black",
-              backgroundColor: "var(--grey400)",
-              borderRadius: "5px",
-              padding: "0 8px",
-              fontWeight: "bold",
-            }}
           />
           <div
             role="button"
@@ -106,6 +97,22 @@ const WishlistUtilBox = styled.div`
     color: #bd2f2f;
     font-size: 0.9rem;
     margin-left: 1rem;
+  }
+`;
+
+const CustomFormControlLabel = styled(FormControlLabel)`
+  margin: 0;
+  color: black;
+  background-color: var(--grey400);
+  border-radius: 5px;
+  padding: 0 8px;
+  font-weight: bold;
+`;
+
+const CustomCheckbox = styled(Checkbox)`
+  color: var(--purpleMain);
+  &.Mui-checked {
+    color: var(--purpleMain);
   }
 `;
 

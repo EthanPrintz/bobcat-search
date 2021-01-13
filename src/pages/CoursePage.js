@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import qs from "qs";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import qs from "qs";
+import styled from "styled-components";
 import Section from "../components/Section";
 import { parseDate } from "../utils"; // eslint-disable-line no-unused-vars
-import styled from "styled-components";
+
+import * as actions from "../redux/modules/wishlist";
 // Import major progressions
 import { progressions } from "../majorProgressions"; // eslint-disable-line no-unused-vars
-import * as actions from "../redux/modules/wishlist";
 
 function CoursePage({ year, semester, location }) {
   const { school, subject, courseid } = qs.parse(location.search, {
@@ -84,14 +85,12 @@ function CoursePage({ year, semester, location }) {
               </>
             )}
           </SectionsDescription>
-          {courseData.sections.length > 1 ? (
+          {courseData.sections.length > 1 && (
             <SectionsHeader>Sections</SectionsHeader>
-          ) : (
-            ""
           )}
-          <CourseSections>
+          <div>
             {courseData.sections.map((section, i) => {
-              let sortedSectionMeetings = section.meetings
+              const sortedSectionMeetings = section.meetings
                 ? section.meetings.sort(
                     (a, b) =>
                       parseDate(a.beginDate).getDay() -
@@ -106,10 +105,11 @@ function CoursePage({ year, semester, location }) {
                   courseData={courseData}
                   year={year}
                   semester={semester}
+                  lastSection={i === courseData.sections.length - 1}
                 />
               );
             })}
-          </CourseSections>
+          </div>
         </>
       )}
     </div>
@@ -202,8 +202,6 @@ const SectionsHeader = styled.div`
   color: var(--grey800);
   margin-top: calc(2vmin + 1rem);
 `;
-
-const CourseSections = styled.div``;
 
 const mapStateToProps = (state, props) => ({
   wishlist: state.wishlist[props.semester + props.year] || [],

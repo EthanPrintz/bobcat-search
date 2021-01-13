@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import PropTypes from "prop-types";
 import styled, { keyframes } from "styled-components";
-import { findSchool } from "../utils";
-import { Link } from "react-router-dom";
-import SearchBar from "../components/SearchBar";
 import { grey } from "@material-ui/core/colors";
+
+import SearchBar from "../components/SearchBar";
+
+import { findSchool } from "../utils";
 
 export default function SearchPage({ year, semester }) {
   const [departments, setDepartments] = useState({ loading: true, data: {} });

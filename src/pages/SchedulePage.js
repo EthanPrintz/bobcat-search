@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { dayToStr } from "../constants";
-import WishlistCourse from "../components/WishlistCourse";
-import Calendar from "../components/Calendar";
-import ScheduleCourse from "../components/ScheduleCourse";
 
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import SnackBar from "@material-ui/core/Snackbar";
 import { grey } from "@material-ui/core/colors";
 
+import WishlistCourse from "../components/WishlistCourse";
+import Calendar from "../components/Calendar";
+import ScheduleCourse from "../components/ScheduleCourse";
+
+import { dayToStr } from "../constants";
+
 import * as wishlistActions from "../redux/modules/wishlist";
 import * as courseActions from "../redux/modules/courseSelect";
+import { Link } from "react-router-dom";
 
 function SchedulePage({
   year,
@@ -37,6 +40,7 @@ function SchedulePage({
   useEffect(() => {
     (async () => {
       try {
+        //Empty wishlist and schedule so clear schedule state
         if (wishlist.length === 0) {
           setSchedule({});
           return;
@@ -45,15 +49,19 @@ function SchedulePage({
           setSchedule({});
           return;
         }
+        //Make request to API to check schedule validity
         const response = await fetch(
           `https://schedge.a1liu.com/${year}/${semester}/generateSchedule?registrationNumbers=${scheduled
             .map((course) => course.courseRegistrationNumber)
             .join(",")}`
         );
+
+        //handle invalid data
         if (!response.ok) {
           return;
         }
         const data = await response.json();
+        //if not valid, make toast visible and clear checkboxes
         if (!data.valid) {
           setToast({
             open: true,
@@ -86,7 +94,14 @@ function SchedulePage({
         console.error(error);
       }
     })();
-  }, [year, semester, scheduled]);
+  }, [
+    year,
+    semester,
+    scheduled,
+    checkboxes,
+    toggleCourseSelect,
+    wishlist.length,
+  ]);
 
   const handleClearSchedule = () => {
     clearSchedule({ year, semester });
@@ -175,16 +190,19 @@ function SchedulePage({
         </Header>
         <WishlistCoursesList>
           {wishlist.length === 0 ? (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "10px",
-              }}
-            >
-              Wishlist displayed here
-            </div>
+            <EmptyWishlistContainer>
+              Your wishlist appears empty!
+              <Link
+                to={{
+                  pathname: "/",
+                }}
+                style={{ textDecoration: "none", color: "purpleLight" }}
+              >
+                {" "}
+                Search{" "}
+              </Link>
+              for courses to add to your wishlist
+            </EmptyWishlistContainer>
           ) : (
             wishlist.map((course, i) => {
               return (
@@ -202,7 +220,6 @@ function SchedulePage({
           )}
         </WishlistCoursesList>
         <ClearScheduleButton
-          style={{ cursor: "pointer", marginTop: "1rem", color: "#bd2f2f" }}
           onClick={handleClearSchedule}
           onKeyPress={() => clearSchedule({ year, semester })}
           role="button"
@@ -262,9 +279,19 @@ const WishlistCoursesList = styled.div`
 `;
 
 const ClearScheduleButton = styled.div`
+  width: 50%;
   cursor: pointer;
   margin-top: 1rem;
   color: #bd2f2f;
+  border-radius: 6px;
+  border: 2px solid #bd2f2f;
+  text-align: center;
+  padding: 0 5px;
+`;
+
+const EmptyWishlistContainer = styled.div`
+  color: var(--grey800);
+  padding: 10px;
 `;
 
 const mapStateToProps = (state, props) => ({

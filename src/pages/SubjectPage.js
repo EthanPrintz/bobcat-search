@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import PropTypes from "prop-types";
 import qs from "qs";
-import { findSchool } from "../utils";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { grey } from "@material-ui/core/colors";
+
+import { findSchool } from "../utils";
 
 export default function SubjectPage({ year, semester, location }) {
   const { school, subject } = qs.parse(location.search, {
@@ -135,8 +137,6 @@ SubjectPage.propTypes = {
     search: PropTypes.string.isRequired,
   }),
 };
-
-// Styled components
 
 const PageContainer = styled.div`
   background-color: ${grey[200]};

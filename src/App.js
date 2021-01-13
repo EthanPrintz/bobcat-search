@@ -8,31 +8,30 @@ import {
   NavLink,
 } from "react-router-dom";
 
-// Page Imports
+import styled from "styled-components";
+import { Select, MenuItem } from "@material-ui/core";
+import InputBase from "@material-ui/core/InputBase";
+
 import SearchPage from "./pages/SearchPage";
 import SchoolPage from "./pages/SchoolPage";
 import SubjectPage from "./pages/SubjectPage";
 import CoursePage from "./pages/CoursePage";
 import SchedulePage from "./pages/SchedulePage";
-import { Select, MenuItem } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import InputBase from "@material-ui/core/InputBase";
 
-const BootstrapInput = withStyles((theme) => ({
-  input: {
-    borderRadius: 4,
-    border: "1px solid #9e9e9e",
-    fontSize: "1rem",
-    padding: "10px 26px 10px 12px",
-    fontWeight: "bold",
-    color: "var(--grey800)",
-    fontFamily: "var(--primaryFont)",
-    transition: theme.transitions.create(["border-color", "box-shadow"]),
-    "&:focus": {
-      borderRadius: 4,
-    },
-  },
-}))(InputBase);
+const BootstrapInput = styled(InputBase)`
+  border-radius: 4px;
+  border: 1px solid #9e9e9e;
+  font-size: 1rem;
+  padding: 10px 26px 10px 12px;
+  font-weight: bold;
+  color: var(--grey800);
+  font-family: var(--primaryFont);
+  transition: border-color 300ms, box-shadow 300ms;
+
+  &:focus {
+    border-radius: 4px;
+  }
+`;
 
 function App() {
   const getPath = () => window.location.pathname + window.location.search;

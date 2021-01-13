@@ -30,6 +30,7 @@ function Section({
   section,
   sortedSectionMeetings,
   courseData,
+  lastSection,
 }) {
   const [expandedList, setExpandedList] = useState({});
 
@@ -51,20 +52,18 @@ function Section({
           (course) => course.registrationNumber === section.registrationNumber
         ).length > 0
       }
+      lastSection={lastSection}
     >
-      {courseData.name !== section.name ? (
+      {courseData.name !== section.name && (
         <h3 className="sectionName">{section.name}</h3>
-      ) : (
-        ""
       )}
-      {courseData.sections.length > 1 ? (
+      {courseData.sections.length > 1 && (
         <h4 className="sectionNum">{section.code}</h4>
-      ) : (
-        ""
       )}
       <Attributes
         instructors={section.instructors}
         building={splitLocation(section.location).Building}
+        room={splitLocation(section.location).Room}
         units={convertUnits(section.minUnits, section.maxUnits)}
         status={section.status}
         type={section.type}
@@ -74,12 +73,11 @@ function Section({
         (section) => section.notes === courseData.sections[0].notes
       ) && <SectionDescription>{section.notes}</SectionDescription>}
 
-      <DateSection sortedSectionMeetings={sortedSectionMeetings} />
+      {sortedSectionMeetings && (
+        <DateSection sortedSectionMeetings={sortedSectionMeetings} />
+      )}
       <UtilBar>
-        {section.recitations === undefined ||
-        section.recitations.length === 0 ? (
-          <></>
-        ) : (
+        {section.recitations !== undefined && section.recitations.length !== 0 && (
           <ExpandButton
             onClick={(e) => handleExpandList(e, section.registrationNumber)}
             onKeyPress={(e) => handleExpandList(e, section.registrationNumber)}
@@ -153,9 +151,9 @@ function Section({
         timeout="auto"
         unmountOnExit
       >
-        {section.recitations ? (
+        {section.recitations &&
           section.recitations.map((recitation, i) => {
-            let sortedRecitationsMeetings = recitation.meetings
+            const sortedRecitationsMeetings = recitation.meetings
               ? recitation.meetings.sort(
                   (a, b) =>
                     parseDate(a.beginDate).getDay() -
@@ -170,12 +168,10 @@ function Section({
                 courseName={courseData.name}
                 year={year}
                 semester={semester}
+                lastRecitation={i === section.recitations.length - 1}
               />
             );
-          })
-        ) : (
-          <> </>
-        )}
+          })}
       </Collapse>
     </SectionContainer>
   );
@@ -189,6 +185,7 @@ Section.propTypes = {
   section: PropTypes.object.isRequired,
   sortedSectionMeetings: PropTypes.array.isRequired,
   courseData: PropTypes.object.isRequired,
+  lastSection: PropTypes.bool.isRequired,
 };
 
 const SectionContainer = styled.div`
@@ -197,6 +194,7 @@ const SectionContainer = styled.div`
   width: 84%;
   margin-left: 8%;
   position: relative;
+  border-bottom: ${(props) => (props.lastSection ? "" : "1px solid")};
 
   & > .sectionName {
     font-size: 1.8rem;
@@ -253,7 +251,6 @@ const UtilBar = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  border-bottom: 1px solid;
 `;
 
 const CalendarButton = styled.div`

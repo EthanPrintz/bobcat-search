@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import qs from "qs";
 import styled, { keyframes } from "styled-components";
-import { Link } from "react-router-dom";
 import { grey } from "@material-ui/core/colors";
 
 export default function SchoolPage({ location }) {
   const { school } = qs.parse(location.search, {
     ignoreQueryPrefix: true,
   });
-  const { schoolName } = location.state ? location.state : "";
+  const { schoolName } = location.state ?? { schoolName: school };
   const [loading, setLoading] = useState(true);
   const [schoolData, setSchoolData] = useState({});
 
@@ -29,12 +29,12 @@ export default function SchoolPage({ location }) {
         console.error(error);
       }
     })();
-  }, [setSchoolData]);
+  }, [school, setSchoolData]);
 
   return (
     <PageContainer>
       <DepartmentHeader>
-        <div id="departmentTitle">{schoolName ? schoolName : school}</div>
+        <div id="departmentTitle">{schoolName}</div>
       </DepartmentHeader>
       {loading && <span>Loading...</span>}
       {!loading && (
@@ -103,7 +103,7 @@ const Departments = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(22rem, 1fr));
   grid-gap: 0.5rem;
-  padding: 5rem 2rem 2rem 2rem;
+  padding: 0 2rem;
   animation: ${deptFadeIn} 0.8s ease forwards;
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;
