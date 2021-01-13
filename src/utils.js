@@ -87,7 +87,7 @@ export function generateScheduleTime(meetings) {
   if (meetings.length === 1) {
     //meeting only once per week
     const day = dayToStr[parsedMeetings[0].day].toUpperCase();
-    return `${day} ${parsedMeetings[0].startTimeStr}-${parsedMeetings[1].endTimeStr}`;
+    return `${day} ${parsedMeetings[0].startTimeStr}-${parsedMeetings[0].endTimeStr}`;
   } else if (meetings.length === 2) {
     if (isEqualTime(parsedMeetings[0].startTime, parsedMeetings[1].startTime)) {
       //2 meetings a week are identical
