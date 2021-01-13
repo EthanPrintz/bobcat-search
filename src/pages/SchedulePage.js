@@ -284,9 +284,9 @@ const ClearScheduleButton = styled.div`
   margin-top: 1rem;
   color: #bd2f2f;
   border-radius: 6px;
-  border: 2px solid #bd2f2f;
+  border: 3px solid #bd2f2f;
   text-align: center;
-  padding: 0 5px;
+  padding: 8px 16px;
 `;
 
 const EmptyWishlistContainer = styled.div`
