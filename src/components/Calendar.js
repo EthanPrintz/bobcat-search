@@ -24,6 +24,9 @@ export default function Calendar({ renderCourses }) {
             </CalendarDay>
           );
         })}
+        {/* The calendar is generated using a grid. The time range is from 8:00 to
+        21:00 so we need 13 rows. Currently we are having 5 days from Mon-Fri.
+        So we need to generate 13 * 5 = 65 grid tile. */}
         {Array(65)
           .fill(1)
           .map((item, i) => {
