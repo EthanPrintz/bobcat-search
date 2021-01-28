@@ -12,6 +12,7 @@ export default function SchoolPage({ location }) {
   const { schoolName } = location.state ?? { schoolName: school };
   const [loading, setLoading] = useState(true);
   const [schoolData, setSchoolData] = useState({});
+  const [schools, setSchools] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -24,6 +25,8 @@ export default function SchoolPage({ location }) {
 
         const data = await response.json();
         setSchoolData(() => data[school]);
+        const sortedSchools = Object.keys(data[school]).sort();
+        setSchools(sortedSchools);
         setLoading(() => false);
       } catch (error) {
         console.error(error);
@@ -39,7 +42,7 @@ export default function SchoolPage({ location }) {
       {loading && <span>Loading...</span>}
       {!loading && (
         <Departments>
-          {Object.keys(schoolData).map((subjectid, i) => {
+          {schools.map((subjectid, i) => {
             const subject = schoolData[subjectid];
             return (
               <Link
