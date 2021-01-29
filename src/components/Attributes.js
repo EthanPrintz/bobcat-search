@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+
 import styled from "styled-components";
+import Drawer from "@material-ui/core/Drawer";
+import grey from "@material-ui/core/colors/grey";
+
+import { findInstructor } from "../utils";
+import Table from "./Table";
 
 export default function Attributes({
   instructors,
@@ -11,13 +17,115 @@ export default function Attributes({
   type,
   registrationNumber,
 }) {
+  const [instructorsWithRMP, setInstructorsWithRMP] = useState([]);
+  const [currentInstructor, setCurrentInstructor] = useState({
+    name: "Instructor",
+    rmpId: "",
+    page: 1,
+    ratings: [],
+    isMore: false,
+    overallRating: -1,
+    totalRatings: 0,
+  });
+  const [drawer, setDrawer] = useState(false);
+
+  const onClickInstructor = async (instructor) => {
+    try {
+      if (instructor.rmpId === null) {
+        setDrawer(false);
+        return;
+      }
+      const resp = await fetch(
+        `https://www.ratemyprofessors.com/paginate/professors/ratings?tid=${instructor.rmpId}&page=1`
+      );
+      if (!resp.ok) {
+        console.log(`Error ${resp.status}`);
+      }
+      const jsonRatings = await resp.json();
+      setCurrentInstructor({
+        name: instructor.name,
+        rmpId: instructor.rmpId,
+        page: 1,
+        isMore: jsonRatings.remaining === 0 ? false : true,
+        ratings: [...currentInstructor.ratings, ...jsonRatings.ratings],
+        overallRating: instructor.overall,
+        totalRatings: jsonRatings.remaining + jsonRatings.ratings.length,
+      });
+      setDrawer(true);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onLoadMore = async () => {
+    const resp = await fetch(
+      `https://www.ratemyprofessors.com/paginate/professors/ratings?tid=${
+        currentInstructor.rmpId
+      }&page=${currentInstructor.page + 1}`
+    );
+    if (!resp.ok) {
+      console.log(`Error ${resp.status}`);
+    }
+    const moreRatings = await resp.json();
+    setCurrentInstructor({
+      ...currentInstructor,
+      isMore: moreRatings.remaining === 0 ? false : true,
+      page: currentInstructor.page + 1,
+      ratings: [...currentInstructor.ratings, ...moreRatings.ratings],
+    });
+  };
+
+  const onClose = () => {
+    setDrawer(false);
+    setCurrentInstructor({
+      name: "Instructor",
+      rmpId: "",
+      page: 1,
+      ratings: [],
+      isMore: false,
+      overallRating: -1,
+      totalRatings: 0,
+    });
+  };
+
+  useEffect(() => {
+    (() => {
+      const modifiedInstructors = instructors.map((instructor) =>
+        findInstructor(instructor)
+      );
+      setInstructorsWithRMP(modifiedInstructors);
+    })();
+  }, [instructors]);
+
   return (
     <div className="attributes">
+      <React.Fragment>
+        <Drawer anchor={"right"} open={drawer} onClose={onClose}>
+          <Table
+            name={currentInstructor.name}
+            totalRatings={currentInstructor.totalRatings}
+            overallRating={currentInstructor.overallRating}
+            ratings={currentInstructor.ratings}
+            isMore={currentInstructor.isMore}
+            onLoadMore={onLoadMore}
+          />
+        </Drawer>
+      </React.Fragment>
       <AttributeContainer>
         <div className="attributeLabel">
-          Instructor{instructors.length > 1 ? "s" : ""}
+          Instructor{instructorsWithRMP.length > 1 ? "s" : ""}
         </div>
-        {instructors.join(", ")}
+        {instructorsWithRMP.map((instructor) => {
+          return (
+            <InstructorName
+              key={instructor.name}
+              clickable={instructor.rmpId ? true : false}
+              onClick={() => onClickInstructor(instructor)}
+            >
+              {instructor.name}
+            </InstructorName>
+          );
+        })}
       </AttributeContainer>
       <AttributeContainer>
         <div className="attributeLabel">Building</div>
@@ -33,11 +141,6 @@ export default function Attributes({
         <div className="attributeLabel">Units</div>
         {units}
       </AttributeContainer>
-      {/* seem unnecessary if we have the calendar button to demonstrate whether a section is open or not */}
-      {/* <AttributeContainer>
-        <div className="attributeLabel">Status</div>
-        {status}
-      </AttributeContainer> */}
       <AttributeContainer>
         <div className="attributeLabel">Type</div>
         {type}
@@ -70,5 +173,14 @@ const AttributeContainer = styled.div`
     font-size: 1rem;
     font-family: var(--condensedFont);
     color: var(--grey700);
+  }
+`;
+
+const InstructorName = styled.div`
+  cursor: ${(props) => (props.clickable ? "pointer" : "")};
+  transition: 0.1s;
+
+  :hover {
+    color: ${(props) => (props.clickable ? grey[600] : "")};
   }
 `;

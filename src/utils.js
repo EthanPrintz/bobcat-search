@@ -1,5 +1,7 @@
 import { green, red, yellow } from "@material-ui/core/colors";
 import { missingPrograms, dayToStr } from "./constants";
+import instructors from "./data/instructors";
+
 export function convertUnits(minUnit, maxUnit) {
   if (minUnit === 0) {
     return maxUnit;
@@ -22,12 +24,10 @@ export function splitLocation(location) {
 }
 
 export function changeStatus(section) {
-  if (section.status === "Open") {
-    return "Add to Calendar";
-  } else if (section.status === "Closed") {
-    return "Section Closed";
-  } else {
+  if (section.status === "WaitList") {
     return `Waitlist (${section.waitlistTotal})`;
+  } else {
+    return section.status;
   }
 }
 
@@ -87,7 +87,7 @@ export function generateScheduleTime(meetings) {
   if (meetings.length === 1) {
     //meeting only once per week
     const day = dayToStr[parsedMeetings[0].day].toUpperCase();
-    return `${day} ${parsedMeetings[0].startTimeStr}-${parsedMeetings[1].endTimeStr}`;
+    return `${day} ${parsedMeetings[0].startTimeStr}-${parsedMeetings[0].endTimeStr}`;
   } else if (meetings.length === 2) {
     if (isEqualTime(parsedMeetings[0].startTime, parsedMeetings[1].startTime)) {
       //2 meetings a week are identical
@@ -111,4 +111,13 @@ export function generateScheduleTime(meetings) {
 
 export function findSchool(school) {
   return missingPrograms[school] ?? "";
+}
+
+export function findInstructor(instructor) {
+  const foundInstructor = instructors.find(
+    (rmpInstructor) =>
+      rmpInstructor.name === instructor ||
+      rmpInstructor.name.includes(instructor)
+  );
+  return foundInstructor ?? { name: instructor, rmpId: null };
 }

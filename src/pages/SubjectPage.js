@@ -31,7 +31,8 @@ export default function SubjectPage({ year, semester, location }) {
           return;
         }
         const data = await response.json();
-        setCourseList(() => ({ loading: false, data }));
+        const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
+        setCourseList(() => ({ loading: false, data: sortedData }));
       } catch (error) {
         console.error(error);
       }
