@@ -40,7 +40,9 @@ export default function Table({
                     <Rating>{rating.rClass}</Rating>
                     <Rating>{`Overall: ${rating.rOverall}`}</Rating>
                     <Rating>{`Helpful: ${rating.rHelpful}`}</Rating>
-                    <Rating>{`${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`}</Rating>
+                    <Rating>{`${
+                      date.getMonth() + 1
+                    }/${date.getDate()}/${date.getFullYear()}`}</Rating>
                   </InfoContainer>
                   <Comment>{rating.rComments}</Comment>
                 </RatingContainer>
@@ -65,7 +67,7 @@ export default function Table({
 Table.propTypes = {
   name: PropTypes.string.isRequired,
   totalRatings: PropTypes.number.isRequired,
-  overallRating: PropTypes.string.isRequired,
+  overallRating: PropTypes.number.isRequired,
   ratings: PropTypes.array.isRequired,
   isMore: PropTypes.bool.isRequired,
   onLoadMore: PropTypes.func.isRequired,

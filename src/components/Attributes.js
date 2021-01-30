@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
 import styled from "styled-components";
 import Drawer from "@material-ui/core/Drawer";
 import grey from "@material-ui/core/colors/grey";
-
-import { findInstructor } from "../utils";
 import Table from "./Table";
 
 export default function Attributes({
@@ -17,7 +15,6 @@ export default function Attributes({
   type,
   registrationNumber,
 }) {
-  const [instructorsWithRMP, setInstructorsWithRMP] = useState([]);
   const [currentInstructor, setCurrentInstructor] = useState({
     name: "Instructor",
     rmpId: "",
@@ -31,25 +28,47 @@ export default function Attributes({
 
   const onClickInstructor = async (instructor) => {
     try {
-      if (instructor.rmpId === null) {
-        setDrawer(false);
+      const names = instructor.split(" ");
+      const query =
+        names.length >= 2
+          ? names[0] + " " + names[names.length - 1]
+          : instructor;
+      const professorResp = await fetch(
+        `https://www.ratemyprofessors.com/filter/professor/?&page=1&queryBy=schoolsid&sid=675&queryoption=TEACHER&queryBy=teacher&query=${query}`
+      );
+      const jsonResp = await professorResp.json();
+      if (jsonResp.searchResultsTotal === 0) {
+        setCurrentInstructor({
+          ...currentInstructor,
+          name: instructor,
+        });
+        setDrawer(true);
+        return;
+      }
+      const professorInfo = jsonResp.professors[0];
+      if (professorInfo.overall_rating === "N/A") {
+        setCurrentInstructor({
+          ...currentInstructor,
+          name: instructor,
+        });
+        setDrawer(true);
         return;
       }
       const resp = await fetch(
-        `https://www.ratemyprofessors.com/paginate/professors/ratings?tid=${instructor.rmpId}&page=1`
+        `https://www.ratemyprofessors.com/paginate/professors/ratings?tid=${professorInfo.tid}&page=1`
       );
       if (!resp.ok) {
         console.log(`Error ${resp.status}`);
       }
       const jsonRatings = await resp.json();
       setCurrentInstructor({
-        name: instructor.name,
-        rmpId: instructor.rmpId,
+        name: instructor,
+        rmpId: professorInfo.tid,
         page: 1,
         isMore: jsonRatings.remaining === 0 ? false : true,
         ratings: [...currentInstructor.ratings, ...jsonRatings.ratings],
-        overallRating: instructor.overall,
-        totalRatings: jsonRatings.remaining + jsonRatings.ratings.length,
+        overallRating: parseFloat(professorInfo.overall_rating),
+        totalRatings: professorInfo.tNumRatings,
       });
       setDrawer(true);
     } catch (e) {
@@ -88,15 +107,6 @@ export default function Attributes({
     });
   };
 
-  useEffect(() => {
-    (() => {
-      const modifiedInstructors = instructors.map((instructor) =>
-        findInstructor(instructor)
-      );
-      setInstructorsWithRMP(modifiedInstructors);
-    })();
-  }, [instructors]);
-
   return (
     <div className="attributes">
       <React.Fragment>
@@ -113,16 +123,16 @@ export default function Attributes({
       </React.Fragment>
       <AttributeContainer>
         <div className="attributeLabel">
-          Instructor{instructorsWithRMP.length > 1 ? "s" : ""}
+          Instructor{instructors.length > 1 ? "s" : ""}
         </div>
-        {instructorsWithRMP.map((instructor) => {
+        {instructors.map((instructor) => {
           return (
             <InstructorName
-              key={instructor.name}
-              clickable={instructor.rmpId ? true : false}
+              key={instructor}
+              clickable={true}
               onClick={() => onClickInstructor(instructor)}
             >
-              {instructor.name}
+              {instructor}
             </InstructorName>
           );
         })}

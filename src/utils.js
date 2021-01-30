@@ -1,6 +1,5 @@
 import { green, red, yellow } from "@material-ui/core/colors";
 import { missingPrograms, dayToStr } from "./constants";
-import instructors from "./data/instructors";
 
 export function convertUnits(minUnit, maxUnit) {
   if (minUnit === 0) {
@@ -111,13 +110,4 @@ export function generateScheduleTime(meetings) {
 
 export function findSchool(school) {
   return missingPrograms[school] ?? "";
-}
-
-export function findInstructor(instructor) {
-  const foundInstructor = instructors.find(
-    (rmpInstructor) =>
-      rmpInstructor.name === instructor ||
-      rmpInstructor.name.includes(instructor)
-  );
-  return foundInstructor ?? { name: instructor, rmpId: null };
 }
