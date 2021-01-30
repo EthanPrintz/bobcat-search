@@ -15,7 +15,7 @@ export default function Table({
   return (
     <React.Fragment>
       <MetaContainer>
-        <div>{name}</div>
+        <div className="instructorName">{name}</div>
         <div>{`${totalRatings} review${totalRatings >= 1 ? "s" : ""}`}</div>
         <div>
           {overallRating > -1
@@ -92,6 +92,12 @@ const MetaContainer = styled.div`
   > div {
     padding: 0.2rem 0;
   }
+
+  & > .instructorName {
+    font-size: 2rem
+  }
+
+  >
 `;
 
 const RatingTable = styled.table`

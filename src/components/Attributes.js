@@ -31,7 +31,7 @@ export default function Attributes({
       const names = instructor.split(" ");
       const query =
         names.length >= 2
-          ? names[0] + " " + names[names.length - 1]
+          ? `${names[0]} ${names[names.length - 1]}`
           : instructor;
       const professorResp = await fetch(
         `https://www.ratemyprofessors.com/filter/professor/?&page=1&queryBy=schoolsid&sid=675&queryoption=TEACHER&queryBy=teacher&query=${query}`
