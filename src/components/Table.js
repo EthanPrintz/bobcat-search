@@ -32,10 +32,10 @@ export default function Table({
         </TableHeaders>
         <TableBody>
           {ratings.length > 0 &&
-            ratings.map((rating) => {
+            ratings.map((rating, idx) => {
               const date = new Date(rating.rTimestamp);
               return (
-                <RatingContainer key={rating.id}>
+                <RatingContainer key={rating.id} isOdd={idx % 2 === 0}>
                   <InfoContainer>
                     <Rating>{rating.rClass}</Rating>
                     <Rating>{`Overall: ${rating.rOverall}`}</Rating>
@@ -130,13 +130,10 @@ const RatingContainer = styled.tr`
   font-size: 1rem;
   color: var(--grey900);
   font-weight: bold;
-  background-color: var(--grey400);
+  background-color: ${(props) =>
+    props.isOdd ? "var(--grey400)" : "var(--grey300)"};
   border-bottom: 1.2px solid var(--grey600);
   border-top: 1.2px solid var(--grey600);
-
-  &:hover {
-    background-color: var(--grey500);
-  }
 `;
 
 const InfoContainer = styled.td`
