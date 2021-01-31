@@ -79,7 +79,7 @@ const MetaContainer = styled.div`
   justify-content: center;
   align-items: center;
   padding: calc(0.8vmin + 0.8rem);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: var(--grey200);
   font-weight: bold;
   background: linear-gradient(
@@ -94,10 +94,8 @@ const MetaContainer = styled.div`
   }
 
   & > .instructorName {
-    font-size: 2rem
+    font-size: 2rem;
   }
-
-  >
 `;
 
 const RatingTable = styled.table`

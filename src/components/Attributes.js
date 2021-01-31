@@ -39,8 +39,13 @@ export default function Attributes({
       const jsonResp = await professorResp.json();
       if (jsonResp.searchResultsTotal === 0) {
         setCurrentInstructor({
-          ...currentInstructor,
           name: instructor,
+          rmpId: "",
+          page: 1,
+          ratings: [],
+          isMore: false,
+          overallRating: -1,
+          totalRatings: 0,
         });
         setDrawer(true);
         return;
@@ -48,8 +53,13 @@ export default function Attributes({
       const professorInfo = jsonResp.professors[0];
       if (professorInfo.overall_rating === "N/A") {
         setCurrentInstructor({
-          ...currentInstructor,
           name: instructor,
+          rmpId: "",
+          page: 1,
+          ratings: [],
+          isMore: false,
+          overallRating: -1,
+          totalRatings: 0,
         });
         setDrawer(true);
         return;
@@ -66,7 +76,9 @@ export default function Attributes({
         rmpId: professorInfo.tid,
         page: 1,
         isMore: jsonRatings.remaining === 0 ? false : true,
-        ratings: [...currentInstructor.ratings, ...jsonRatings.ratings],
+        ratings: !drawer
+          ? [...jsonRatings.ratings]
+          : [...currentInstructor.ratings, ...jsonRatings.ratings],
         overallRating: parseFloat(professorInfo.overall_rating),
         totalRatings: professorInfo.tNumRatings,
       });
@@ -96,21 +108,17 @@ export default function Attributes({
 
   const onClose = () => {
     setDrawer(false);
-    setCurrentInstructor({
-      name: "Instructor",
-      rmpId: "",
-      page: 1,
-      ratings: [],
-      isMore: false,
-      overallRating: -1,
-      totalRatings: 0,
-    });
   };
 
   return (
     <div className="attributes">
       <React.Fragment>
-        <Drawer anchor={"right"} open={drawer} onClose={onClose}>
+        <Drawer
+          anchor={"right"}
+          open={drawer}
+          onClose={onClose}
+          transitionDuration={{ enter: 500, exit: 550 }}
+        >
           <Table
             name={currentInstructor.name}
             totalRatings={currentInstructor.totalRatings}
