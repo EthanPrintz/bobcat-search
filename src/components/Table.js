@@ -44,7 +44,9 @@ export default function Table({
                       date.getMonth() + 1
                     }/${date.getDate()}/${date.getFullYear()}`}</Rating>
                   </InfoContainer>
-                  <Comment>{rating.rComments}</Comment>
+                  <Comment
+                    dangerouslySetInnerHTML={{ __html: rating.rComments }}
+                  />
                 </RatingContainer>
               );
             })}
