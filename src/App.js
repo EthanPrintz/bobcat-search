@@ -33,6 +33,15 @@ const BootstrapInput = styled(InputBase)`
   }
 `;
 
+const Image = styled.img`
+  height: 2.8rem;
+  margin: 1.2vmin;
+  float: right;
+  padding: 0.5rem;
+  border-radius: 100%;
+  background-color: ${(props) => (props.isActive ? "var(--grey300)" : "")};
+`;
+
 function App() {
   const getPath = () => window.location.pathname + window.location.search;
 
@@ -100,12 +109,26 @@ function App() {
             <li className="icon">
               {toggle !== "/schedule" ? (
                 <NavLink to={toggle} onClick={() => setToggle("/schedule")}>
-                  <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
+                  <Image
+                    src="./img/edit-calendar.svg"
+                    alt="Edit Calendar"
+                    isActive={true}
+                  />
                 </NavLink>
               ) : (
+                // <ScheduleLink to={toggle} onClick={() => setToggle("/schedule")}>
+                //   <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
+                // </ScheduleLink>
                 <NavLink to="/schedule" onClick={() => setToggle(getPath)}>
-                  <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
+                  <Image
+                    src="./img/edit-calendar.svg"
+                    alt="Edit Calendar"
+                    isActive={false}
+                  />
                 </NavLink>
+                // <ScheduleLink to="/schedule" onClick={() => setToggle(getPath)}>
+                //   <img src="./img/edit-calendar.svg" alt="Edit Calendar" />
+                // </ScheduleLink>
               )}
             </li>
           </ul>

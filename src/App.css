@@ -44,20 +44,8 @@ nav li {
   width: 100px;
 }
 
-.icon img {
-  height: 2.8rem;
-  margin: 1.2vmin;
-  float: right;
-  padding: 0.5rem;
-  border-radius: 100%;
-}
-
 .icon a {
   transition: 0.2s;
-}
-
-.icon a.active img {
-  background-color: var(--grey300);
 }
 
 @media (max-width: 1000px) {
