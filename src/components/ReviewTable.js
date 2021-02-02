@@ -4,25 +4,15 @@ import styled from "styled-components";
 import grey from "@material-ui/core/colors/grey";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
-export default function Table({
-  name,
-  totalRatings,
-  overallRating,
+export default function ReviewTable({
   ratings,
-  isMore,
-  onLoadMore,
+  remaining,
+  page,
+  setPage,
+  isPreviousData,
 }) {
   return (
     <React.Fragment>
-      <MetaContainer>
-        <div className="instructorName">{name}</div>
-        <div>{`${totalRatings} review${totalRatings >= 1 ? "s" : ""}`}</div>
-        <div>
-          {overallRating > -1
-            ? `Overall ${overallRating}`
-            : "No Overall Rating"}
-        </div>
-      </MetaContainer>
       <RatingTable>
         <TableHeaders>
           <tr>
@@ -31,7 +21,8 @@ export default function Table({
           </tr>
         </TableHeaders>
         <TableBody>
-          {ratings.length > 0 &&
+          {ratings &&
+            ratings.length > 0 &&
             ratings.map((rating, idx) => {
               const date = new Date(rating.rTimestamp);
               return (
@@ -45,60 +36,61 @@ export default function Table({
                     }/${date.getDate()}/${date.getFullYear()}`}</Rating>
                   </InfoContainer>
                   <Comment
-                    dangerouslySetInnerHTML={{ __html: rating.rComments }}
+                    dangerouslySetInnerHTML={{
+                      __html: rating.rComments,
+                    }}
                   />
                 </RatingContainer>
               );
             })}
         </TableBody>
       </RatingTable>
-      {isMore && (
-        <ExpandButton onClick={onLoadMore}>
-          <ExpandMoreIcon
-            style={{
-              color: grey[700],
+      <ButtonContainer>
+        {!(page === 1) && (
+          <ExpandButton
+            onClick={() => {
+              setPage((old) => Math.max(old - 1, 1));
             }}
-          />
-          <span style={{ color: grey[700] }}>More Reviews</span>
-        </ExpandButton>
-      )}
+          >
+            <ExpandMoreIcon
+              style={{
+                color: grey[700],
+                transform: "rotate(90deg)",
+              }}
+            />
+            <span>Prev</span>
+          </ExpandButton>
+        )}
+        {remaining > 0 && (
+          <ExpandButton
+            onClick={() => {
+              if (!isPreviousData && remaining > 0) {
+                setPage((old) => old + 1);
+              }
+            }}
+            next={true}
+          >
+            <span>Next</span>
+            <ExpandMoreIcon
+              style={{
+                color: grey[700],
+                transform: "rotate(-90deg)",
+              }}
+            />
+          </ExpandButton>
+        )}
+      </ButtonContainer>
     </React.Fragment>
   );
 }
 
-Table.propTypes = {
-  name: PropTypes.string.isRequired,
-  totalRatings: PropTypes.number.isRequired,
-  overallRating: PropTypes.number.isRequired,
+ReviewTable.propTypes = {
   ratings: PropTypes.array.isRequired,
-  isMore: PropTypes.bool.isRequired,
-  onLoadMore: PropTypes.func.isRequired,
+  remaining: PropTypes.bool.isRequired,
+  page: PropTypes.number.isRequired,
+  setPage: PropTypes.func.isRequired,
+  isPreviousData: PropTypes.bool.isRequired,
 };
-
-const MetaContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: calc(0.8vmin + 0.8rem);
-  font-size: 1.4rem;
-  color: var(--grey200);
-  font-weight: bold;
-  background: linear-gradient(
-    167deg,
-    var(--purpleMain) 21%,
-    #712991 60%,
-    rgba(135, 37, 144, 1) 82%
-  );
-
-  > div {
-    padding: 0.2rem 0;
-  }
-
-  & > .instructorName {
-    font-size: 2rem;
-  }
-`;
 
 const RatingTable = styled.table`
   width: 40vw;
@@ -154,20 +146,21 @@ const Comment = styled.td`
 
 const ExpandButton = styled.div`
   font-size: 1.1rem;
-  width: 100%;
-  padding: 0.8rem 0.5rem;
+  padding: 0.8rem 0.6rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background-color: ${grey[200]};
+  background-color: var(--grey100);
+  color: var(--grey800);
   transition: 0.1s;
+  float: ${(props) => (props.next ? "right" : "left")};
 
   :hover {
     background-color: ${grey[300]};
   }
+`;
 
-  & > svg {
-    margin-right: 0.65rem;
-  }
+const ButtonContainer = styled.div`
+  background-color: var(--grey100);
 `;

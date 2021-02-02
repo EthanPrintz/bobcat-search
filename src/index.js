@@ -1,6 +1,7 @@
 import React from "react";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
+import { QueryClient, QueryClientProvider } from "react-query";
 import "./index.css";
 import "./variables.css";
 import App from "./App";
@@ -13,9 +14,13 @@ const initialState = loadState();
 const store = createStore(initialState);
 store.subscribe(() => saveState(store.getState()));
 
+const queryClient = new QueryClient();
+
 render(
   <Provider store={store}>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </Provider>,
   document.getElementById("root")
 );
