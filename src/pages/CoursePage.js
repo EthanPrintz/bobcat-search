@@ -165,6 +165,7 @@ const CourseHeader = styled.div`
     opacity: 0.7;
     transition: 0.15s;
   }
+
   & #backButton:hover {
     opacity: 1;
   }

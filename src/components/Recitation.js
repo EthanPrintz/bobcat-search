@@ -47,15 +47,7 @@ function Recitation({
         <DateSection sortedSectionMeetings={sortedRecitationsMeetings} />
       )}
       <UtilBar>
-        <CalendarButton
-          onClick={() =>
-            wishlistCourse({
-              year,
-              semester,
-              course: recitation,
-            })
-          }
-        >
+        <StatusContainer>
           <CalendarTodayTwoTone
             style={{
               color: styleStatus(recitation.status),
@@ -68,8 +60,16 @@ function Recitation({
           >
             {changeStatus(recitation)}
           </span>
-        </CalendarButton>
-        <CalendarButton>
+        </StatusContainer>
+        <WishlistButton
+          onClick={() =>
+            wishlistCourse({
+              year,
+              semester,
+              course: recitation,
+            })
+          }
+        >
           <AddBoxTwoTone
             style={{
               color: grey[700],
@@ -82,7 +82,7 @@ function Recitation({
           >
             Add to Wishlist
           </span>
-        </CalendarButton>
+        </WishlistButton>
       </UtilBar>
     </RecitationContainer>
   );
@@ -140,7 +140,24 @@ const UtilBar = styled.div`
   align-items: center;
 `;
 
-const CalendarButton = styled.div`
+const StatusContainer = styled.div`
+  font-size: 1.1rem;
+  height: 100%;
+  width: 12rem;
+  border-radius: 0.6rem;
+  padding: 0.8rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${grey[200]};
+  margin-right: 2rem;
+
+  & > svg {
+    margin-right: 0.65rem;
+  }
+`;
+
+const WishlistButton = styled.div`
   font-size: 1.1rem;
   height: 100%;
   width: 12rem;

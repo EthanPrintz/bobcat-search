@@ -1,5 +1,6 @@
 import { green, red, yellow } from "@material-ui/core/colors";
 import { missingPrograms, dayToStr } from "./constants";
+
 export function convertUnits(minUnit, maxUnit) {
   if (minUnit === 0) {
     return maxUnit;
@@ -22,12 +23,10 @@ export function splitLocation(location) {
 }
 
 export function changeStatus(section) {
-  if (section.status === "Open") {
-    return "Add to Calendar";
-  } else if (section.status === "Closed") {
-    return "Section Closed";
-  } else {
+  if (section.status === "WaitList") {
     return `Waitlist (${section.waitlistTotal})`;
+  } else {
+    return section.status;
   }
 }
 

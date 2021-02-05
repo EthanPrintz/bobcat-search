@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
+
 import styled from "styled-components";
+import Instructor from "./Instructor";
 
 export default function Attributes({
   instructors,
@@ -17,7 +19,9 @@ export default function Attributes({
         <div className="attributeLabel">
           Instructor{instructors.length > 1 ? "s" : ""}
         </div>
-        {instructors.join(", ")}
+        {instructors.map((instructor) => {
+          return <Instructor key={instructor} instructor={instructor} />;
+        })}
       </AttributeContainer>
       <AttributeContainer>
         <div className="attributeLabel">Building</div>
@@ -33,11 +37,6 @@ export default function Attributes({
         <div className="attributeLabel">Units</div>
         {units}
       </AttributeContainer>
-      {/* seem unnecessary if we have the calendar button to demonstrate whether a section is open or not */}
-      {/* <AttributeContainer>
-        <div className="attributeLabel">Status</div>
-        {status}
-      </AttributeContainer> */}
       <AttributeContainer>
         <div className="attributeLabel">Type</div>
         {type}

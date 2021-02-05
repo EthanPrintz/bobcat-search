@@ -101,10 +101,8 @@ export default function DateSection({ sortedSectionMeetings }) {
       {sortedSectionMeetings.length > 2 && (
         <DateContainer>
           {parsedMeetings.map((meeting, i) => (
-            <>
-              <BoldedDate>
-                {days[parseDate(meeting.startTime).getDay()]}s{" "}
-              </BoldedDate>
+            <React.Fragment key={i}>
+              <BoldedDate>{days[meeting.startTime.getDay()]}s </BoldedDate>
               from{" "}
               <BoldedDate>
                 {convertToLocaleTimeStr(meeting.startTime)}{" "}
@@ -113,7 +111,7 @@ export default function DateSection({ sortedSectionMeetings }) {
               <BoldedDate>{convertToLocaleTimeStr(meeting.endTime)}</BoldedDate>
               {i < sortedSectionMeetings.length - 1 && ", "}
               <br />
-            </>
+            </React.Fragment>
           ))}
         </DateContainer>
       )}
