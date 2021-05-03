@@ -47,10 +47,6 @@ function App() {
 
   const options = [
     {
-      name: "Fall 2020",
-      code: "fa-2020",
-    },
-    {
       name: "January 2021",
       code: "ja-2021",
     },
@@ -61,6 +57,10 @@ function App() {
     {
       name: "Summer 2021",
       code: "su-2021",
+    },
+    {
+      name: "Fall 2021",
+      code: "fa-2021",
     },
   ];
 
