@@ -47,25 +47,25 @@ function App() {
 
   const options = [
     {
-      name: "January 2021",
-      code: "ja-2021",
+      name: "January 2022",
+      code: "ja-2022",
     },
     {
-      name: "Spring 2021",
-      code: "sp-2021",
+      name: "Spring 2022",
+      code: "sp-2022",
     },
     {
-      name: "Summer 2021",
-      code: "su-2021",
+      name: "Summer 2022",
+      code: "su-2022",
     },
     {
-      name: "Fall 2021",
-      code: "fa-2021",
+      name: "Fall 2022",
+      code: "fa-2022",
     },
   ];
 
   /* eslint-disable no-unused-vars */
-  const [year, setYear] = useState(2021);
+  const [year, setYear] = useState(2022);
   const [semester, setSemester] = useState("sp");
   // if we start on schedule page, the first toggle brings us to home
   // otherwise, the first toggle brings us to schedule page
