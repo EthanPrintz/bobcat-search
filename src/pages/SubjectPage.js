@@ -6,7 +6,7 @@ import qs from "qs";
 import styled from "styled-components";
 import { grey } from "@material-ui/core/colors";
 
-import { findSchool } from "../utils";
+import { findSchool, styleStatus, changeStatus } from "../utils";
 
 export default function SubjectPage({ year, semester, location }) {
   const { school, subject } = qs.parse(location.search, {
@@ -115,10 +115,21 @@ export default function SubjectPage({ year, semester, location }) {
                 style={{ textDecoration: "none", color: "inherit" }}
               >
                 <Course>
-                  <h4>
-                    {course.subjectCode.code}-{course.subjectCode.school}{" "}
-                    {course.deptCourseId}
-                  </h4>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <h4>
+                      {course.subjectCode.code}-{course.subjectCode.school}{" "}
+                      {course.deptCourseId}
+                    </h4>
+                    {/* TODO: Get course status for ALL sections (currently just first section) */}
+                    <span
+                      style={{ color: styleStatus(course.sections[0].status) }}
+                    >
+                      {/* Returns the waitlist count, if any */}
+                      {changeStatus(course.sections[0])}
+                    </span>
+                  </div>
                   <h3>{course.name}</h3>
                   <p>{course.sections.length} Sections</p>
                 </Course>
