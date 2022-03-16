@@ -22,6 +22,16 @@ export function splitLocation(location) {
   };
 }
 
+export function checkStatus(sections) {
+  // If even one open section available, return open
+  const hasOpenSections = sections.some(({status}) => status === "Open");
+  const hasWaitlistSections = sections.some(({status}) => status === "WaitList");
+  if (hasOpenSections) {
+    return "Open";
+  }
+  return hasWaitlistSections ? "Waitlist" : "Closed";
+}
+
 export function changeStatus(section) {
   if (section.status === "WaitList") {
     return `Waitlist (${section.waitlistTotal})`;

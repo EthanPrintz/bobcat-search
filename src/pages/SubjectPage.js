@@ -6,7 +6,7 @@ import qs from "qs";
 import styled from "styled-components";
 import { grey } from "@material-ui/core/colors";
 
-import { findSchool } from "../utils";
+import { findSchool, styleStatus, checkStatus } from "../utils";
 
 export default function SubjectPage({ year, semester, location }) {
   const { school, subject } = qs.parse(location.search, {
@@ -115,10 +115,22 @@ export default function SubjectPage({ year, semester, location }) {
                 style={{ textDecoration: "none", color: "inherit" }}
               >
                 <Course>
-                  <h4>
-                    {course.subjectCode.code}-{course.subjectCode.school}{" "}
-                    {course.deptCourseId}
-                  </h4>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <h4>
+                      {course.subjectCode.code}-{course.subjectCode.school}{" "}
+                      {course.deptCourseId}
+                    </h4>
+                    {/* Display overall course status */}
+                    <span
+                      style={{
+                        color: styleStatus(checkStatus(course.sections)),
+                      }}
+                    >
+                      {checkStatus(course.sections)}
+                    </span>
+                  </div>
                   <h3>{course.name}</h3>
                   <p>{course.sections.length} Sections</p>
                 </Course>

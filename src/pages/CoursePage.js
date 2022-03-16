@@ -29,7 +29,6 @@ function CoursePage({ year, semester, location }) {
           return;
         }
         const data = await response.json();
-
         setCourseData(
           () => data.filter((course) => course.deptCourseId === courseid)[0]
         );
