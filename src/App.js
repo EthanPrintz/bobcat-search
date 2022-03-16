@@ -17,6 +17,7 @@ import SchoolPage from "./pages/SchoolPage";
 import SubjectPage from "./pages/SubjectPage";
 import CoursePage from "./pages/CoursePage";
 import SchedulePage from "./pages/SchedulePage";
+// import SearchBar from "./components/SearchBar";
 
 const BootstrapInput = styled(InputBase)`
   border-radius: 4px;
@@ -106,6 +107,7 @@ function App() {
                 })}
               </Select>
             </ul>
+            {/* TODO: Add the search bar to the header */}
             <li className="icon">
               {toggle !== "/schedule" ? (
                 <NavLink to={toggle} onClick={() => setToggle("/schedule")}>

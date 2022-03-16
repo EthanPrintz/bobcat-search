@@ -29,6 +29,9 @@ export function checkStatus(sections) {
       return "Open";
     }
   }
+  if (sections[0].status === "WaitList") {
+    return "Waitlist";
+  }
   return sections[0].status;
 }
 
