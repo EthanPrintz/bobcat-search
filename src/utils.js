@@ -22,6 +22,16 @@ export function splitLocation(location) {
   };
 }
 
+export function checkStatus(sections) {
+  // If even one open section available, return open
+  for (var i = 0; i < sections.length; i++) {
+    if (sections[i].status === "Open") {
+      return "Open";
+    }
+  }
+  return sections[0].status;
+}
+
 export function changeStatus(section) {
   if (section.status === "WaitList") {
     return `Waitlist (${section.waitlistTotal})`;
