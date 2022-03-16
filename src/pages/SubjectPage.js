@@ -122,15 +122,13 @@ export default function SubjectPage({ year, semester, location }) {
                       {course.subjectCode.code}-{course.subjectCode.school}{" "}
                       {course.deptCourseId}
                     </h4>
-                    {/* TODO: Get course status for ALL sections (currently just first section) */}
+                    {/* Display overall course status */}
                     <span
                       style={{
                         color: styleStatus(checkStatus(course.sections)),
                       }}
                     >
-                      {/* Returns the waitlist count, if any */}
                       {checkStatus(course.sections)}
-                      {/* {changeStatus(course.sections[0])} */}
                     </span>
                   </div>
                   <h3>{course.name}</h3>
