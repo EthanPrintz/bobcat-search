@@ -24,15 +24,12 @@ export function splitLocation(location) {
 
 export function checkStatus(sections) {
   // If even one open section available, return open
-  for (var i = 0; i < sections.length; i++) {
-    if (sections[i].status === "Open") {
-      return "Open";
-    }
+  const hasOpenSections = sections.some(({status}) => status === "Open");
+  const hasWaitlistSections = sections.some(({status}) => status === "WaitList");
+  if (hasOpenSections) {
+    return "Open";
   }
-  if (sections[0].status === "WaitList") {
-    return "Waitlist";
-  }
-  return sections[0].status;
+  return hasWaitlistSections ? "Waitlist" : "Closed";
 }
 
 export function changeStatus(section) {
